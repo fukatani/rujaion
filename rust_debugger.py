@@ -3,6 +3,8 @@ import codecs
 import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+import syntax
+
 
 class CustomMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -61,12 +63,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.textEdit.setText(f.read())
 
     def saveFile(self):
-        savename = unicode(QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', ''))
+        savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.textEdit.toPlainText())
 
     def addtextedit(self):
         self.textEdit = QtWidgets.QTextEdit()
+        high_lighter = syntax.RustHighlighter(self.textEdit.document())
         self.setCentralWidget(self.textEdit)
 
 
