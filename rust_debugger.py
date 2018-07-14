@@ -1,5 +1,6 @@
 import codecs
 import os
+import subprocess
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -37,6 +38,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.savebutton = self.edit_tool.addAction("Save...")
         self.savebutton.triggered.connect(self.saveFile)
 
+        self.compilebutton = self.edit_tool.addAction("Compile...")
+        self.compilebutton.triggered.connect(self.compile)
+
         # closebutton = self.edit_tool.addAction("Close...")
         # self.connect(closebutton, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
 
@@ -65,6 +69,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
 
+        self.fname = ''
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
 
@@ -79,6 +84,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         f = open(fname)
         self.editor.setPlainText(f.read())
         self.settings.setValue('LastOpenedFile', fname)
+        self.fname = fname
 
     def saveFile(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
@@ -98,6 +104,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def newFile(self):
         self.editor.clear()
+
+    def compile(self):
+        command = ("rustc", "-g", self.fname)
+        try:
+            _ = subprocess.check_output(command)
+        except subprocess.CalledProcessError as err:
+            print(err)
 
 
 def main():
