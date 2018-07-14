@@ -1,6 +1,6 @@
 import codecs
 import sys
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 import syntax
 
@@ -64,12 +64,19 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
 
+        self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
+        self.openFile(self.settings.value('LastOpenedFile', type=str))
+
     def showFileDialog(self):
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', '.rs')[0]
         if not fname:
             return
+        self.openFile(fname)
+
+    def openFile(self, fname):
         f = open(fname)
         self.editor.setPlainText(f.read())
+        self.settings.setValue('LastOpenedFile', fname)
 
     def saveFile(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
