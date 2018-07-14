@@ -92,6 +92,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.setPlainText(f.read())
         self.settings.setValue('LastOpenedFile', fname)
         self.fname = fname
+        self.setWindowTitle(self.fname)
 
     def saveFile(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
