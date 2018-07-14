@@ -13,7 +13,6 @@ import util
 import console
 
 
-# TODO: console
 # TODO: breakpoint
 # TODO: step
 # TODO: print
@@ -125,9 +124,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         command = ("rustc", "-g", self.fname)
         try:
             _ = subprocess.check_output(command)
-            self.bottom_widget.write('Compile is finished successfully.')
+            self.bottom_widget.write('Compile is finished successfully!',
+                                     mode='success')
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err)
+            self.bottom_widget.write(err, mode='error')
 
     def run(self):
         if not self.fname:
@@ -139,7 +139,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             output = subprocess.check_output(('./' + compiled_file,))
             self.bottom_widget.write(output)
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err)
+            self.bottom_widget.write(err, mode='error')
 
 
 def main():
