@@ -6,11 +6,10 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import syntax
+import util
 
 
-# TODO: compile
 # TODO: console
-# TODO: run
 # TODO: breakpoint
 # TODO: step
 # TODO: print
@@ -29,17 +28,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.file_tool = self.addToolBar("File")
         self.edit_tool = self.addToolBar("Exit")
 
-        self.newbutton = self.file_tool.addAction("New...")
-        self.newbutton.triggered.connect(self.newFile)
+        newbutton = self.file_tool.addAction("New...")
+        newbutton.triggered.connect(self.newFile)
 
-        self.openbutton = self.file_tool.addAction("Open...")
-        self.openbutton.triggered.connect(self.showFileDialog)
+        openbutton = self.file_tool.addAction("Open...")
+        openbutton.triggered.connect(self.showFileDialog)
 
-        self.savebutton = self.edit_tool.addAction("Save...")
-        self.savebutton.triggered.connect(self.saveFile)
+        savebutton = self.edit_tool.addAction("Save...")
+        savebutton.triggered.connect(self.saveFile)
 
-        self.compilebutton = self.edit_tool.addAction("Compile...")
-        self.compilebutton.triggered.connect(self.compile)
+        compilebutton = self.edit_tool.addAction("Compile...")
+        compilebutton.triggered.connect(self.compile)
+
+        runbutton = self.edit_tool.addAction("Run...")
+        runbutton.triggered.connect(self.run)
 
         # closebutton = self.edit_tool.addAction("Close...")
         # self.connect(closebutton, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
@@ -106,9 +108,23 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.clear()
 
     def compile(self):
+        if not self.fname:
+            util.disp_error("File is not opened.")
         command = ("rustc", "-g", self.fname)
         try:
             _ = subprocess.check_output(command)
+        except subprocess.CalledProcessError as err:
+            print(err)
+
+    def run(self):
+        if not self.fname:
+            util.disp_error("File is not opened.")
+        compiled_file = os.path.basename(self.fname).replace('.rs', '')
+        if not os.path.isfile(compiled_file):
+            util.disp_error("Compiled file is not opened.")
+        try:
+            output = subprocess.check_output(('./' + compiled_file,))
+            print(output)
         except subprocess.CalledProcessError as err:
             print(err)
 
