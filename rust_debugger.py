@@ -1,11 +1,12 @@
 import codecs
+import os
 import sys
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import syntax
 
 
-# TODO: open last opened file
 # TODO: compile
 # TODO: console
 # TODO: run
@@ -68,12 +69,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.openFile(self.settings.value('LastOpenedFile', type=str))
 
     def showFileDialog(self):
-        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', '.rs')[0]
-        if not fname:
-            return
+        dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
+        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', dirname, 'Rust Files (*.rs)')[0]
         self.openFile(fname)
 
     def openFile(self, fname):
+        if not fname:
+            return
         f = open(fname)
         self.editor.setPlainText(f.read())
         self.settings.setValue('LastOpenedFile', fname)
