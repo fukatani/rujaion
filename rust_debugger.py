@@ -1,24 +1,34 @@
-# -*- coding:utf-8 -*-
 import codecs
 import sys
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 
 import syntax
+
+
+# TODO: open last opened file
+# TODO: compile
+# TODO: console
+# TODO: run
+# TODO: breakpoint
+# TODO: step
+# TODO: print
+# TODO: watch
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(CustomMainWindow, self).__init__(parent)
-        self.resize(800, 500)
+        self.resize(800, 700)
         self.setWindowTitle("RustGUIDebugger")
         self.setStyleSheet("background-color: white")
         self.addtextedit()
+        self.setCentralWidget(self.editor)
 
         self.file_tool = self.addToolBar("File")
         self.edit_tool = self.addToolBar("Exit")
 
         self.newbutton = self.file_tool.addAction("New...")
-        self.newbutton.triggered.connect(self.addtextedit)
+        self.newbutton.triggered.connect(self.newFile)
 
         self.openbutton = self.file_tool.addAction("Open...")
         self.openbutton.triggered.connect(self.showFileDialog)
@@ -58,19 +68,27 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', '.rs')[0]
         if not fname:
             return
-        self.addtextedit()
         f = open(fname)
-        self.textEdit.setText(f.read())
+        self.editor.setPlainText(f.read())
 
     def saveFile(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
+        if not savename:
+            return
         fname = codecs.open(savename, 'w', 'utf-8')
-        fname.write(self.textEdit.toPlainText())
+        fname.write(self.editor.toPlainText())
 
     def addtextedit(self):
-        self.textEdit = QtWidgets.QTextEdit()
-        high_lighter = syntax.RustHighlighter(self.textEdit.document())
-        self.setCentralWidget(self.textEdit)
+        font = QtGui.QFont()
+        font.setFamily('Courier')
+        font.setFixedPitch(True)
+        font.setPointSize(10)
+        self.editor = QtWidgets.QTextEdit()
+        self.editor.setFont(font)
+        self.highlighter = syntax.RustHighlighter(self.editor.document())
+
+    def newFile(self):
+        self.editor.clear()
 
 
 def main():
@@ -82,4 +100,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
