@@ -3,10 +3,14 @@ import os
 import subprocess
 import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 import syntax
 import util
+import console
 
 
 # TODO: console
@@ -14,6 +18,7 @@ import util
 # TODO: step
 # TODO: print
 # TODO: watch
+# TODO: completer
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
@@ -74,6 +79,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.fname = ''
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
+        self.addConsole()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
@@ -104,6 +110,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.setFont(font)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
 
+    def addConsole(self):
+        self.bottom_widget = console.Console(self)
+        dock = QtWidgets.QDockWidget("Console", self)
+        dock.setWidget(self.bottom_widget)
+        self.addDockWidget(Qt.BottomDockWidgetArea, dock)
+
     def newFile(self):
         self.editor.clear()
 
@@ -113,8 +125,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         command = ("rustc", "-g", self.fname)
         try:
             _ = subprocess.check_output(command)
+            self.bottom_widget.write('Compile is finished successfully.')
         except subprocess.CalledProcessError as err:
-            print(err)
+            self.bottom_widget.write(err)
 
     def run(self):
         if not self.fname:
@@ -124,9 +137,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             util.disp_error("Compiled file is not opened.")
         try:
             output = subprocess.check_output(('./' + compiled_file,))
-            print(output)
+            self.bottom_widget.write(output)
         except subprocess.CalledProcessError as err:
-            print(err)
+            self.bottom_widget.write(err)
 
 
 def main():
