@@ -27,8 +27,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.resize(800, 700)
         self.setWindowTitle("RustGUIDebugger")
         self.setStyleSheet("background-color: white")
-        self.addtextedit()
-        self.setCentralWidget(self.editor)
+        self.addCentral()
 
         self.file_tool = self.addToolBar("File")
         self.edit_tool = self.addToolBar("Exit")
@@ -47,6 +46,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         runbutton = self.edit_tool.addAction("Run...")
         runbutton.triggered.connect(self.run)
+
+        debugbutton = self.edit_tool.addAction("Debug...")
+        debugbutton.triggered.connect(self.debug)
 
         # closebutton = self.edit_tool.addAction("Close...")
         # self.connect(closebutton, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
@@ -102,34 +104,67 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.editor.toPlainText())
 
-    def addtextedit(self):
+    def addEditer(self, parent):
         font = QtGui.QFont()
         font.setFamily('Courier')
         font.setFixedPitch(True)
         font.setPointSize(10)
-        self.editor = editor.RustEditter()
+        self.editor = editor.RustEditter(parent)
         self.editor.setFont(font)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
-        self.editor.doubleClickedSignal.connect(self.OnMousePressed)
+
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                            QtWidgets.QSizePolicy.Expanding)
+        self.editor.setFixedWidth(500)
+        self.editor.setSizePolicy(size_policy)
+
+    def addBreakEditer(self, parent):
+        font = QtGui.QFont()
+        font.setFamily('Courier')
+        font.setFixedPitch(True)
+        font.setPointSize(10)
+        self.breakEditer = editor.BreakPointEditter(parent)
+        self.breakEditer.setFont(font)
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                            QtWidgets.QSizePolicy.Expanding)
+        self.breakEditer.setSizePolicy(size_policy)
+        self.breakEditer.doubleClickedSignal.connect(self.OnMousePressed)
+
+    def addCentral(self):
+        self.centralWidget = QtWidgets.QWidget(self)
+        self.setCentralWidget(self.centralWidget)
+        self.centralWidget.setObjectName("centralWidget")
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
+                                            QtWidgets.QSizePolicy.Expanding)
+        size_policy.setHorizontalStretch(0)
+        size_policy.setVerticalStretch(0)
+        self.centralWidget.setSizePolicy(size_policy)
+        self.centralWidget.setFixedHeight(500)
+        self.centralWidget.setFixedWidth(700)
+
+        self.HorizontalSplitter = QtWidgets.QSplitter(self.centralWidget)
+        self.HorizontalSplitter.setOrientation(QtCore.Qt.Horizontal)
+        self.HorizontalSplitter.setObjectName("HorizontalSplitter")
+        self.HorizontalSplitter.setSizePolicy(size_policy)
+        self.HorizontalSplitter.setFixedHeight(500)
+
+        self.addBreakEditer(self.HorizontalSplitter)
+        self.addEditer(self.HorizontalSplitter)
 
     def OnMousePressed(self, pos):
+        cursor = self.editor.cursorForPosition(pos)
+        line_num = cursor.blockNumber() + 1
         self.bottom_widget.write('Mouse released at ' +
-                                 str(self.editor.textCursor().blockNumber() + 1) +
+                                 str(line_num) +
                                  '\n')
+        self.breakEditer.toggleBreak(line_num)
+
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
         dock = QtWidgets.QDockWidget("Console", self)
         dock.setWidget(self.bottom_widget)
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
-
-        self.left_widget = editor.BreakPointEditter(self)
-        self.left_widget.setReadOnly(True)
-        self.left_widget.setFixedWidth(5)
-        dock = QtWidgets.QDockWidget("Break", self)
-        dock.setWidget(self.left_widget)
-        self.addDockWidget(Qt.LeftDockWidgetArea, dock)
-
 
     def newFile(self):
         self.editor.clear()
@@ -154,6 +189,30 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         try:
             output = subprocess.check_output(('./' + compiled_file,))
             self.bottom_widget.write(output)
+        except subprocess.CalledProcessError as err:
+            self.bottom_widget.write(err, mode='error')
+
+    def debug(self):
+        if not self.fname:
+            util.disp_error("File is not opened.")
+        compiled_file = os.path.basename(self.fname).replace('.rs', '')
+        if not os.path.isfile(compiled_file):
+            util.disp_error("Compiled file is not opened.")
+        try:
+            proc = subprocess.Popen(['rust-gdb',  './' + compiled_file],
+                                    stdin=subprocess.PIPE,
+                                    stdout=subprocess.PIPE)
+
+            for com in self.breakEditer.break_points:
+                proc.stdin.write(com)
+
+            proc.stdin.write(b'run\n')
+            self.bottom_widget.write(proc.stdout.readline())
+            self.bottom_widget.write(proc.stdout.readline())
+
+            proc.stdin.write(b'quit\n')
+            self.bottom_widget.write(proc.stdout.readline())
+            self.bottom_widget.write(proc.stdout.readline())
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
 
