@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSignal, QPoint, QEvent
+from PyQt5.QtCore import pyqtSignal, QPoint
 
 
 class RustEditter(QtWidgets.QTextEdit):
@@ -9,5 +9,14 @@ class RustEditter(QtWidgets.QTextEdit):
         super().__init__(*args)
 
     def mouseDoubleClickEvent(self, event):
-        # if event.type() == QEvent.MouseButtonDblClick:
+        self.doubleClickedSignal.emit(event.pos())
+
+
+class BreakPointEditter(QtWidgets.QTextEdit):
+    doubleClickedSignal = pyqtSignal(QPoint)
+
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())

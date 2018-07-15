@@ -80,7 +80,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
         self.addConsole()
-        self.txtCursor = QtGui.QTextCursor()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
@@ -114,18 +113,23 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.doubleClickedSignal.connect(self.OnMousePressed)
 
     def OnMousePressed(self, pos):
-        cursor = self.editor.cursorForPosition(pos)
-        position = cursor.position()
-        # self.editor.setPosition(position)
-        self.editor.setTextCursor(self.txtCursor)
-        self.txtCursor.setPosition(position, mode=QtGui.QTextCursor.KeepAnchor)
-        self.bottom_widget.write('Mouse released')
+        self.bottom_widget.write('Mouse released at ' +
+                                 str(self.editor.textCursor().blockNumber() + 1) +
+                                 '\n')
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
         dock = QtWidgets.QDockWidget("Console", self)
         dock.setWidget(self.bottom_widget)
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
+
+        self.left_widget = editor.BreakPointEditter(self)
+        self.left_widget.setReadOnly(True)
+        self.left_widget.setFixedWidth(5)
+        dock = QtWidgets.QDockWidget("Break", self)
+        dock.setWidget(self.left_widget)
+        self.addDockWidget(Qt.LeftDockWidgetArea, dock)
+
 
     def newFile(self):
         self.editor.clear()
