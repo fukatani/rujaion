@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 import syntax
+import editor
 import util
 import console
 
@@ -79,6 +80,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
         self.addConsole()
+        self.txtCursor = QtGui.QTextCursor()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
@@ -106,9 +108,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         font.setFamily('Courier')
         font.setFixedPitch(True)
         font.setPointSize(10)
-        self.editor = QtWidgets.QTextEdit()
+        self.editor = editor.RustEditter()
         self.editor.setFont(font)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
+        self.editor.doubleClickedSignal.connect(self.OnMousePressed)
+
+    def OnMousePressed(self, pos):
+        cursor = self.editor.cursorForPosition(pos)
+        position = cursor.position()
+        # self.editor.setPosition(position)
+        self.editor.setTextCursor(self.txtCursor)
+        self.txtCursor.setPosition(position, mode=QtGui.QTextCursor.KeepAnchor)
+        self.bottom_widget.write('Mouse released')
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
