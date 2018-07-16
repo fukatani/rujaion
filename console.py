@@ -22,11 +22,15 @@ class Console(QtWidgets.QTextEdit):
         elif mode == 'error':
             font.setBold(True)
             self.setTextColor(QtCore.Qt.red)
+        elif mode == 'gdb':
+            font.setBold(False)
+            self.setTextColor(QtCore.Qt.black)
+            msg = '>>> ' + msg
         self.setFont(font)
 
         self.insertPlainText(msg)
         self.moveCursor(QtGui.QTextCursor.End)
-        self._buffer.write(msg)
+        self._buffer.write(msg + '\n')
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)

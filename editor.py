@@ -5,6 +5,39 @@ from PyQt5.QtCore import pyqtSignal, QPoint
 from PyQt5.QtCore import Qt
 
 
+"""
+Fixing Some Bugs on a Sunday Evening
+------------------------------------
+
+Whose bugs these are I think I know,
+But now he works at 3DO;
+He will not see me working here
+To fix his code and make it go.
+
+The saner folk must think it queer
+To trace without the source code near
+After a launch and frozen mouse
+The weirdest stack crawl of the year.
+
+I give my nodding head a shake
+To see if I can stay awake
+The only other thing to do
+Is find some more coffeine to take.
+
+This bug is pretty hard to nip,
+But I have other ones to fix,
+And tons to go before we ship,
+And tons to go before we ship.
+
+
+Written by David A. Lyons <dlyons@apple.com>, January 1994
+(with apologies to Robert Frost)
+
+Hey, it's fiction.  Close to reality in spirit,
+but does not refer to a specific project, bug, Sunday,
+or brand of soft drink.
+"""
+
 class RustEditter(QtWidgets.QTextEdit):
     doubleClickedSignal = pyqtSignal(QPoint)
 

@@ -7,6 +7,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+import pexpect
 
 import syntax
 import editor
@@ -199,20 +200,25 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            proc = subprocess.Popen(['rust-gdb',  './' + compiled_file],
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
+            proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
 
-            for com in self.breakEditer.break_points:
-                proc.stdin.write(com)
+            proc.expect('\(gdb\)')
+            self.bottom_widget.write(proc.before.decode())
 
-            proc.stdin.write(b'run\n')
-            self.bottom_widget.write(proc.stdout.readline())
-            self.bottom_widget.write(proc.stdout.readline())
+            for com in self.breakEditer.generateBreak():
+                proc.send(com)
+                proc.expect('\(gdb\)')
+                self.bottom_widget.write(proc.before.decode(), mode='gdb')
 
-            proc.stdin.write(b'quit\n')
-            self.bottom_widget.write(proc.stdout.readline())
-            self.bottom_widget.write(proc.stdout.readline())
+            print('run ' + compiled_file)
+            proc.send(b'run\n')
+            proc.expect('\(gdb\)')
+            self.bottom_widget.write(proc.before.decode(), mode='gdb')
+
+            print('quit ' + compiled_file)
+            proc.send(b'quit\n')
+            proc.terminate()
+
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
 
