@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QPoint
 from PyQt5.QtCore import Qt
 
@@ -38,41 +38,64 @@ but does not refer to a specific project, bug, Sunday,
 or brand of soft drink.
 """
 
-class RustEditter(QtWidgets.QTextEdit):
+class RustEditter(QtWidgets.QPlainTextEdit):
     doubleClickedSignal = pyqtSignal(QPoint)
 
     def __init__(self, *args):
         super().__init__(*args)
+        font = QtGui.QFont()
+        font.setFamily('Courier')
+        font.setFixedPitch(True)
+        font.setPointSize(10)
+        self.setFont(font)
+
+        self.lineNumberAreaWidth = self.fontMetrics().width('8') * 4
+        self.setViewportMargins(self.lineNumberAreaWidth, 0, 0, 0)
+        self.lineNumberArea = QtWidgets.QWidget(self)
+        self.lineNumberArea.installEventFilter(self)
+
+        self.break_points = defaultdict(lambda : False)
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
 
+    def eventFilter(self, obj, event):
+        if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
+            self.drawLineNumbers()
+            return True
+        return False
 
-class BreakPointEditter(QtWidgets.QTextEdit):
-    doubleClickedSignal = pyqtSignal(QPoint)
+    def drawLineNumbers(self):
+        painter = QtGui.QPainter(self.lineNumberArea)
+        painter.setPen(Qt.black)
+        r = QtCore.QRect(self.lineNumberArea.rect())
+        painter.fillRect(r, Qt.lightGray)
+        ht = self.fontMetrics().height()
+        block = QtGui.QTextBlock(self.firstVisibleBlock())
+        line_number = block.blockNumber() + 1
+        while block.isValid():
+            y = self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
+            if y >= r.bottom():
+                break
+            if self.break_points[line_number]:
+                disp = "b " + str(line_number)
+            else:
+                disp = str(line_number)
+            painter.drawText(0, y, self.lineNumberAreaWidth,
+                             ht, Qt.AlignRight, disp)
+            line_number += 1
+            block = block.next()
 
-    def __init__(self, *args):
-        super().__init__(*args)
-        self.setReadOnly(True)
-        self.setFixedWidth(30)
-        self.break_points = defaultdict(lambda: False)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-    def mouseDoubleClickEvent(self, event):
-        self.doubleClickedSignal.emit(event.pos())
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.lineNumberArea.setGeometry(QtCore.QRect(self.rect().left(),
+                                                     self.rect().top(),
+                                                     self.lineNumberAreaWidth,
+                                                     self.rect().height()))
 
     def toggleBreak(self, line_num):
         self.break_points[line_num] = not self.break_points[line_num]
-        self.update()
-
-    def update(self):
-        lines = []
-        for i in range(1, 100):
-            if self.break_points[i]:
-                lines.append('b')
-            else:
-                lines.append('')
-        self.setPlainText('\n'.join(lines))
+        self.repaint()
 
     def generateBreak(self):
         commands = []
@@ -80,3 +103,14 @@ class BreakPointEditter(QtWidgets.QTextEdit):
             if self.break_points[i]:
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
+
+    def highlight_current_line(self):
+        extraSelections = []
+        selection = QtWidgets.QTextEdit.ExtraSelection()
+        selection.format.setBackground(Qt.cyan)
+        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                     QtCore.QVariant(True))
+        selection.cursor = self.textCursor()
+        selection.cursor.clearSelection()
+        extraSelections.append(selection)
+        self.setExtraSelections(extraSelections)

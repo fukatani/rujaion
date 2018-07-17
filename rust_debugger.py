@@ -15,7 +15,7 @@ import util
 import console
 
 
-# TODO: breakpoint
+# TODO: breakpoint highlight
 # TODO: step
 # TODO: print
 # TODO: watch
@@ -106,60 +106,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         fname.write(self.editor.toPlainText())
 
     def addEditer(self, parent):
-        font = QtGui.QFont()
-        font.setFamily('Courier')
-        font.setFixedPitch(True)
-        font.setPointSize(10)
         self.editor = editor.RustEditter(parent)
-        self.editor.setFont(font)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
-
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                            QtWidgets.QSizePolicy.Expanding)
-        self.editor.setFixedWidth(500)
-        self.editor.setSizePolicy(size_policy)
-
-    def addBreakEditer(self, parent):
-        font = QtGui.QFont()
-        font.setFamily('Courier')
-        font.setFixedPitch(True)
-        font.setPointSize(10)
-        self.breakEditer = editor.BreakPointEditter(parent)
-        self.breakEditer.setFont(font)
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                            QtWidgets.QSizePolicy.Expanding)
-        self.breakEditer.setSizePolicy(size_policy)
-        self.breakEditer.doubleClickedSignal.connect(self.OnMousePressed)
+        self.editor.doubleClickedSignal.connect(self.OnMousePressed)
 
     def addCentral(self):
-        self.centralWidget = QtWidgets.QWidget(self)
-        self.setCentralWidget(self.centralWidget)
-        self.centralWidget.setObjectName("centralWidget")
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                            QtWidgets.QSizePolicy.Expanding)
-        size_policy.setHorizontalStretch(0)
-        size_policy.setVerticalStretch(0)
-        self.centralWidget.setSizePolicy(size_policy)
-        self.centralWidget.setFixedHeight(500)
-        self.centralWidget.setFixedWidth(700)
-
-        self.HorizontalSplitter = QtWidgets.QSplitter(self.centralWidget)
-        self.HorizontalSplitter.setOrientation(QtCore.Qt.Horizontal)
-        self.HorizontalSplitter.setObjectName("HorizontalSplitter")
-        self.HorizontalSplitter.setSizePolicy(size_policy)
-        self.HorizontalSplitter.setFixedHeight(500)
-
-        self.addBreakEditer(self.HorizontalSplitter)
-        self.addEditer(self.HorizontalSplitter)
+        self.addEditer(self)
+        self.setCentralWidget(self.editor)
 
     def OnMousePressed(self, pos):
         cursor = self.editor.cursorForPosition(pos)
         line_num = cursor.blockNumber() + 1
-        self.bottom_widget.write('Mouse released at ' +
-                                 str(line_num) +
-                                 '\n')
-        self.breakEditer.toggleBreak(line_num)
-
+        self.editor.toggleBreak(line_num)
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
@@ -205,7 +163,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             proc.expect('\(gdb\)')
             self.bottom_widget.write(proc.before.decode())
 
-            for com in self.breakEditer.generateBreak():
+            for com in self.editer.generateBreak():
                 proc.send(com)
                 proc.expect('\(gdb\)')
                 self.bottom_widget.write(proc.before.decode(), mode='gdb')
