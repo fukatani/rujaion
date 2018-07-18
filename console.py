@@ -27,10 +27,10 @@ class Console(QtWidgets.QTextEdit):
             self.setTextColor(QtCore.Qt.black)
             msg = '>>> ' + msg
         self.setFont(font)
-
+        msg = msg + '\n'
         self.insertPlainText(msg)
         self.moveCursor(QtGui.QTextCursor.End)
-        self._buffer.write(msg + '\n')
+        self._buffer.write(msg)
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)

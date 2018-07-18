@@ -15,7 +15,7 @@ import util
 import console
 
 
-# TODO: breakpoint highlight
+# TODO: button, interective
 # TODO: step
 # TODO: print
 # TODO: watch
@@ -42,8 +42,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         savebutton = self.edit_tool.addAction("Save...")
         savebutton.triggered.connect(self.saveFile)
 
-        compilebutton = self.edit_tool.addAction("Compile...")
-        compilebutton.triggered.connect(self.compile)
+        # compilebutton = self.edit_tool.addAction("Compile...")
+        # compilebutton.triggered.connect(self.compile)
 
         runbutton = self.edit_tool.addAction("Run...")
         runbutton.triggered.connect(self.run)
@@ -51,8 +51,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         debugbutton = self.edit_tool.addAction("Debug...")
         debugbutton.triggered.connect(self.debug)
 
-        # closebutton = self.edit_tool.addAction("Close...")
-        # self.connect(closebutton, QtCore.SIGNAL('triggered()'), QtCore.SLOT('close()'))
+        continuebutton = self.edit_tool.addAction("Continue...")
+        continuebutton.triggered.connect(self.continue_process)
+
+        nextbutton = self.edit_tool.addAction("Next...")
+        nextbutton.triggered.connect(self.next)
+
+        stepinbutton =  self.edit_tool.addAction("Step In...")
+        stepinbutton.triggered.connect(self.stepIn)
+
+        stepoutbutton = self.edit_tool.addAction("Step Out...")
+        stepoutbutton.triggered.connect(self.stepOut)
+
+        terminatebutton = self.edit_tool.addAction("Terminate...")
+        terminatebutton.triggered.connect(self.terminate)
 
         # Add MenuBar
         filemenu = self.menuBar()
@@ -80,6 +92,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         filemenu.addAction(a)
 
         self.fname = ''
+        self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
         self.addConsole()
@@ -138,8 +151,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                      mode='success')
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
+            return False
+        return True
 
     def run(self):
+        if not self.compile():
+            return
         if not self.fname:
             util.disp_error("File is not opened.")
         compiled_file = os.path.basename(self.fname).replace('.rs', '')
@@ -152,33 +169,85 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.bottom_widget.write(err, mode='error')
 
     def debug(self):
+        if not self.compile():
+            return
         if not self.fname:
             util.disp_error("File is not opened.")
         compiled_file = os.path.basename(self.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
+            if self.proc is None:
+                self.proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
+            else:
+                self.terminate()
+            self.proc.expect('\(gdb\)')
+            self.bottom_widget.write(self.proc.before.decode())
 
-            proc.expect('\(gdb\)')
-            self.bottom_widget.write(proc.before.decode())
-
-            for com in self.editer.generateBreak():
-                proc.send(com)
-                proc.expect('\(gdb\)')
-                self.bottom_widget.write(proc.before.decode(), mode='gdb')
+            for com in self.editor.generateBreak():
+                self.proc.send(com)
+                self.proc.expect('\(gdb\)')
+                self.bottom_widget.write(self.proc.before.decode(), mode='gdb')
 
             print('run ' + compiled_file)
-            proc.send(b'run\n')
-            proc.expect('\(gdb\)')
-            self.bottom_widget.write(proc.before.decode(), mode='gdb')
-
-            print('quit ' + compiled_file)
-            proc.send(b'quit\n')
-            proc.terminate()
+            self.proc.send(b'run\n')
+            self.post_process()
 
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
+
+
+    def next(self):
+        print('next')
+        if self.proc is None:
+            return
+        self.proc.send(b'n\n')
+        self.post_process()
+
+    def stepIn(self):
+        print('step in')
+        if self.proc is None:
+            return
+        self.proc.send(b's\n')
+        self.post_process()
+
+    def stepOut(self):
+        print('step out')
+        if self.proc is None:
+            return
+        self.proc.send(b'fin\n')
+        self.post_process()
+
+    def terminate(self):
+        print('quit')
+        if self.proc is None:
+            return
+        self.proc.send(b'quit\n')
+        self.proc.terminate()
+        self.proc = None
+        self.bottom_widget.write("Debug process was successfully terminated.",
+                                 mode='success')
+
+    def continue_process(self):
+        print('continue')
+        if self.proc is None:
+            return
+        self.proc.send(b'c\n')
+        self.post_process()
+
+    def post_process(self):
+        assert self.proc is not None
+        self.proc.expect('\(gdb\)')
+        msg = self.proc.before.decode()
+        for line in msg.split('\r\n'):
+            self.bottom_widget.write(line, mode='gdb')
+        last_line = msg.split('\r\n')[-2]
+        if last_line.endswith("exited normally]"):
+            self.terminate()
+        else:
+            line_num = int(last_line.split('\t')[0])
+            self.editor.highlight_current_line(line_num)
+
 
 
 def main():

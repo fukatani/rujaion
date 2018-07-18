@@ -104,13 +104,15 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
 
-    def highlight_current_line(self):
+    def highlight_current_line(self, line_num):
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(Qt.cyan)
         selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
                                      QtCore.QVariant(True))
+        self.textCursor().setPosition(line_num)
         selection.cursor = self.textCursor()
         selection.cursor.clearSelection()
         extraSelections.append(selection)
         self.setExtraSelections(extraSelections)
+        # self.repaint()
