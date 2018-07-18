@@ -15,17 +15,17 @@ import util
 import console
 
 
-# TODO: button, interective
-# TODO: step
+# TODO: high light update
 # TODO: print
 # TODO: watch
+# TODO  page
 # TODO: completer
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(CustomMainWindow, self).__init__(parent)
-        self.resize(800, 700)
+
         self.setWindowTitle("RustGUIDebugger")
         self.setStyleSheet("background-color: white")
         self.addCentral()
@@ -95,7 +95,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
+        self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
+        self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.addConsole()
+
+    def closeEvent(self, e):
+        self.settings.setValue("size", self.size())
+        self.settings.setValue("pos", self.pos())
+        e.accept()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
