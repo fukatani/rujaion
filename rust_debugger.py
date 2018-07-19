@@ -233,6 +233,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.proc = None
         self.bottom_widget.write("Debug process was successfully terminated.",
                                  mode='success')
+        self.editor.clear_highlight_line()
 
     def continue_process(self):
         print('continue')
