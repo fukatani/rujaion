@@ -93,6 +93,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                                                      self.lineNumberAreaWidth,
                                                      self.rect().height()))
 
+    def wheelEvent(self, event):
+        super().wheelEvent(event)
+        self.repaint()
+
     def toggleBreak(self, line_num):
         self.break_points[line_num] = not self.break_points[line_num]
         self.repaint()
