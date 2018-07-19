@@ -110,9 +110,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         selection.format.setBackground(Qt.cyan)
         selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
                                      QtCore.QVariant(True))
-        self.textCursor().setPosition(line_num)
-        selection.cursor = self.textCursor()
+        selection.cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num - 1))
         selection.cursor.clearSelection()
         extraSelections.append(selection)
         self.setExtraSelections(extraSelections)
-        # self.repaint()

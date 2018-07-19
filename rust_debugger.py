@@ -15,7 +15,6 @@ import util
 import console
 
 
-# TODO: high light update
 # TODO: print
 # TODO: watch
 # TODO  page
