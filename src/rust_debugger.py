@@ -9,13 +9,15 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 import pexpect
 
+import display_widget
 import syntax
 import editor
 import util
 import console
 
 
-# TODO: print
+# TODO: multi file
+# TODO: parenthis
 # TODO: watch
 # TODO  page
 # TODO: completer
@@ -97,6 +99,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.addConsole()
+        self.addDisplay()
 
     def closeEvent(self, e):
         self.settings.setValue("size", self.size())
@@ -133,10 +136,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addEditer(self)
         self.setCentralWidget(self.editor)
 
-    def OnMousePressed(self, pos):
-        cursor = self.editor.cursorForPosition(pos)
-        line_num = cursor.blockNumber() + 1
-        self.editor.toggleBreak(line_num)
+    def addDisplay(self):
+        self.display_widget = display_widget.ResultTableModel(self)
+        dock = QtWidgets.QDockWidget("Display", self)
+        dock.setWidget(self.display_widget)
+        self.addDockWidget(Qt.RightDockWidgetArea, dock)
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
@@ -202,7 +206,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
 
-
     def next(self):
         print('next')
         if self.proc is None:
@@ -251,10 +254,29 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         last_line = msg.split('\r\n')[-2]
         if last_line.endswith("exited normally]"):
             self.terminate()
+            return
         else:
             line_num = int(last_line.split('\t')[0])
             self.editor.highlight_current_line(line_num)
 
+        for i, name in self.display_widget.name_iter():
+            self.proc.send(b'p ' + name.encode() + b'\n')
+            self.proc.expect('\(gdb\)')
+            value = ''.join(self.proc.before.decode().split('\n')[1:])
+            value = value.split(' = ')[-1]
+            self.display_widget.set_cell(i, 2, value)
+
+            self.proc.send(b'pt ' + name.encode() + b'\n')
+            self.proc.expect('\(gdb\)')
+            type = ''.join(self.proc.before.decode().split('\n')[1:])
+            type = type.split(' = ')[-1]
+            type = type.split(' {')[0]
+            self.display_widget.set_cell(i, 1, type)
+
+    def OnMousePressed(self, pos):
+        cursor = self.editor.cursorForPosition(pos)
+        line_num = cursor.blockNumber() + 1
+        self.editor.toggleBreak(line_num)
 
 
 def main():
