@@ -16,11 +16,12 @@ import util
 import console
 
 
+# TODO: keybind
 # TODO: multi file
 # TODO: parenthis
 # TODO: watch
-# TODO  page
-# TODO: completer
+# TODO: completer(racer)
+# TODO: rusti
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
