@@ -208,7 +208,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             if self.proc is None:
                 self.proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
             else:
-                self.terminate()
+                self.continue_process()
                 return
             self.proc.expect('\(gdb\)')
             self.bottom_widget.write(self.proc.before.decode())
@@ -270,19 +270,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         msg = self.proc.before.decode()
         for line in msg.split('\r\n'):
             self.bottom_widget.write(line, mode='gdb')
-        last_line = msg.split('\r\n')[-2]
-        if last_line.endswith("exited normally]"):
-            self.terminate()
-            return
-        elif last_line.endswith('No such file or directory.'):
-            self.stepOut()
-        else:
-            # HACK
-            try:
-                line_num = int(last_line.split('\t')[0])
-            except ValueError:
-                line_num = int(msg.split('\r\n')[-3].split('\t')[0])
-            self.editor.highlight_current_line(line_num)
+
+        for line in reversed(msg.split('\r\n')):
+            if line.endswith("exited normally]"):
+                self.terminate()
+                return
+            elif line.endswith('No such file or directory.'):
+                self.stepOut()
+                return
+            else:
+                try:
+                    line_num = int(line.split('\t')[0])
+                except ValueError:
+                    continue
+                self.editor.highlight_current_line(line_num)
 
         for i, name in self.display_widget.name_iter():
             self.proc.send(b'p ' + name.encode() + b'\n')
