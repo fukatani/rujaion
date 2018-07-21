@@ -15,7 +15,6 @@ import editor
 import util
 import console
 
-# TODO: display status
 # TODO: sokuji hyouka
 # TODO: completer(racer)
 # TODO: rusti
@@ -183,6 +182,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         return True
 
     def run(self):
+        self.setWindowTitle('(Running...) ' + self.fname)
         if not self.compile():
             return
         if not self.fname:
@@ -195,6 +195,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.bottom_widget.write(output)
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
+        self.setWindowTitle(self.fname)
 
     def debug(self):
         if not self.compile():
@@ -220,6 +221,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
+            self.setWindowTitle('(Debugging...) ' + self.fname)
             self.post_process()
 
         except subprocess.CalledProcessError as err:
@@ -256,6 +258,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.bottom_widget.write("Debug process was successfully terminated.",
                                  mode='success')
         self.editor.clear_highlight_line()
+        self.setWindowTitle(self.fname)
 
     def continue_process(self):
         print('continue')
