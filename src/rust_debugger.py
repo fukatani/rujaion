@@ -109,12 +109,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def keyPressEvent(self, event):
         print(event.text())
-        if event.modifiers() and QtCore.Qt.ControlModifier and \
-                event.key == QtCore.Qt.Key_O:
-            self.openFile()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                event.key == QtCore.Qt.Key_S:
-            self.saveFile()
         if event.modifiers() and QtCore.Qt.ShiftModifier and \
                 event.key == QtCore.Qt.Key_F8:
             self.stepOut()
