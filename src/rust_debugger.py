@@ -16,7 +16,7 @@ import util
 import console
 
 # TODO: sokuji hyouka
-# TODO: editting
+# TODO: editting status
 # TODO: completer(racer)
 # TODO: rusti
 # TODO: parenthis
@@ -296,18 +296,21 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.editor.highlight_current_line(line_num)
 
         for i, name in self.display_widget.name_iter():
-            self.proc.send(b'p ' + name.encode() + b'\n')
-            self.proc.expect('\(gdb\)')
-            value = ''.join(self.proc.before.decode().split('\n')[1:])
-            value = value.split(' = ')[-1]
-            self.display_widget.set_cell(i, 2, value)
+            self.display_one_valuable(i, name)
 
-            self.proc.send(b'pt ' + name.encode() + b'\n')
-            self.proc.expect('\(gdb\)')
-            type = ''.join(self.proc.before.decode().split('\n')[1:])
-            type = type.split(' = ')[-1]
-            type = type.split(' {')[0]
-            self.display_widget.set_cell(i, 1, type)
+    def display_one_valuable(self, row_num, name):
+        self.proc.send(b'p ' + name.encode() + b'\n')
+        self.proc.expect('\(gdb\)')
+        value = ''.join(self.proc.before.decode().split('\n')[1:])
+        value = value.split(' = ')[-1]
+        self.display_widget.set_cell(row_num, 2, value)
+
+        self.proc.send(b'pt ' + name.encode() + b'\n')
+        self.proc.expect('\(gdb\)')
+        type = ''.join(self.proc.before.decode().split('\n')[1:])
+        type = type.split(' = ')[-1]
+        type = type.split(' {')[0]
+        self.display_widget.set_cell(row_num, 1, type)
 
     def OnMousePressed(self, pos):
         cursor = self.editor.cursorForPosition(pos)
