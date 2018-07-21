@@ -16,6 +16,8 @@ import util
 import console
 
 
+# TODO: sokuji hyouka
+# TODO: maigo
 # TODO: display status
 # TODO: completer(racer)
 # TODO: rusti
@@ -274,8 +276,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if last_line.endswith("exited normally]"):
             self.terminate()
             return
+        elif last_line.endswith('No such file or directory.'):
+            self.stepOut()
         else:
-            line_num = int(last_line.split('\t')[0])
+            # HACK
+            try:
+                line_num = int(last_line.split('\t')[0])
+            except ValueError:
+                line_num = int(msg.split('\r\n')[-3].split('\t')[0])
             self.editor.highlight_current_line(line_num)
 
         for i, name in self.display_widget.name_iter():
