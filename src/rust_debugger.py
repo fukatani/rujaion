@@ -15,8 +15,6 @@ import editor
 import util
 import console
 
-# TODO: file menu
-# TODO: save as
 # TODO: sokuji hyouka
 # TODO: editting status
 # TODO: rustsym(jump)
@@ -36,6 +34,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.setStyleSheet("background-color: white")
         self.addCentral()
 
+        menubar = self.menuBar()
         self.file_tool = self.addToolBar("File")
         self.edit_tool = self.addToolBar("Exit")
 
@@ -45,7 +44,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         openbutton = self.file_tool.addAction("Open...")
         openbutton.triggered.connect(self.showFileDialog)
 
-        savebutton = self.edit_tool.addAction("Save...")
+        savebutton = self.file_tool.addAction("Save...")
         savebutton.triggered.connect(self.saveFile)
 
         # compilebutton = self.edit_tool.addAction("Compile...")
@@ -75,9 +74,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         # Add MenuBar
         filemenu = self.menuBar()
         filemenu = filemenu.addMenu('&File')
-        filemenu.addMenu("New...")
-        filemenu.addMenu("Open...")
-        filemenu.addMenu("Save...")
+
+        # Add Open menu
+        a = QtWidgets.QAction('New', self)
+        a.triggered.connect(self.newFile)
+        filemenu.addAction(a)
 
         # Add Open menu
         a = QtWidgets.QAction('Open', self)
@@ -85,17 +86,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
 
-        # Add Exit menu
-        #a = QtWidgets.QAction('Exit', self)
-        #a.setShortcut('Ctrl+w')
-        #a.triggered.connect(QtCore.SLOT('close()'))
-        #filemenu.addAction(a)
-
         # Add Save menu
         a = QtWidgets.QAction('Save', self)
         a.setShortcut('Ctrl+s')
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
+
+        # Add Save as menu
+        a = QtWidgets.QAction('Save as', self)
+        a.setShortcut('Ctrl+w')
+        a.triggered.connect(self.saveFileAs)
+        filemenu.addAction(a)
+        self.filemenu = filemenu
 
         self.fname = ''
         self.proc = None
@@ -112,7 +114,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         e.accept()
 
     def keyPressEvent(self, event):
-        print(event.text())
         if event.modifiers() and QtCore.Qt.ShiftModifier and \
                 event.key == QtCore.Qt.Key_F8:
             self.stepOut()
@@ -129,6 +130,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.reflesh()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
+        else:
+            event.accept()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
@@ -150,12 +153,19 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         f = open(self.fname)
         self.editor.setPlainText(f.read())
 
-    def saveFile(self):
+    def saveFileAs(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
         if not savename:
             return
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.editor.toPlainText())
+
+    def saveFile(self):
+        if self.fname:
+            fname = codecs.open(self.fname, 'w', 'utf-8')
+            fname.write(self.editor.toPlainText())
+        else:
+            self.saveFileAs()
 
     def addEditer(self, parent):
         self.editor = editor.RustEditter(parent)
