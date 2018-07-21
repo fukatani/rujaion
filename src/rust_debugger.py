@@ -16,6 +16,7 @@ import util
 import console
 
 # TODO: sokuji hyouka
+# TODO: editting
 # TODO: completer(racer)
 # TODO: rusti
 # TODO: parenthis
@@ -111,6 +112,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if event.modifiers() and QtCore.Qt.ControlModifier and \
                 event.key == QtCore.Qt.Key_O:
             self.openFile()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                event.key == QtCore.Qt.Key_S:
+            self.saveFile()
+        if event.modifiers() and QtCore.Qt.ShiftModifier and \
+                event.key == QtCore.Qt.Key_F8:
+            self.stepOut()
         elif event.modifiers() and QtCore.Qt.ControlModifier and \
                 event.key == QtCore.Qt.Key_F9:
             self.run()
