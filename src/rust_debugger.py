@@ -15,6 +15,8 @@ import editor
 import util
 import console
 
+# TODO: file menu
+# TODO: save as
 # TODO: sokuji hyouka
 # TODO: editting status
 # TODO: rustsym(jump)
