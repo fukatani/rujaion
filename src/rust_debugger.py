@@ -17,7 +17,9 @@ import console
 
 # TODO: sokuji hyouka
 # TODO: editting status
+# TODO: rustsym(jump)
 # TODO: completer(racer)
+# TODO: procon
 # TODO: rusti
 # TODO: parenthis
 # TODO: watch
@@ -121,6 +123,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.next()
         elif event.key() == QtCore.Qt.Key_F7:
             self.stepIn()
+        elif event.key() == QtCore.Qt.Key_F5:
+            self.reflesh()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
 
@@ -137,6 +141,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue('LastOpenedFile', fname)
         self.fname = fname
         self.setWindowTitle(self.fname)
+
+    def reflesh(self):
+        if not self.fname:
+            return
+        f = open(self.fname)
+        self.editor.setPlainText(f.read())
 
     def saveFile(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
