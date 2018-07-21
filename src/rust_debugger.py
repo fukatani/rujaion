@@ -16,12 +16,12 @@ import util
 import console
 
 
-# TODO: keybind
-# TODO: multi file
-# TODO: parenthis
-# TODO: watch
+# TODO: display status
 # TODO: completer(racer)
 # TODO: rusti
+# TODO: parenthis
+# TODO: watch
+# TODO: multi file
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
@@ -106,6 +106,23 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
         e.accept()
+
+    def keyPressEvent(self, event):
+        print(event.text())
+        if event.modifiers() and QtCore.Qt.ControlModifier and \
+                event.key == QtCore.Qt.Key_O:
+            self.openFile()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                event.key == QtCore.Qt.Key_F9:
+            self.run()
+        elif event.key() == QtCore.Qt.Key_F9:
+            self.debug()
+        elif event.key() == QtCore.Qt.Key_F8:
+            self.next()
+        elif event.key() == QtCore.Qt.Key_F7:
+            self.stepIn()
+        elif event.key() == QtCore.Qt.Key_Escape:
+            self.terminate()
 
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
@@ -192,6 +209,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
             else:
                 self.terminate()
+                return
             self.proc.expect('\(gdb\)')
             self.bottom_widget.write(self.proc.before.decode())
 
