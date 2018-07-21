@@ -119,5 +119,8 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         extraSelections.append(selection)
         self.setExtraSelections(extraSelections)
 
+        self.setTextCursor(selection.cursor)
+        self.ensureCursorVisible()
+
     def clear_highlight_line(self):
         self.setExtraSelections([])

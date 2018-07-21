@@ -15,10 +15,8 @@ import editor
 import util
 import console
 
-
-# TODO: sokuji hyouka
-# TODO: maigo
 # TODO: display status
+# TODO: sokuji hyouka
 # TODO: completer(racer)
 # TODO: rusti
 # TODO: parenthis
