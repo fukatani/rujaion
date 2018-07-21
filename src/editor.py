@@ -103,7 +103,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def generateBreak(self):
         commands = []
-        for i in range(1, 100):
+        for i in range(1, self.document().blockCount()):
             if self.break_points[i]:
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
