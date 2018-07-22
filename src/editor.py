@@ -142,6 +142,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def new_file(self):
         self.clear()
         self.edited = False
+        self.fname = ""
 
     def set_edited(self):
         self.edited = True
