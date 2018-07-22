@@ -15,7 +15,6 @@ import editor
 import util
 import console
 
-# TODO: rustsym(jump)
 # TODO: completer(racer)
 # TODO: fix keybind
 # TODO: procon
@@ -97,7 +96,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         filemenu.addAction(a)
         self.filemenu = filemenu
 
-        self.fname = ''
         self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
@@ -114,8 +112,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             title += '(Debugging...) '
         elif running:
             title += '(Running...) '
-        if self.fname:
-            title += self.fname
+        if self.editor.fname:
+            title += self.editor.fname
         else:
             title += 'Scratch'
 
@@ -141,6 +139,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.stepIn()
         elif event.key() == QtCore.Qt.Key_F5:
             self.reflesh()
+        elif event.key() == QtCore.Qt.Key_F2:
+            self.jump()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         else:
@@ -156,13 +156,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         self.editor.open_file(fname)
         self.settings.setValue('LastOpenedFile', fname)
-        self.fname = fname
         self.updateWindowTitle()
 
     def reflesh(self):
-        if not self.fname:
+        if not self.editor.fname:
             return
-        self.editor.open_file(self.fname)
+        self.editor.open_file(self.editor.fname)
 
     def saveFileAs(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
@@ -172,8 +171,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         fname.write(self.editor.toPlainText())
 
     def saveFile(self):
-        if self.fname:
-            fname = codecs.open(self.fname, 'w', 'utf-8')
+        if self.editor.fname:
+            fname = codecs.open(self.editor.fname, 'w', 'utf-8')
             fname.write(self.editor.toPlainText())
         else:
             self.saveFileAs()
@@ -210,9 +209,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.new_file()
 
     def compile(self):
-        if not self.fname:
+        if not self.editor.fname:
             util.disp_error("File is not opened.")
-        command = ("rustc", "-g", self.fname)
+        command = ("rustc", "-g", self.editor.fname)
         try:
             _ = subprocess.check_output(command)
             self.bottom_widget.write('Compile is finished successfully!',
@@ -226,9 +225,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.updateWindowTitle(True)
         if not self.compile():
             return
-        if not self.fname:
+        if not self.editor.fname:
             util.disp_error("File is not opened.")
-        compiled_file = os.path.basename(self.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
@@ -241,9 +240,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def debug(self):
         if not self.compile():
             return
-        if not self.fname:
+        if not self.editor.fname:
             util.disp_error("File is not opened.")
-        compiled_file = os.path.basename(self.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
@@ -356,6 +355,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         cursor = self.editor.cursorForPosition(pos)
         line_num = cursor.blockNumber() + 1
         self.editor.toggleBreak(line_num)
+
+    def jump(self):
+        self.editor.jump()
 
 
 def main():

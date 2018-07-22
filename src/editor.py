@@ -1,9 +1,11 @@
 from collections import defaultdict
+import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QPoint
 from PyQt5.QtCore import Qt
 
+import util
 
 """
 Fixing Some Bugs on a Sunday Evening
@@ -57,6 +59,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.break_points = defaultdict(lambda : False)
         self.edited = False
         self.textChanged.connect(self.set_edited)
+        self.fname = ''
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
@@ -132,6 +135,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         f = open(fname)
         self.setPlainText(f.read())
         self.edited = False
+        self.fname = fname
 
     def new_file(self):
         self.clear()
@@ -139,3 +143,29 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def set_edited(self):
         self.edited = True
+
+    # TODO: support multifile
+    def jump(self):
+        src_line_num = str(self.textCursor().blockNumber() + 1)
+        src_char_num = str(self.textCursor().columnNumber())
+
+        try:
+            # out = subprocess.check_output(("racer", "find-definition",
+            #                                src_line_num, src_char_num,
+            #                                self.fname))
+            out = subprocess.check_output("racer find-definition" + " " +
+                                          src_line_num + " " + src_char_num +
+                                          " " + self.fname, shell=True).decode()
+        except Exception:
+            return
+        if not out.startswith("MATCH"):
+            return
+        out = out[6:]
+        words = out.split(",")
+        line_num, char_num = int(words[1]), int(words[2])
+        cursor = QtGui.QTextCursor(
+            self.document().findBlockByLineNumber(line_num - 1))
+        cursor.movePosition(QtGui.QTextCursor.NextCharacter,
+                            QtGui.QTextCursor.MoveAnchor, char_num)
+        self.setTextCursor(cursor)
+        self.ensureCursorVisible()
