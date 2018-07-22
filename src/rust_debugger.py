@@ -15,7 +15,6 @@ import editor
 import util
 import console
 
-# TODO: sokuji hyouka
 # TODO: rustsym(jump)
 # TODO: completer(racer)
 # TODO: fix keybind
@@ -107,9 +106,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addConsole()
         self.addDisplay()
 
-        self.edited = False
-        self.editor.textChanged.connect(self.updateWindowTitle)
-
     def updateWindowTitle(self, running=False):
         title = ''
         if self.editor.edited:
@@ -186,6 +182,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor = editor.RustEditter(parent)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
         self.editor.doubleClickedSignal.connect(self.OnMousePressed)
+        self.edited = False
+        self.editor.textChanged.connect(self.updateWindowTitle)
 
     def addCentral(self):
         self.addEditer(self)
@@ -196,6 +194,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         dock = QtWidgets.QDockWidget("Display", self)
         dock.setWidget(self.display_widget)
         self.addDockWidget(Qt.RightDockWidgetArea, dock)
+        self.display_widget.cellChanged.connect(self.processDisplayEdited)
+
+    def processDisplayEdited(self, row_num, column_num):
+        if self.proc is not None:
+            self.display_one_valuable(row_num)
 
     def addConsole(self):
         self.bottom_widget = console.Console(self)
@@ -326,10 +329,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                     continue
                 self.editor.highlight_current_line(line_num)
 
-        for i, name in self.display_widget.name_iter():
-            self.display_one_valuable(i, name)
+        for i, _ in self.display_widget.name_iter():
+            self.display_one_valuable(i)
 
-    def display_one_valuable(self, row_num, name):
+    def display_one_valuable(self, row_num):
+        # Avoid infinity loop
+        self.display_widget.cellChanged.disconnect(self.processDisplayEdited)
+
+        name = self.display_widget.item(row_num, 0).text()
         self.proc.send(b'p ' + name.encode() + b'\n')
         self.proc.expect('\(gdb\)')
         value = ''.join(self.proc.before.decode().split('\n')[1:])
@@ -342,6 +349,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         type = type.split(' = ')[-1]
         type = type.split(' {')[0]
         self.display_widget.set_cell(row_num, 1, type)
+
+        self.display_widget.cellChanged.connect(self.processDisplayEdited)
 
     def OnMousePressed(self, pos):
         cursor = self.editor.cursorForPosition(pos)
