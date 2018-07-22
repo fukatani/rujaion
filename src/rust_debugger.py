@@ -16,6 +16,7 @@ import util
 import console
 
 # TODO: procon
+# TODO: std
 # TODO: rustsym(find usage)
 # TODO: textsearch
 # TODO: rusti
@@ -181,6 +182,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.editor.toPlainText())
+        self.editor.fname = fname
 
     def saveFile(self):
         if self.editor.fname:
