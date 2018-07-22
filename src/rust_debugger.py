@@ -233,7 +233,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def compile(self, no_debug=False):
         if not self.editor.fname:
             util.disp_error("File is not opened.")
-        command = ("rustc", "-g", self.editor.fname)
+        if no_debug:
+            command = ("rustc", "-g", self.editor.fname)
+        else:
+            command = ("rustc", self.editor.fname)
         try:
             _ = subprocess.check_output(command)
             self.bottom_widget.write('Compile is finished successfully!',
@@ -245,7 +248,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def run(self):
         self.updateWindowTitle(True)
-        if not self.compile():
+        if not self.compile(no_debug=True):
             return
         if not self.editor.fname:
             util.disp_error("File is not opened.")
@@ -400,21 +403,24 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         except Exception:
             return
         self.bottom_widget.write(out)
+        self.bottom_widget.write("Downloaded Test data", mode='success')
 
     def clearTestData(self):
         test_data_dir = "./test"
         if os.path.isdir(test_data_dir):
             shutil.rmtree(test_data_dir)
 
-    # def testMyCode(self):
-    #     try:
-    #         out = subprocess.check_output(("oj",
-    #                                        "test",
-    #                                        './' + compiled_file),
-    #                                       stderr=subprocess.STDOUT).decode()
-    #     except Exception:
-    #         return
-    #     self.bottom_widget.write(out)
+    def testMyCode(self):
+        if not self.compile(no_debug=True):
+            return
+        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        try:
+            out = subprocess.check_output(("oj", "test", "-c",
+                                           './' + compiled_file),
+                                          stderr=subprocess.STDOUT).decode()
+        except Exception as e:
+            return
+        self.bottom_widget.write(out)
 
 
 def main():
