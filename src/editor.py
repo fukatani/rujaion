@@ -243,7 +243,7 @@ class RacerCompleter(QtWidgets.QCompleter):
         for line in out.split("\n"):
             if line.startswith("MATCH"):
                 candidates.append(line[6:].split(",")[0])
-        if len(candidates) >= 6:
+        if len(candidates) >= 6 or text in candidates:
             candidates = []
         self.setModel(QtCore.QStringListModel(candidates))
         super().setCompletionPrefix(text)
