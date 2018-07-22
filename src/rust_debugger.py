@@ -16,7 +16,8 @@ import editor
 import util
 import console
 
-# TODO: procon
+# TODO: debug
+# TODO: submit
 # TODO: progress bar
 # TODO: std
 # TODO: rustsym(find usage)
@@ -419,8 +420,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                            './' + compiled_file),
                                           stderr=subprocess.STDOUT).decode()
         except Exception as e:
+            self.bottom_widget.test_result_write(e.output)
             return
-        self.bottom_widget.write(out)
+        self.bottom_widget.test_result_write(out)
 
 
 def main():

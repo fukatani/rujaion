@@ -32,5 +32,16 @@ class Console(QtWidgets.QTextEdit):
         self.moveCursor(QtGui.QTextCursor.End)
         self._buffer.write(msg)
 
+    def test_result_write(self, msg):
+        if isinstance(msg, bytes):
+            msg = msg.decode()
+        for line in msg.split('\n'):
+            if line.startswith('[+]'):
+                self.write(line, mode="success")
+            elif line.startswith('[-]'):
+                self.write(line, mode="error")
+            else:
+                self.write(line)
+
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
