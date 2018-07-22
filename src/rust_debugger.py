@@ -229,7 +229,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
     def newFile(self):
-        self.editor.new_file()
+        self.editor.new_file("template.rs")
 
     def compile(self, no_debug=False):
         if not self.editor.fname:
