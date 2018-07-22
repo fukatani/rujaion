@@ -259,10 +259,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            output = subprocess.check_output(('./' + compiled_file,))
+            output = subprocess.check_output(('./' + compiled_file,),
+                                             stderr=subprocess.STDOUT)
             self.bottom_widget.write(output)
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err, mode='error')
+            self.bottom_widget.write(err.output, mode='error')
         self.updateWindowTitle(False)
 
     def debug(self):
