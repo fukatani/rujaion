@@ -16,6 +16,7 @@ import editor
 import util
 import console
 
+# TODO: print backtrace
 # TODO: debug
 # TODO: submit
 # TODO: progress bar
@@ -239,11 +240,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         else:
             command = ("rustc", self.editor.fname)
         try:
-            _ = subprocess.check_output(command)
+            _ = subprocess.check_output(command,
+                                        stderr=subprocess.STDOUT)
             self.bottom_widget.write('Compile is finished successfully!',
                                      mode='success')
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err, mode='error')
+            self.bottom_widget.write(err.output, mode='error')
             return False
         return True
 
