@@ -279,7 +279,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             util.disp_error("Compiled file is not opened.")
         try:
             if self.proc is None:
-                self.proc = pexpect.spawn('rust-gdb  ./' + compiled_file)
+                self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
             else:
                 self.continue_process()
                 return
