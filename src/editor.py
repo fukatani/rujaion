@@ -55,6 +55,8 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.lineNumberArea.installEventFilter(self)
 
         self.break_points = defaultdict(lambda : False)
+        self.edited = False
+        self.textChanged.connect(self.set_edited)
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
@@ -124,3 +126,16 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def clear_highlight_line(self):
         self.setExtraSelections([])
+
+    def open_file(self, fname):
+        assert fname
+        f = open(fname)
+        self.setPlainText(f.read())
+        self.edited = False
+
+    def new_file(self):
+        self.clear()
+        self.edited = False
+
+    def set_edited(self):
+        self.edited = True

@@ -16,9 +16,9 @@ import util
 import console
 
 # TODO: sokuji hyouka
-# TODO: editting status
 # TODO: rustsym(jump)
 # TODO: completer(racer)
+# TODO: fix keybind
 # TODO: procon
 # TODO: rusti
 # TODO: parenthis
@@ -34,7 +34,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.setStyleSheet("background-color: white")
         self.addCentral()
 
-        menubar = self.menuBar()
         self.file_tool = self.addToolBar("File")
         self.edit_tool = self.addToolBar("Exit")
 
@@ -108,6 +107,24 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addConsole()
         self.addDisplay()
 
+        self.edited = False
+        self.editor.textChanged.connect(self.updateWindowTitle)
+
+    def updateWindowTitle(self, running=False):
+        title = ''
+        if self.editor.edited:
+            title = '(*) '
+        if self.proc is not None:
+            title += '(Debugging...) '
+        elif running:
+            title += '(Running...) '
+        if self.fname:
+            title += self.fname
+        else:
+            title += 'Scratch'
+
+        self.setWindowTitle(title)
+
     def closeEvent(self, e):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
@@ -141,17 +158,15 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def openFile(self, fname):
         if not fname:
             return
-        f = open(fname)
-        self.editor.setPlainText(f.read())
+        self.editor.open_file(fname)
         self.settings.setValue('LastOpenedFile', fname)
         self.fname = fname
-        self.setWindowTitle(self.fname)
+        self.updateWindowTitle()
 
     def reflesh(self):
         if not self.fname:
             return
-        f = open(self.fname)
-        self.editor.setPlainText(f.read())
+        self.editor.open_file(self.fname)
 
     def saveFileAs(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
@@ -189,7 +204,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
     def newFile(self):
-        self.editor.clear()
+        self.editor.new_file()
 
     def compile(self):
         if not self.fname:
@@ -205,7 +220,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         return True
 
     def run(self):
-        self.setWindowTitle('(Running...) ' + self.fname)
+        self.updateWindowTitle(True)
         if not self.compile():
             return
         if not self.fname:
@@ -218,7 +233,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.bottom_widget.write(output)
         except subprocess.CalledProcessError as err:
             self.bottom_widget.write(err, mode='error')
-        self.setWindowTitle(self.fname)
+        self.updateWindowTitle(False)
 
     def debug(self):
         if not self.compile():
@@ -244,7 +259,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
-            self.setWindowTitle('(Debugging...) ' + self.fname)
+            self.updateWindowTitle()
             self.post_process()
 
         except subprocess.CalledProcessError as err:
@@ -281,7 +296,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.bottom_widget.write("Debug process was successfully terminated.",
                                  mode='success')
         self.editor.clear_highlight_line()
-        self.setWindowTitle(self.fname)
+        self.updateWindowTitle()
 
     def continue_process(self):
         print('continue')
