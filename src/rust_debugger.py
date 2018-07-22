@@ -15,7 +15,6 @@ import editor
 import util
 import console
 
-# TODO: fix keybind
 # TODO: procon
 # TODO: rustsym(find usage)
 # TODO: textsearch
@@ -81,19 +80,19 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         # Add Open menu
         a = QtWidgets.QAction('Open', self)
-        a.setShortcut('Ctrl+o')
+        # a.setShortcut('Ctrl+o')
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
 
         # Add Save menu
         a = QtWidgets.QAction('Save', self)
-        a.setShortcut('Ctrl+s')
+        # a.setShortcut('Ctrl+s')
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
 
         # Add Save as menu
         a = QtWidgets.QAction('Save as', self)
-        a.setShortcut('Ctrl+w')
+        # a.setShortcut('Ctrl+w')
         a.triggered.connect(self.saveFileAs)
         filemenu.addAction(a)
         self.filemenu = filemenu
@@ -147,6 +146,15 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.editor.complete()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                 event.key() == QtCore.Qt.Key_O:
+            self.showFileDialog()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                 event.key() == QtCore.Qt.Key_S:
+            self.saveFile()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                 event.key() == QtCore.Qt.Key_W:
+            self.saveFileAs()
         else:
             event.accept()
 
