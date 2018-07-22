@@ -389,7 +389,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         text = (self.settings.value("contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"))
         text, ok = QtWidgets.QInputDialog.getText(self,
                                                   'Text Input Dialog',
-                                                  'Cntest question URL:',
+                                                  'Contest task URL:',
                                                   text=text)
         self.settings.setValue("contest url", text)
         if not ok:

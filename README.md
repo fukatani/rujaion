@@ -1,4 +1,4 @@
-Rust GUI Debugger
+Online judge aware Rust IDE
 ==============================
 
 ![screen_shot](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/debug.png)
@@ -7,17 +7,22 @@ Introduction
 ==============================
 Lightweight rust GUI Debugger based on PyQt and rust-gdb.
 
-Not only debugging, editting text file is supported.
-
 Current version is alpha, some function is not implemented. 
 
 Support one file project only.
+
+Feature
+==============================
+* GUI debug
+* completer and jumper (based on racer) 
+* Online judge testcases downloading and testing. (based on online-judge-tools)
 
 Software Requirements
 ==============================
 * Python (3.4 or later)
 * PyQt5
 * pexpect
+* online-judge-tools
 
 Usage
 ==============================
