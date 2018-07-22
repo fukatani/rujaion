@@ -15,13 +15,15 @@ import editor
 import util
 import console
 
-# TODO: completer(racer)
 # TODO: fix keybind
 # TODO: procon
+# TODO: rustsym(find usage)
+# TODO: textsearch
 # TODO: rusti
 # TODO: parenthis
 # TODO: watch
 # TODO: multi file
+# TODO: refactoring
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
@@ -141,6 +143,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.reflesh()
         elif event.key() == QtCore.Qt.Key_F2:
             self.jump()
+        elif event.key() == QtCore.Qt.Key_F3:
+            self.editor.complete()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         else:

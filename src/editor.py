@@ -1,11 +1,10 @@
+import codecs
 from collections import defaultdict
 import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QPoint
 from PyQt5.QtCore import Qt
-
-import util
 
 """
 Fixing Some Bugs on a Sunday Evening
@@ -60,6 +59,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.edited = False
         self.textChanged.connect(self.set_edited)
         self.fname = ''
+        self.completer = RacerCompleter(self)
+        self.completer.setWidget(self)
+        self.completer.insertText.connect(self.insertCompletion)
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
@@ -169,3 +171,79 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                             QtGui.QTextCursor.MoveAnchor, char_num)
         self.setTextCursor(cursor)
         self.ensureCursorVisible()
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+        tc.movePosition(QtGui.QTextCursor.Left)
+        tc.movePosition(QtGui.QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        super().focusInEvent(event)
+
+    def keyPressEvent(self, event):
+
+        tc = self.textCursor()
+        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+            return
+
+        super().keyPressEvent(event)
+        tc.select(QtGui.QTextCursor.WordUnderCursor)
+        cr = self.cursorRect()
+
+        if len(tc.selectedText()) > 1:
+            self.completer.setCompletionPrefix(tc.selectedText())
+            popup = self.completer.popup()
+            popup.setCurrentIndex(self.completer.completionModel().index(0,0))
+
+            cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+            + self.completer.popup().verticalScrollBar().sizeHint().width())
+            self.completer.complete(cr)
+        else:
+            self.completer.popup().hide()
+
+class RacerCompleter(QtWidgets.QCompleter):
+    insertText = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__((), parent)
+        self.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+        self.highlighted.connect(self.setHighlighted)
+        self.parent = parent
+
+    def setHighlighted(self, text):
+        self.lastSelected = text
+
+    def getSelected(self):
+        return self.lastSelected
+
+    # this is heavy?
+    def setCompletionPrefix(self, text):
+        fname = codecs.open('temp.rs', 'w', 'utf-8')
+        fname.write(self.parent.toPlainText())
+        fname.close()
+        src_line_num = str(self.parent.textCursor().blockNumber() + 1)
+        src_char_num = str(self.parent.textCursor().columnNumber())
+
+        try:
+            out = subprocess.check_output("racer complete" + " " +
+                                          src_line_num + " " + src_char_num +
+                                          " temp.rs",
+                                          shell=True).decode()
+        except Exception:
+            return
+        candidates = []
+        for line in out.split("\n"):
+            if line.startswith("MATCH"):
+                candidates.append(line[6:].split(",")[0])
+        if len(candidates) >= 6:
+            candidates = []
+        self.setModel(QtCore.QStringListModel(candidates))
+        super().setCompletionPrefix(text)
