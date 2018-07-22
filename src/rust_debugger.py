@@ -1,5 +1,6 @@
 import codecs
 import os
+import shutil
 import subprocess
 import sys
 
@@ -16,6 +17,7 @@ import util
 import console
 
 # TODO: procon
+# TODO: progress bar
 # TODO: std
 # TODO: rustsym(find usage)
 # TODO: textsearch
@@ -71,32 +73,38 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         terminatebutton.triggered.connect(self.terminate)
 
         # Add MenuBar
-        filemenu = self.menuBar()
-        filemenu = filemenu.addMenu('&File')
+        menuBar = self.menuBar()
+        filemenu = menuBar.addMenu('&File')
 
-        # Add Open menu
         a = QtWidgets.QAction('New', self)
         a.triggered.connect(self.newFile)
         filemenu.addAction(a)
 
-        # Add Open menu
         a = QtWidgets.QAction('Open', self)
-        # a.setShortcut('Ctrl+o')
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
 
-        # Add Save menu
         a = QtWidgets.QAction('Save', self)
-        # a.setShortcut('Ctrl+s')
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
 
-        # Add Save as menu
         a = QtWidgets.QAction('Save as', self)
-        # a.setShortcut('Ctrl+w')
         a.triggered.connect(self.saveFileAs)
         filemenu.addAction(a)
-        self.filemenu = filemenu
+
+        filemenu = menuBar.addMenu('&Contest')
+
+        a = QtWidgets.QAction('Download', self)
+        a.triggered.connect(self.download)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction('Test My Code', self)
+        a.triggered.connect(self.testMyCode)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction('Clear Test Data', self)
+        a.triggered.connect(self.clearTestData)
+        filemenu.addAction(a)
 
         self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
@@ -222,7 +230,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def newFile(self):
         self.editor.new_file()
 
-    def compile(self):
+    def compile(self, no_debug=False):
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         command = ("rustc", "-g", self.editor.fname)
@@ -372,6 +380,41 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def jump(self):
         self.editor.jump()
+
+    def download(self):
+        text = (self.settings.value("contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"))
+        text, ok = QtWidgets.QInputDialog.getText(self,
+                                                  'Text Input Dialog',
+                                                  'Cntest question URL:',
+                                                  text=text)
+        self.settings.setValue("contest url", text)
+        if not ok:
+            return
+
+        try:
+            self.clearTestData()
+            out = subprocess.check_output(("oj",
+                                           "download",
+                                           text),
+                                          stderr=subprocess.STDOUT).decode()
+        except Exception:
+            return
+        self.bottom_widget.write(out)
+
+    def clearTestData(self):
+        test_data_dir = "./test"
+        if os.path.isdir(test_data_dir):
+            shutil.rmtree(test_data_dir)
+
+    # def testMyCode(self):
+    #     try:
+    #         out = subprocess.check_output(("oj",
+    #                                        "test",
+    #                                        './' + compiled_file),
+    #                                       stderr=subprocess.STDOUT).decode()
+    #     except Exception:
+    #         return
+    #     self.bottom_widget.write(out)
 
 
 def main():
