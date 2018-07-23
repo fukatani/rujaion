@@ -330,12 +330,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.proc.send(b'run\n')
             self.updateWindowTitle()
             for debug_input in inputs:
-                self.proc.send(debug_input.encode())
                 try:
-                    self.proc.expect('\(gdb\)', timeout=0.2)
+                    self.proc.expect('\(gdb\)', timeout=0.5)
                 except:
                     pass
                 self.bottom_widget.write(self.proc.before.decode())
+                self.proc.send(debug_input.encode())
             self.post_process()
 
         except subprocess.CalledProcessError as err:
@@ -384,10 +384,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def post_process(self):
         assert self.proc is not None
         try:
-            self.proc.expect('\(gdb\)')
+            self.proc.expect('\(gdb\)', timeout=3)
         except:
             print(str(self.proc))
-            return
         msg = self.proc.before.decode()
         for line in msg.split('\r\n'):
             self.bottom_widget.write(line, mode='gdb')
