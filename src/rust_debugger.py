@@ -17,6 +17,7 @@ import util
 import console
 
 
+# TODO: rustfmt
 # TODO: fix gdb hang (std)
 # TODO: submit
 # TODO: progress bar
@@ -205,8 +206,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def saveFile(self):
         if self.editor.fname:
-            fname = codecs.open(self.editor.fname, 'w', 'utf-8')
-            fname.write(self.editor.toPlainText())
+            f = codecs.open(self.editor.fname, 'w', 'utf-8')
+            f.write(self.editor.toPlainText())
+            f.close()
+            out = subprocess.check_output("rustfmt " + self.editor.fname,
+                                          shell=True,
+                                          stderr=subprocess.STDOUT)
+            print(out)
+            self.reflesh()
         else:
             self.saveFileAs()
 

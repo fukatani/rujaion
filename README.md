@@ -23,6 +23,9 @@ Software Requirements
 * PyQt5
 * pexpect
 * online-judge-tools
+* rustfmt
+* racer
+
 
 Usage
 ==============================
