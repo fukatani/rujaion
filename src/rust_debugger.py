@@ -17,11 +17,9 @@ import util
 import console
 
 # TODO: clear console
-# TODO: fix gdb hang
-# TODO: debug with testcase
+# TODO: fix gdb hang (std)
 # TODO: submit
 # TODO: progress bar
-# TODO: std
 # TODO: rustsym(find usage)
 # TODO: textsearch
 # TODO: rusti
@@ -74,6 +72,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         terminatebutton = self.edit_tool.addAction("Terminate...")
         terminatebutton.triggered.connect(self.terminate)
+
+        button = self.edit_tool.addAction("Clear Console...")
+        button.triggered.connect(self.clearConsole)
 
         # Add MenuBar
         menuBar = self.menuBar()
@@ -140,6 +141,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
         e.accept()
+
+    def clearConsole(self):
+        self.console.clear()
 
     def keyPressEvent(self, event):
         if event.modifiers() and QtCore.Qt.ShiftModifier and \
@@ -229,9 +233,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.display_one_valuable(row_num)
 
     def addConsole(self):
-        self.bottom_widget = console.Console(self)
+        self.console = console.Console(self)
         dock = QtWidgets.QDockWidget("Console", self)
-        dock.setWidget(self.bottom_widget)
+        dock.setWidget(self.console)
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
     def newFile(self):
@@ -247,10 +251,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         try:
             _ = subprocess.check_output(command,
                                         stderr=subprocess.STDOUT)
-            self.bottom_widget.write('Compile is finished successfully!',
-                                     mode='success')
+            self.console.write('Compile is finished successfully!',
+                               mode='success')
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err.output, mode='error')
+            self.console.write(err.output, mode='error')
             return False
         return True
 
@@ -267,9 +271,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 'RUST_BACKTRACE=1',
                 './' + compiled_file,),
                 stderr=subprocess.STDOUT)
-            self.bottom_widget.write(output)
+            self.console.write(output)
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err.output, mode='error')
+            self.console.write(err.output, mode='error')
         self.updateWindowTitle(False)
 
     def debug(self):
@@ -285,12 +289,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.continue_process()
                 return
             self.proc.expect('\(gdb\)')
-            self.bottom_widget.write(self.proc.before.decode())
+            self.console.write(self.proc.before.decode())
 
             for com in self.editor.generateBreak():
                 self.proc.send(com)
                 self.proc.expect('\(gdb\)')
-                self.bottom_widget.write(self.proc.before.decode(), mode='gdb')
+                self.console.write(self.proc.before.decode(), mode='gdb')
 
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
@@ -298,7 +302,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.post_process()
 
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err, mode='error')
+            self.console.write(err, mode='error')
 
     def debugWithTestData(self):
         if not self.compile():
@@ -324,7 +328,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             for com in self.editor.generateBreak():
                 self.proc.send(com)
                 self.proc.expect('\(gdb\)')
-                self.bottom_widget.write(self.proc.before.decode(), mode='gdb')
+                self.console.write(self.proc.before.decode(), mode='gdb')
 
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
@@ -334,12 +338,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                     self.proc.expect('\(gdb\)', timeout=0.5)
                 except:
                     pass
-                self.bottom_widget.write(self.proc.before.decode())
+                self.console.write(self.proc.before.decode())
                 self.proc.send(debug_input.encode())
             self.post_process()
 
         except subprocess.CalledProcessError as err:
-            self.bottom_widget.write(err, mode='error')
+            self.console.write(err, mode='error')
 
     def next(self):
         print('next')
@@ -369,8 +373,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.proc.send(b'quit\n')
         self.proc.terminate()
         self.proc = None
-        self.bottom_widget.write("Debug process was successfully terminated.",
-                                 mode='success')
+        self.console.write("Debug process was successfully terminated.",
+                           mode='success')
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
 
@@ -389,7 +393,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             print(str(self.proc))
         msg = self.proc.before.decode()
         for line in msg.split('\r\n'):
-            self.bottom_widget.write(line, mode='gdb')
+            self.console.write(line, mode='gdb')
 
         for line in reversed(msg.split('\r\n')):
             if line.endswith("exited normally]"):
@@ -454,8 +458,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                           stderr=subprocess.STDOUT).decode()
         except Exception:
             return
-        self.bottom_widget.write(out)
-        self.bottom_widget.write("Downloaded Test data", mode='success')
+        self.console.write(out)
+        self.console.write("Downloaded Test data", mode='success')
 
     def clearTestData(self):
         test_data_dir = "./test"
@@ -471,9 +475,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                            './' + compiled_file),
                                           stderr=subprocess.STDOUT).decode()
         except Exception as e:
-            self.bottom_widget.test_result_write(e.output)
+            self.console.test_result_write(e.output)
             return
-        self.bottom_widget.test_result_write(out)
+        self.console.test_result_write(out)
 
 
 def main():
