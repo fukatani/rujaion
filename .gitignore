@@ -1,2 +1,4 @@
 *.pyc
+src/test/*
+src/temp.rs
 
