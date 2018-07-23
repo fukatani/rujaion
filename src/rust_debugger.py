@@ -16,6 +16,7 @@ import editor
 import util
 import console
 
+# TODO: clear console
 # TODO: fix gdb hang
 # TODO: debug with testcase
 # TODO: submit
@@ -102,6 +103,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction('Test My Code', self)
         a.triggered.connect(self.testMyCode)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction('Debug With Test Data', self)
+        a.triggered.connect(self.debugWithTestData)
         filemenu.addAction(a)
 
         a = QtWidgets.QAction('Clear Test Data', self)
@@ -236,9 +241,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         if no_debug:
-            command = ("rustc", "-g", self.editor.fname)
-        else:
             command = ("rustc", self.editor.fname)
+        else:
+            command = ("rustc", "-g", self.editor.fname)
         try:
             _ = subprocess.check_output(command,
                                         stderr=subprocess.STDOUT)
@@ -253,8 +258,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.updateWindowTitle(True)
         if not self.compile(no_debug=True):
             return
-        if not self.editor.fname:
-            util.disp_error("File is not opened.")
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
@@ -272,8 +275,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def debug(self):
         if not self.compile():
             return
-        if not self.editor.fname:
-            util.disp_error("File is not opened.")
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
@@ -294,6 +295,47 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
             self.updateWindowTitle()
+            self.post_process()
+
+        except subprocess.CalledProcessError as err:
+            self.bottom_widget.write(err, mode='error')
+
+    def debugWithTestData(self):
+        if not self.compile():
+            return
+        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
+                                                      'Test data (*.in)')[0]
+        if not fname:
+            return
+
+        with open(fname) as fr:
+            inputs = [line for line in fr if line]
+
+        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        if not os.path.isfile(compiled_file):
+            util.disp_error("Compiled file is not opened.")
+        try:
+            if self.proc is None:
+                self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
+            else:
+                self.continue_process()
+                return
+            self.proc.expect('\(gdb\)')
+            for com in self.editor.generateBreak():
+                self.proc.send(com)
+                self.proc.expect('\(gdb\)')
+                self.bottom_widget.write(self.proc.before.decode(), mode='gdb')
+
+            print('run ' + compiled_file)
+            self.proc.send(b'run\n')
+            self.updateWindowTitle()
+            for debug_input in inputs:
+                self.proc.send(debug_input.encode())
+                try:
+                    self.proc.expect('\(gdb\)', timeout=0.2)
+                except:
+                    pass
+                self.bottom_widget.write(self.proc.before.decode())
             self.post_process()
 
         except subprocess.CalledProcessError as err:
@@ -341,7 +383,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def post_process(self):
         assert self.proc is not None
-        self.proc.expect('\(gdb\)')
+        try:
+            self.proc.expect('\(gdb\)')
+        except:
+            print(str(self.proc))
+            return
         msg = self.proc.before.decode()
         for line in msg.split('\r\n'):
             self.bottom_widget.write(line, mode='gdb')
