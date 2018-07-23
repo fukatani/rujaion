@@ -16,7 +16,7 @@ import editor
 import util
 import console
 
-# TODO: clear console
+
 # TODO: fix gdb hang (std)
 # TODO: submit
 # TODO: progress bar
