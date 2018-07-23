@@ -1,3 +1,9 @@
+macro_rules! debug {
+    ($($a:expr),*) => {
+        eprintln!(concat!($(stringify!($a), " = {:?}, "),*), $($a),*);
+    }
+}
+
 fn read<T: std::str::FromStr>() -> T {
     let mut s = String::new();
     std::io::stdin().read_line(&mut s).ok();
