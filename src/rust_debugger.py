@@ -16,8 +16,8 @@ import editor
 import util
 import console
 
-# TODO: print backtrace
-# TODO: debug
+# TODO: fix gdb hang
+# TODO: debug with testcase
 # TODO: submit
 # TODO: progress bar
 # TODO: std
@@ -192,7 +192,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.editor.toPlainText())
-        self.editor.fname = fname
+        self.editor.fname = savename
 
     def saveFile(self):
         if self.editor.fname:
