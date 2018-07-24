@@ -17,11 +17,10 @@ import util
 import console
 
 
-# TODO: rustfmt
 # TODO: fix gdb hang (std)
 # TODO: submit
 # TODO: progress bar
-# TODO: rustsym(find usage)
+# TODO: rustsym(find usage)r
 # TODO: textsearch
 # TODO: rusti
 # TODO: parenthis
@@ -209,10 +208,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             f = codecs.open(self.editor.fname, 'w', 'utf-8')
             f.write(self.editor.toPlainText())
             f.close()
-            out = subprocess.check_output("rustfmt " + self.editor.fname,
-                                          shell=True,
-                                          stderr=subprocess.STDOUT)
-            print(out)
+            try:
+                out = subprocess.check_output("rustfmt " + self.editor.fname,
+                                              shell=True,
+                                              stderr=subprocess.STDOUT)
+            except Exception as err:
+                self.console.write(err.output)
             self.reflesh()
         else:
             self.saveFileAs()
