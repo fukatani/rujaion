@@ -276,6 +276,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         return True
 
     def run(self):
+        if self.proc is not None:
+            return
         self.updateWindowTitle(True)
         if not self.compile(no_debug=True):
             return
