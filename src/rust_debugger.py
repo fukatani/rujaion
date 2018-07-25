@@ -193,7 +193,16 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def reflesh(self):
         if not self.editor.fname:
             return
+        cursor = self.editor.textCursor()
+        line_num = cursor.blockNumber()
+        char_num = cursor.columnNumber()
         self.editor.open_file(self.editor.fname)
+        cursor = QtGui.QTextCursor(
+            self.editor.document().findBlockByLineNumber(line_num - 1))
+        cursor.movePosition(QtGui.QTextCursor.NextCharacter,
+                            QtGui.QTextCursor.MoveAnchor, char_num + 1)
+        self.editor.setTextCursor(cursor)
+
 
     def saveFileAs(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
@@ -464,7 +473,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                            "download",
                                            text),
                                           stderr=subprocess.STDOUT).decode()
-        except Exception:
+        except Exception as err:
+            self.console.write(err.output)
             return
         self.console.write(out)
         self.console.write("Downloaded Test data", mode='success')
