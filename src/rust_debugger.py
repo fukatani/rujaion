@@ -314,7 +314,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def debug(self):
         if not self.compile():
             return
-        if self.askTerminateOrNot():
+        if self.proc is not None and self.askTerminateOrNot():
             self.terminate()
         else:
             return
@@ -346,10 +346,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def debugWithTestData(self):
         if not self.compile():
             return
-        if self.askTerminateOrNot():
-            self.terminate()
-        else:
-            return
+        if self.proc is not None:
+            if self.askTerminateOrNot():
+                self.terminate()
+            else:
+                return
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
                                                       'Test data (*.in)')[0]
         if not fname:
