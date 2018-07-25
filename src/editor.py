@@ -41,6 +41,7 @@ or brand of soft drink.
 
 class RustEditter(QtWidgets.QPlainTextEdit):
     doubleClickedSignal = pyqtSignal(QPoint)
+    toggleBreakSignal = pyqtSignal(bytes)
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -107,6 +108,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def toggleBreak(self, line_num):
         self.break_points[line_num] = not self.break_points[line_num]
         self.repaint()
+        if self.break_points[line_num]:
+            command = ("b " + str(line_num) + "\n").encode()
+        else:
+            command = str(line_num).encode()
+        self.toggleBreakSignal.emit(command)
 
     def generateBreak(self):
         commands = []
@@ -212,6 +218,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             self.completer.complete(cr)
         else:
             self.completer.popup().hide()
+
 
 class RacerCompleter(QtWidgets.QCompleter):
     insertText = QtCore.pyqtSignal(str)

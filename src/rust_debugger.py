@@ -231,6 +231,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor = editor.RustEditter(parent)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
         self.editor.doubleClickedSignal.connect(self.OnMousePressed)
+        self.editor.toggleBreakSignal.connect(self.UpdateBreak)
         self.edited = False
         self.editor.textChanged.connect(self.updateWindowTitle)
 
@@ -363,6 +364,21 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         except subprocess.CalledProcessError as err:
             self.console.write(err, mode='error')
+
+    def UpdateBreak(self, command):
+        if self.proc is None:
+            return
+        if command.startswith(b"b "):
+            self.proc.send(command)
+            self.proc.expect('\(gdb\)')
+        else:
+            self.proc.send("i b\n".encode())
+            self.proc.expect('\(gdb\)')
+            for line in self.proc.before.decode().split('\r\n'):
+                if line.endswith(":" + command.decode()):
+                    self.proc.send(("d " + line.split(" ")[0] +"\n").encode())
+                    self.proc.expect('\(gdb\)')
+                    break
 
     def next(self):
         print('next')
