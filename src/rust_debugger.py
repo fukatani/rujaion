@@ -190,6 +190,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue('LastOpenedFile', fname)
         self.updateWindowTitle()
 
+    def askTerminateOrNot(self):
+        ret = QtWidgets.QMessageBox.information(None, "Debugging process is runnning",
+                                                "Do you want to terminate debug process"
+                                                " and start new process?",
+                                                QtWidgets.QMessageBox.Yes,
+                                                QtWidgets.QMessageBox.No)
+
+        if ret == QtWidgets.QMessageBox.Yes:
+            return True
+        else:
+            return False
+
     def reflesh(self):
         if not self.editor.fname:
             return
@@ -278,7 +290,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def run(self):
         if self.proc is not None:
-            return
+            if self.askTerminateOrNot():
+                self.terminate()
+            else:
+                return
         self.updateWindowTitle(True)
         if not self.compile(no_debug=True):
             return
@@ -298,6 +313,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def debug(self):
         if not self.compile():
+            return
+        if self.askTerminateOrNot():
+            self.terminate()
+        else:
             return
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
@@ -326,6 +345,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def debugWithTestData(self):
         if not self.compile():
+            return
+        if self.askTerminateOrNot():
+            self.terminate()
+        else:
             return
         fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
                                                       'Test data (*.in)')[0]
