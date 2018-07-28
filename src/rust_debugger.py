@@ -119,6 +119,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.clearTestData)
         filemenu.addAction(a)
 
+        a = QtWidgets.QAction('Submit', self)
+        a.triggered.connect(self.submit)
+        filemenu.addAction(a)
+
         self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
         self.openFile(self.settings.value('LastOpenedFile', type=str))
@@ -546,6 +550,29 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.console.test_result_write(e.output)
             return
         self.console.test_result_write(out)
+
+    def submit(self):
+        text = (self.settings.value("contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"))
+        text, ok = QtWidgets.QInputDialog.getText(self,
+                                                  'Text Input Dialog',
+                                                  'Contest task URL:',
+                                                  text=text)
+        if not ok:
+            return
+        self.settings.setValue("contest url", text)
+        if not self.editor.fname:
+            util.disp_error("Please save this file")
+        cmd = ("oj", "s", "-l", "3504",  # rust
+               "-y", text, self.editor.fname)
+        try:
+            out = subprocess.check_output(cmd,
+                                          stderr=subprocess.STDOUT,
+                                          ).decode()
+        except Exception as err:
+            self.console.write(err.output)
+            return
+        self.console.write(out)
+        self.console.write("submitted", mode='success')
 
 
 def main():
