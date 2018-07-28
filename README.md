@@ -16,6 +16,8 @@ Feature
 * GUI debug
 * completer and jumper (based on racer) 
 * Online judge testcases downloading and testing. (based on online-judge-tools)
+* Debug with online judge testcases
+* Do online judge submission
 
 Software Requirements
 ==============================
