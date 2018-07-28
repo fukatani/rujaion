@@ -1,3 +1,8 @@
+#[allow(unused_imports)]
+use std::cmp::*;
+use std::collections::*;
+
+#[allow(unused_macros)]
 macro_rules! debug {
     ($($a:expr),*) => {
         eprintln!(concat!($(stringify!($a), " = {:?}, "),*), $($a),*);
