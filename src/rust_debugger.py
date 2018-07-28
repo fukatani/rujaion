@@ -13,6 +13,7 @@ import pexpect
 import display_widget
 import syntax
 import editor
+import login
 import util
 import console
 
@@ -97,6 +98,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         filemenu.addAction(a)
 
         filemenu = menuBar.addMenu('&Contest')
+
+        a = QtWidgets.QAction('Login', self)
+        a.triggered.connect(self.login)
+        filemenu.addAction(a)
 
         a = QtWidgets.QAction('Download', self)
         a.triggered.connect(self.download)
@@ -520,6 +525,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         self.console.write(out)
         self.console.write("Downloaded Test data", mode='success')
+
+    def login(self):
+        login.LoginDialog(self, settings=self.settings).show()
 
     def clearTestData(self):
         test_data_dir = "./test"
