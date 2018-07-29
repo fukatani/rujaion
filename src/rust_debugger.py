@@ -562,7 +562,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", "3504",  # rust
+        cmd = ("oj", "s", "-l", "rust",
                "-y", text, self.editor.fname)
         try:
             out = subprocess.check_output(cmd,

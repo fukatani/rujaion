@@ -24,7 +24,7 @@ Software Requirements
 * Python (3.4 or later)
 * PyQt5
 * pexpect
-* online-judge-tools
+* online-judge-tools (0.1.36 or later)
 * rustfmt
 * racer
 
