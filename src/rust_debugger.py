@@ -323,19 +323,17 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def debug(self):
         if not self.compile():
             return
-        if self.proc is not None and self.askTerminateOrNot():
-            self.terminate()
-        else:
-            return
+        if self.proc is not None:
+            if self.askTerminateOrNot():
+                self.terminate()
+            else:
+                return
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            if self.proc is None:
-                self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
-            else:
-                self.continue_process()
-                return
+            assert self.proc is None
+            self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
             self.proc.expect('\(gdb\)')
             self.console.write(self.proc.before.decode())
 
