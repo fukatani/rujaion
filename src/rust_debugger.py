@@ -125,7 +125,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         self.proc = None
         self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
-        self.openFile(self.settings.value('LastOpenedFile', type=str))
+        try:
+            self.openFile(self.settings.value('LastOpenedFile', type=str))
+        except FileNotFoundError:
+            pass
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.addConsole()
