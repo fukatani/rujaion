@@ -18,7 +18,7 @@ class RustHighlighter(QSyntaxHighlighter):
                             "\\buse\\b", "\\bconst\\b", "\\bstatic\\b",
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bVec\\b", "\\bcontinue\\b", "\\bloop\\b",
-                            "\\bin\\b")
+                            "\\bin\\b", "\\belse\\b", "\\bif\\b")
 
         self.highlight_rules = [(QRegExp(pattern), keyword_format)
                                 for pattern in keyword_patterns]
