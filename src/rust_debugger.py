@@ -19,7 +19,6 @@ import console
 
 
 # TODO: fix gdb hang (std)
-# TODO: submit
 # TODO: progress bar
 # TODO: rustsym(find usage)r
 # TODO: textsearch
