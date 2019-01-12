@@ -224,9 +224,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         char_num = cursor.columnNumber()
         self.editor.open_file(self.editor.fname)
         cursor = QtGui.QTextCursor(
-            self.editor.document().findBlockByLineNumber(line_num - 1))
+            self.editor.document().findBlockByLineNumber(line_num))
         cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                            QtGui.QTextCursor.MoveAnchor, char_num + 1)
+                            QtGui.QTextCursor.MoveAnchor, char_num)
         self.editor.setTextCursor(cursor)
 
 
