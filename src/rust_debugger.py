@@ -18,6 +18,9 @@ import util
 import console
 
 
+# TODO: fix table bug
+# TODO: display dp
+# TODO: display tree
 # TODO: fix gdb hang (std)
 # TODO: progress bar
 # TODO: rustsym(find usage)r
@@ -72,9 +75,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         terminatebutton = self.edit_tool.addAction("Terminate...")
         terminatebutton.triggered.connect(self.terminate)
-
-        button = self.edit_tool.addAction("Clear Console...")
-        button.triggered.connect(self.clearConsole)
 
         # Add MenuBar
         menuBar = self.menuBar()
@@ -153,9 +153,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
         e.accept()
-
-    def clearConsole(self):
-        self.console.clear()
 
     def keyPressEvent(self, event):
         if event.modifiers() and QtCore.Qt.ShiftModifier and \

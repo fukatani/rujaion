@@ -8,6 +8,8 @@ class Console(QtWidgets.QTextEdit):
         super(Console, self).__init__(parent)
         self._buffer = StringIO()
         self.setReadOnly(True)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.__contextMenu)
 
     def write(self, msg, mode=''):
         if isinstance(msg, bytes):
@@ -45,3 +47,12 @@ class Console(QtWidgets.QTextEdit):
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
+
+    def __contextMenu(self):
+        self._normalMenu = self.createStandardContextMenu()
+        self._addCustomMenuItems(self._normalMenu)
+        self._normalMenu.exec_(QtGui.QCursor.pos())
+
+    def _addCustomMenuItems(self, menu):
+        menu.addSeparator()
+        menu.addAction(u'Clear', self.clear)
