@@ -63,6 +63,17 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.completer = RacerCompleter(self)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.__contextMenu)
+
+    def __contextMenu(self):
+        self._normalMenu = self.createStandardContextMenu()
+        self._addCustomMenuItems(self._normalMenu)
+        self._normalMenu.exec_(QtGui.QCursor.pos())
+
+    def _addCustomMenuItems(self, menu):
+        menu.addSeparator()
+        menu.addAction(u'Go to declaration (F2)', self.jump)
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
@@ -76,7 +87,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             return
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        lineColor = QtGui.QColor(Qt.yellow).lighter(160)
+        lineColor = QtGui.QColor(Qt.yellow).lighter(180)
 
         selection.format.setBackground(lineColor)
         selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,

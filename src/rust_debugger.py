@@ -18,7 +18,8 @@ import util
 import console
 
 
-# TODO: Jump Definition by right click menu
+# TODO: refactoring
+# TODO: highlight selecting variable
 # TODO: display dp
 # TODO: display tree
 # TODO: fix gdb hang (std)
@@ -27,7 +28,6 @@ import console
 # TODO: textsearch
 # TODO: rusti
 # TODO: parenthis
-# TODO: refactoring
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
