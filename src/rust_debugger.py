@@ -18,7 +18,6 @@ import util
 import console
 
 
-# TODO: fix table bug
 # TODO: display dp
 # TODO: display tree
 # TODO: fix gdb hang (std)
@@ -514,6 +513,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.display_widget.cellChanged.disconnect(self.processDisplayEdited)
 
         name = self.display_widget.item(row_num, 0).text()
+        if not name:
+            self.display_widget.set_cell(row_num, 1, "")
+            self.display_widget.set_cell(row_num, 2, "")
+            self.display_widget.cellChanged.connect(self.processDisplayEdited)
+            return
         self.proc.send(b'p ' + name.encode() + b'\n')
         self.proc.expect('\(gdb\)')
         value = ''.join(self.proc.before.decode().split('\n')[1:])
