@@ -175,6 +175,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.jump()
         elif event.key() == QtCore.Qt.Key_F3:
             self.editor.complete()
+        elif event.key() == QtCore.Qt.Key_F4:
+            self.debugWithTestData()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif event.modifiers() and QtCore.Qt.ControlModifier and \
