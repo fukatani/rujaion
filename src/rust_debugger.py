@@ -229,7 +229,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                             QtGui.QTextCursor.MoveAnchor, char_num)
         self.editor.setTextCursor(cursor)
 
-
     def saveFileAs(self):
         savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
         if not savename:
@@ -240,6 +239,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
     def saveFile(self):
         if self.editor.fname:
+            scroll_value = self.editor.verticalScrollBar().value()
             f = codecs.open(self.editor.fname, 'w', 'utf-8')
             f.write(self.editor.toPlainText())
             f.close()
@@ -250,6 +250,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             except Exception as err:
                 self.console.write(err.output)
             self.reflesh()
+            self.editor.verticalScrollBar().setValue(scroll_value)
         else:
             self.saveFileAs()
 
