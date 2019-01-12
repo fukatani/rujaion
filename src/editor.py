@@ -196,12 +196,25 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             self.completer.setWidget(self)
         super().focusInEvent(event)
 
-    def keyPressEvent(self, event):
+    def enter_with_auto_indent(self):
+        tc = self.textCursor()
+        line_text = self.toPlainText().split('\n')[tc.blockNumber()]
+        indent_level = line_text.count('    ')
+        if line_text.endswith('{'):
+            indent_level += 1
+        elif line_text.endswith('}') and indent_level > 0:
+            indent_level -= 1
+        self.insertPlainText('\n' + '    ' * indent_level)
 
+    def keyPressEvent(self, event):
         tc = self.textCursor()
         if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+            return
+
+        if event.key() == 16777220:
+            self.enter_with_auto_indent()
             return
 
         super().keyPressEvent(event)
