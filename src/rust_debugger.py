@@ -397,12 +397,28 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             print('run ' + compiled_file)
             self.proc.send(b'run\n')
             self.updateWindowTitle()
-            for debug_input in inputs:
+            for i, debug_input in enumerate(inputs):
                 try:
                     self.proc.expect('\(gdb\)', timeout=0.5)
                 except:
                     pass
-                self.console.write(self.proc.before.decode())
+                msg = self.proc.before.decode()
+                for line in msg.split('\r\n'):
+                    self.console.write(line, mode='gdb')
+
+                for line in reversed(msg.split('\r\n')):
+                    if line.endswith("exited normally]"):
+                        if i != len(inputs) -1:
+                            self.console.write("Partial input is rejected",
+                                               mode="error")
+                        self.terminate()
+                        return
+                    if "exited with code" in line:
+                        self.console.write("Process is finished with error",
+                                           mode="error")
+                        self.terminate()
+                        return
+
                 self.proc.send(debug_input.encode())
             self.post_process()
 
@@ -480,6 +496,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 return
             elif line.endswith('No such file or directory.'):
                 self.stepOut()
+                return
+            elif "exited with code" in line:
+                self.console.write("Process is finished with error",
+                                   mode="error")
+                self.terminate()
                 return
             else:
                 try:
