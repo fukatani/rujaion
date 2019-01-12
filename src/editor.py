@@ -218,6 +218,13 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             return
 
         super().keyPressEvent(event)
+
+        # need to repaint after cursor moved
+        if event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
+            event.key() == Qt.Key_PageUp or event.key() == Qt.Key_PageDown or \
+            event.key() == Qt.Key_Home or event.key() == Qt.Key_End:
+            self.repaint()
+
         tc.select(QtGui.QTextCursor.WordUnderCursor)
         cr = self.cursorRect()
 
