@@ -6,6 +6,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QPoint
 from PyQt5.QtCore import Qt
 
+import finder
+
 """
 Fixing Some Bugs on a Sunday Evening
 ------------------------------------
@@ -63,6 +65,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.completer = RacerCompleter(self)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
+
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
 
@@ -74,6 +77,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
         menu.addAction(u'Go to declaration (F2)', self.jump)
+
+    def find(self):
+        finder.Find(self).show()
 
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())

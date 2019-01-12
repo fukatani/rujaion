@@ -74,6 +74,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         terminatebutton = self.edit_tool.addAction("Terminate...")
         terminatebutton.triggered.connect(self.terminate)
 
+        findbutton = self.edit_tool.addAction("Find...")
+        findbutton.triggered.connect(self.editor.find)
+
         # Add MenuBar
         menuBar = self.menuBar()
         filemenu = menuBar.addMenu('&File')
