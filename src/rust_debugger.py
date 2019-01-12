@@ -419,8 +419,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.proc.send("i b\n".encode())
             self.proc.expect('\(gdb\)')
             for line in self.proc.before.decode().split('\r\n'):
-                if line.endswith(":" + command.decode()):
-                    self.proc.send(("d " + line.split(" ")[0] +"\n").encode())
+                if line.rstrip('\n').endswith(":" + command.decode()):
+                    self.proc.send(("d " + line.split(" ")[0] + "\n").encode())
                     self.proc.expect('\(gdb\)')
                     break
 

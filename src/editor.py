@@ -111,7 +111,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         if self.break_points[line_num]:
             command = ("b " + str(line_num) + "\n").encode()
         else:
-            command = str(line_num).encode()
+            command = (str(line_num)).encode()
         self.toggleBreakSignal.emit(command)
 
     def generateBreak(self):
