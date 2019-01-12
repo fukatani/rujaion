@@ -132,6 +132,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.addConsole()
         self.addDisplay()
+        self.last_used_testcase = ""
 
     def updateWindowTitle(self, running=False):
         title = ''
@@ -176,7 +177,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_F3:
             self.editor.complete()
         elif event.key() == QtCore.Qt.Key_F4:
-            self.debugWithTestData()
+            self.debugWithLastCase()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif event.modifiers() and QtCore.Qt.ControlModifier and \
@@ -354,7 +355,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         except subprocess.CalledProcessError as err:
             self.console.write(err, mode='error')
 
-    def debugWithTestData(self):
+    def debugWithLastCase(self):
+        self.debugWithTestData(True)
+
+    def debugWithTestData(self, use_lastcase=False):
         if not self.compile():
             return
         if self.proc is not None:
@@ -362,10 +366,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
-                                                      'Test data (*.in)')[0]
+        if use_lastcase:
+            fname = self.last_used_testcase
+        else:
+            fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
+                                                          'Test data (*.in)')[0]
         if not fname:
             return
+        self.last_used_testcase = fname
 
         with open(fname) as fr:
             inputs = [line for line in fr if line]
