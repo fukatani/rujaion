@@ -252,7 +252,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def addEditer(self, parent):
         self.editor = editor.RustEditter(parent)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
-        self.editor.doubleClickedSignal.connect(self.OnMousePressed)
+        self.editor.doubleClickedSignal.connect(self.OnDoubleClicked)
         self.editor.toggleBreakSignal.connect(self.UpdateBreak)
         self.edited = False
         self.editor.textChanged.connect(self.updateWindowTitle)
@@ -532,7 +532,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
 
-    def OnMousePressed(self, pos):
+    def OnDoubleClicked(self, pos):
         cursor = self.editor.cursorForPosition(pos)
         line_num = cursor.blockNumber() + 1
         self.editor.toggleBreak(line_num)
