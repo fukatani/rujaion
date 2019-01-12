@@ -156,7 +156,6 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def set_edited(self):
         self.edited = True
 
-    # TODO: support multifile
     def jump(self):
         src_line_num = str(self.textCursor().blockNumber() + 1)
         src_char_num = str(self.textCursor().columnNumber())
@@ -181,6 +180,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                             QtGui.QTextCursor.MoveAnchor, char_num)
         self.setTextCursor(cursor)
         self.ensureCursorVisible()
+        self.repaint()
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
