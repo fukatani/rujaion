@@ -67,6 +67,25 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def mouseDoubleClickEvent(self, event):
         self.doubleClickedSignal.emit(event.pos())
 
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+        self.highlight_cursor_line()
+
+    def highlight_cursor_line(self):
+        if self.parent().proc is not None:
+            return
+        extraSelections = []
+        selection = QtWidgets.QTextEdit.ExtraSelection()
+        lineColor = QtGui.QColor(Qt.yellow).lighter(160)
+
+        selection.format.setBackground(lineColor)
+        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                     QtCore.QVariant(True))
+        selection.cursor = self.textCursor()
+        selection.cursor.clearSelection()
+        extraSelections.append(selection)
+        self.setExtraSelections(extraSelections)
+
     def eventFilter(self, obj, event):
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
             self.drawLineNumbers()
@@ -121,7 +140,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
 
-    def highlight_current_line(self, line_num):
+    def highlight_executing_line(self, line_num):
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(Qt.cyan)
@@ -220,10 +239,13 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         super().keyPressEvent(event)
 
         # need to repaint after cursor moved
-        if event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
+        if event.key() == Qt.Key_Right or event.key() == Qt.Key_Left or \
+            event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
             event.key() == Qt.Key_PageUp or event.key() == Qt.Key_PageDown or \
             event.key() == Qt.Key_Home or event.key() == Qt.Key_End:
             self.repaint()
+
+            self.highlight_cursor_line()
 
         tc.select(QtGui.QTextCursor.WordUnderCursor)
         cr = self.cursorRect()
