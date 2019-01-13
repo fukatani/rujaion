@@ -261,7 +261,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def addEditer(self, parent):
         self.editor = editor.RustEditter(parent)
         self.highlighter = syntax.RustHighlighter(self.editor.document())
-        self.editor.doubleClickedSignal.connect(self.OnDoubleClicked)
         self.editor.toggleBreakSignal.connect(self.UpdateBreak)
         self.edited = False
         self.editor.textChanged.connect(self.updateWindowTitle)
@@ -371,7 +370,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        if use_lastcase:
+        if use_lastcase and self.last_used_testcase:
             fname = self.last_used_testcase
         else:
             fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
@@ -540,11 +539,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.display_widget.set_cell(row_num, 1, type)
 
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
-
-    def OnDoubleClicked(self, pos):
-        cursor = self.editor.cursorForPosition(pos)
-        line_num = cursor.blockNumber() + 1
-        self.editor.toggleBreak(line_num)
 
     def jump(self):
         self.editor.jump()

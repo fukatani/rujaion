@@ -42,7 +42,6 @@ or brand of soft drink.
 """
 
 class RustEditter(QtWidgets.QPlainTextEdit):
-    doubleClickedSignal = pyqtSignal(QPoint)
     toggleBreakSignal = pyqtSignal(bytes)
 
     def __init__(self, *args):
@@ -80,9 +79,6 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def find(self):
         finder.Find(self).show()
-
-    def mouseDoubleClickEvent(self, event):
-        self.doubleClickedSignal.emit(event.pos())
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
@@ -252,6 +248,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         if event.key() == 16777220:  # Enter
             self.enter_with_auto_indent()
+            return
+
+        if event.key() == Qt.Key_F5:
+            line_num = tc.blockNumber() + 1
+            self.toggleBreak(line_num)
             return
 
         # comment out or uncomment
