@@ -233,6 +233,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         fname = codecs.open(savename, 'w', 'utf-8')
         fname.write(self.editor.toPlainText())
         self.editor.fname = savename
+        self.editor.edited = False
+        self.updateWindowTitle()
 
     def saveFile(self):
         if self.editor.fname:
@@ -247,9 +249,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             except Exception as err:
                 self.console.write(err.output)
             self.reflesh()
+            self.editor.edited = False
             self.editor.verticalScrollBar().setValue(scroll_value)
             self.editor.repaint()
             self.editor.highlight_cursor_line()
+            self.updateWindowTitle()
         else:
             self.saveFileAs()
 
