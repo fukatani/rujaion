@@ -38,6 +38,10 @@ class RustHighlighter(QSyntaxHighlighter):
         self.highlight_rules += [(QRegExp(pattern), const_format)
                                  for pattern in const_patterns]
 
+        self_format = QTextCharFormat()
+        self_format.setForeground(Qt.darkRed)
+        self.highlight_rules.append((QRegExp("\\bself\\b"), self_format))
+
         line_comment_format = QTextCharFormat()
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("//[^\n]*"),
