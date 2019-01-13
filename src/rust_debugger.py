@@ -248,6 +248,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.console.write(err.output)
             self.reflesh()
             self.editor.verticalScrollBar().setValue(scroll_value)
+            self.editor.repaint()
+            self.editor.highlight_cursor_line()
         else:
             self.saveFileAs()
 

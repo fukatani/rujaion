@@ -217,6 +217,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setTextCursor(cursor)
         self.ensureCursorVisible()
         self.repaint()
+        self.highlight_cursor_line()
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
@@ -259,9 +260,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         if event.key() == Qt.Key_Right or event.key() == Qt.Key_Left or \
             event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
             event.key() == Qt.Key_PageUp or event.key() == Qt.Key_PageDown or \
-            event.key() == Qt.Key_Home or event.key() == Qt.Key_End:
+            event.key() == Qt.Key_Home or event.key() == Qt.Key_End or \
+            event.key() == Qt.Key_Backspace:
             self.repaint()
-
             self.highlight_cursor_line()
 
         tc.select(QtGui.QTextCursor.WordUnderCursor)
