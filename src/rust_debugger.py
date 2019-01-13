@@ -17,8 +17,7 @@ import login
 import util
 import console
 
-# TODO: highlight multi line
-# TODO: commment out
+# TODO: highlight multi line comment
 # TODO: display dp
 # TODO: refactoring
 # TODO: highlight compile error and propose replace
