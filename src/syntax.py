@@ -37,10 +37,10 @@ class RustHighlighter(QSyntaxHighlighter):
         const_format.setForeground(Qt.darkYellow)
 
         const_patterns = ("\\btrue\\b", "\\bfalse\\b", "\\bNone\\b",
-                          "\\bSome\\b", "\\b[0-9\._]", "\\b[0-9\_]usize",
-                          "\\b[0-9_]u32", "\\b[0-9_]u64", "\\b[0-9_]u128",
-                          "\\b[0-9_]i32", "\\b[0-9_]i64", "\\b[0-9_]i128",
-                          "\\b[0-9\._]f32", "\\b[0-9\._]f64",
+                          "\\bSome\\b", "\\b[0-9\.\_]+\\b", "\\b[0-9\_]+usize\\b",
+                          "\\b[0-9_]+u32\\b", "\\b[0-9_]+u64\\b", "\\b[0-9_]+u128\\b",
+                          "\\b[0-9_]+i32\\b", "\\b[0-9_]+i64\\b", "\\b[0-9_]+i128\\b",
+                          "\\b[0-9\._]+f32\\b", "\\b[0-9\._]+f64\\b",
                           )
 
         self.highlight_rules += [(QRegExp(pattern), const_format)
