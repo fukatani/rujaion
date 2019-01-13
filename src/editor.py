@@ -256,6 +256,13 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         super().keyPressEvent(event)
 
+        if event.key() == Qt.Key_Home:
+            if self.document().characterAt(self.textCursor().position())  == ' ':
+                cursor = self.textCursor()
+                cursor.movePosition(QtGui.QTextCursor.NextWord,
+                                    QtGui.QTextCursor.MoveAnchor, 1)
+                self.setTextCursor(cursor)
+
         # need to repaint after cursor moved
         if event.key() == Qt.Key_Right or event.key() == Qt.Key_Left or \
             event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
