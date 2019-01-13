@@ -43,14 +43,15 @@ class RustHighlighter(QSyntaxHighlighter):
         self.highlight_rules.append((QRegExp("//[^\n]*"),
                                      line_comment_format))
 
-        attribute_format = QTextCharFormat()
-        attribute_format.setForeground(Qt.green)
-        self.highlight_rules.append((QRegExp("#[^\n]*"),
-                                     attribute_format))
-
         quotation_format = QTextCharFormat()
         quotation_format.setForeground(Qt.darkGreen)
         self.highlight_rules.append((QRegExp("\".*\""), quotation_format))
+
+        macro_format = QTextCharFormat()
+        macro_format.setFontItalic(True)
+        macro_format.setForeground(Qt.darkCyan)
+        self.highlight_rules.append((QRegExp("\\b[A-Za-z0-9_]+!(?=\\()"),
+                                     macro_format))
 
         function_format = QTextCharFormat()
         function_format.setFontItalic(True)
@@ -58,11 +59,10 @@ class RustHighlighter(QSyntaxHighlighter):
         self.highlight_rules.append((QRegExp("\\b[A-Za-z0-9_:<>]+(?=\\()"),
                                      function_format))
 
-        macro_format = QTextCharFormat()
-        macro_format.setFontItalic(True)
-        macro_format.setForeground(Qt.darkCyan)
-        self.highlight_rules.append((QRegExp("\\b[A-Za-z0-9_]+!(?=\\()"),
-                                     macro_format))
+        attribute_format = QTextCharFormat()
+        attribute_format.setForeground(QColor(Qt.green).darker(140))
+        self.highlight_rules.append((QRegExp("#[^\n]*"),
+                                     attribute_format))
 
     def highlightBlock(self, text):
         for pattern, format in self.highlight_rules:
