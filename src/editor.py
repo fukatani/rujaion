@@ -257,6 +257,8 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key_Home:
+            if self.textCursor().selectedText():
+                return
             if self.document().characterAt(self.textCursor().position())  == ' ':
                 cursor = self.textCursor()
                 cursor.movePosition(QtGui.QTextCursor.NextWord,
