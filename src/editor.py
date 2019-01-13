@@ -48,7 +48,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def __init__(self, *args):
         super().__init__(*args)
         font = QtGui.QFont()
-        font.setFamily('Courier')
+        font.setFamily('DejaVu Sans Mono')
         font.setFixedPitch(True)
         font.setPointSize(10)
         self.setFont(font)

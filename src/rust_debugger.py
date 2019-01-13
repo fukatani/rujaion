@@ -17,15 +17,14 @@ import login
 import util
 import console
 
-
-# TODO: refactoring
-# TODO: highlight selecting variable
 # TODO: display dp
+# TODO: refactoring
+# TODO: highlight compile error and propose replace
 # TODO: display tree
+# TODO: highlight selecting variable
 # TODO: fix gdb hang (std)
 # TODO: progress bar
 # TODO: rustsym(find usage)r
-# TODO: textsearch
 # TODO: rusti
 # TODO: parenthis
 
