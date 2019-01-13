@@ -14,10 +14,11 @@ Support one file project only.
 Feature
 ==============================
 * GUI debug
-* completer and jumper (based on racer) 
 * Online judge testcases downloading and testing. (based on online-judge-tools)
 * Debug with online judge testcases
 * Do online judge submission
+* Completer and jumper (based on racer) 
+* Auto Formatting (based on rustfmt)
 
 Software Requirements
 ==============================
@@ -43,6 +44,7 @@ KeyBinds
 - Open File (Ctrl + o)
 - Save File (Ctrl + s)
 - Start Debug or continue (F9)
+- Start Debug with downloaded testcase (F4)
 - Run (Ctrl + F9)
 - Next (F8)
 - Step in (F7)
