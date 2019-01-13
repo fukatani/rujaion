@@ -279,6 +279,36 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
+        if event.key() == Qt.Key_Tab and event.modifiers() == QtCore.Qt.ControlModifier:
+            tc = self.textCursor()
+            if tc.selection().isEmpty():
+                selected_line_num = 1
+            else:
+                selected_line_num = tc.selection().toPlainText().count("\n") + 1
+            for i in range(selected_line_num):
+                tc.movePosition(QtGui.QTextCursor.StartOfLine)
+                if self.document().characterAt(tc.position()) == ' ':
+                    tc.deleteChar()
+                    tc.deleteChar()
+                    tc.deleteChar()
+                    tc.deleteChar()
+                    tc.movePosition(QtGui.QTextCursor.Down,
+                                    QtGui.QTextCursor.MoveAnchor, 1)
+            return
+
+        if event.key() == Qt.Key_Tab:
+            tc = self.textCursor()
+            if tc.selection().isEmpty():
+                selected_line_num = 1
+            else:
+                selected_line_num = tc.selection().toPlainText().count("\n") + 1
+            for i in range(selected_line_num):
+                tc.movePosition(QtGui.QTextCursor.StartOfLine)
+                tc.insertText("    ")
+                tc.movePosition(QtGui.QTextCursor.Down,
+                                QtGui.QTextCursor.MoveAnchor, 1)
+            return
+
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key_Home:
