@@ -53,3 +53,4 @@ KeyBinds
 - Terminate debug process (Esc)
 - Set break point (double click on text)
 - display value (editting display widget "Name" columns)
+- Comment out (Ctrl + /)
