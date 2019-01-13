@@ -250,8 +250,32 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 
-        if event.key() == 16777220:
+        if event.key() == 16777220:  # Enter
             self.enter_with_auto_indent()
+            return
+
+        # comment out or uncomment
+        if event.modifiers() and QtCore.Qt.ControlModifier and \
+            event.key() == Qt.Key_Slash:
+            tc = self.textCursor()
+            if tc.selection().isEmpty():
+                selected_line_num = 1
+            else:
+                selected_line_num = tc.selection().toPlainText().count("\n") + 1
+            for i in range(selected_line_num):
+                tc.movePosition(QtGui.QTextCursor.StartOfLine)
+                if self.document().characterAt(tc.position()) == ' ':
+                    tc.movePosition(QtGui.QTextCursor.NextWord,
+                                    QtGui.QTextCursor.MoveAnchor, 1)
+                if self.document().characterAt(tc.position()) == '/' and \
+                   self.document().characterAt(tc.position() + 1) == '/' and \
+                   self.document().characterAt(tc.position() + 2) == ' ':
+                    tc.deleteChar()
+                    tc.deleteChar()
+                    tc.deleteChar()
+                else:
+                    tc.insertText("// ")
+                tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
         super().keyPressEvent(event)
