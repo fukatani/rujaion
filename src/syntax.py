@@ -39,7 +39,7 @@ class RustHighlighter(QSyntaxHighlighter):
                                  for pattern in const_patterns]
 
         line_comment_format = QTextCharFormat()
-        line_comment_format.setForeground(Qt.red)
+        line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("//[^\n]*"),
                                      line_comment_format))
 
