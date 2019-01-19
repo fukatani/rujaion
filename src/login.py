@@ -87,9 +87,7 @@ class PasswordEdit(QtWidgets.QLineEdit):
         self.parent = parent
         self.settings = settings
         super().__init__()
-        v = settings.value('Password', type=str)
-        self.setText(v)
         self.setEchoMode(QtWidgets.QLineEdit.Password)
 
     def commit(self):
-        self.settings.setValue('Password', self.text())
+        pass
