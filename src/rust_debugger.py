@@ -578,9 +578,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         try:
+            #TODO: configurable timeout
             out = subprocess.check_output(("oj", "test", "-c",
                                            './' + compiled_file),
-                                          stderr=subprocess.STDOUT).decode()
+                                          stderr=subprocess.STDOUT,
+                                          timeout=4.0).decode()
+        except subprocess.TimeoutExpired:
+            self.console.test_result_write("[-] Test is Timeout")
+            return
         except Exception as e:
             self.console.test_result_write(e.output)
             return
