@@ -87,17 +87,44 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def highlight_cursor_line(self):
         if self.parent().proc is not None:
             return
-        extraSelections = []
+        extra_selections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        lineColor = QtGui.QColor(Qt.yellow).lighter(180)
+        line_color = QtGui.QColor(Qt.yellow).lighter(180)
 
-        selection.format.setBackground(lineColor)
+        selection.format.setBackground(line_color)
         selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
                                      QtCore.QVariant(True))
         selection.cursor = self.textCursor()
         selection.cursor.clearSelection()
-        extraSelections.append(selection)
-        self.setExtraSelections(extraSelections)
+        extra_selections.append(selection)
+        self.setExtraSelections(extra_selections)
+
+    def highlight_compile_error(self, invalid_places):
+        extra_selections = []
+        selection = QtWidgets.QTextEdit.ExtraSelection()
+        line_color = QtGui.QColor(Qt.red).lighter(110)
+
+        selection.format.setFontUnderline(True)
+        selection.format.setUnderlineColor(line_color)
+        selection.format.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
+        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                     QtCore.QVariant(True))
+
+        for line, pos in invalid_places:
+            tc = self.textCursor()
+            selection.cursor = tc
+            # selection.cursor = self.textCursor()
+            selection.cursor.movePosition(QtGui.QTextCursor.Start)
+            selection.cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1)
+            # selection.cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            # selection.cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
+            # selection.cursor.movePosition(QtGui.QTextCursor.EndOfWord, QtGui.QTextCursor.KeepAnchor)
+            # selection.cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
+            self.setTextCursor(tc)
+
+            extra_selections.append(selection)
+        self.setExtraSelections(extra_selections)
+        return
 
     def eventFilter(self, obj, event):
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:

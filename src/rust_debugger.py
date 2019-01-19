@@ -303,8 +303,23 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                                mode='success')
         except subprocess.CalledProcessError as err:
             self.console.write(err.output, mode='error')
+            invalid_places = self.parse_compile_error(err.output.decode())
+            self.editor.highlight_compile_error(invalid_places)
             return False
         return True
+
+    def parse_compile_error(self, error_message):
+        line_num_lines = []
+        lines = error_message.split('\n')
+        for i, line in enumerate(lines):
+            if line.startswith('error') and '-->' in lines[i + 1]:
+                    line_num_lines.append(i + 1)
+
+        invalid_places = []
+        for num in line_num_lines:
+            invalid_line, invalid_pos = lines[num].split(':')[1:]
+            invalid_places.append((int(invalid_line), int(invalid_pos)))
+        return invalid_places
 
     def run(self):
         if self.proc is not None:
