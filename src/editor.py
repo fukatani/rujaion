@@ -235,8 +235,6 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         indent_level = line_text.count('    ')
         if line_text.endswith('{'):
             indent_level += 1
-        elif line_text.endswith('}') and indent_level > 0:
-            indent_level -= 1
         self.insertPlainText('\n' + '    ' * indent_level)
 
     def keyPressEvent(self, event):
@@ -249,6 +247,13 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         if event.key() == 16777220:  # Enter
             self.enter_with_auto_indent()
             return
+
+        if event.key() == Qt.Key_BraceRight:
+            # Decrease indent level
+            tc.movePosition(QtGui.QTextCursor.StartOfLine)
+            for i in range(4):
+                if self.document().characterAt(tc.position()) == ' ':
+                    tc.deleteChar()
 
         if event.key() == Qt.Key_F5:
             line_num = tc.blockNumber() + 1
