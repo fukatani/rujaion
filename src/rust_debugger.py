@@ -312,9 +312,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        self.updateWindowTitle(True)
         if not self.compile(no_debug=True):
             return
+        self.updateWindowTitle(True)
         compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
