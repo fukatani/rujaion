@@ -18,6 +18,7 @@ class RustHighlighter(QSyntaxHighlighter):
         keyword_format.setFontWeight(QFont.Bold)
 
         keyword_patterns = ("\\bi32\\b", "\\bi64\\b", "\\bi16\\b",
+                            "\\bu16\\b", "\\bu32\\b", "\\bu64\\b",
                             "\\bf16\\b", "\\bf32\\b", "\\bf64\\b",
                             "\\busize\\b", "\\blet\\b", "\\bmut\\b",
                             "\\bfn\\b", "\\bstruct\\b", "\\bpub\\b",
@@ -27,7 +28,9 @@ class RustHighlighter(QSyntaxHighlighter):
                             "\\benum\\b", "\\bmatch\\b", "\\btype\\b",
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bVec\\b", "\\bcontinue\\b", "\\bloop\\b",
-                            "\\bin\\b", "\\belse\\b", "\\bif\\b")
+                            "\\bin\\b", "\\belse\\b", "\\bif\\b",
+                            "\\bas\\b",
+                            )
 
         self.highlight_rules += [(QRegExp(pattern), keyword_format)
                                 for pattern in keyword_patterns]
