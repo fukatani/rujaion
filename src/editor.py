@@ -101,27 +101,24 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def highlight_compile_error(self, invalid_places):
         extra_selections = []
-        selection = QtWidgets.QTextEdit.ExtraSelection()
         line_color = QtGui.QColor(Qt.red).lighter(110)
 
-        selection.format.setFontUnderline(True)
-        selection.format.setUnderlineColor(line_color)
-        selection.format.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
-        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
-                                     QtCore.QVariant(True))
-
         for line, pos in invalid_places:
-            tc = self.textCursor()
-            selection.cursor = tc
-            # selection.cursor = self.textCursor()
-            selection.cursor.movePosition(QtGui.QTextCursor.Start)
-            selection.cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1)
-            # selection.cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-            # selection.cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
-            # selection.cursor.movePosition(QtGui.QTextCursor.EndOfWord, QtGui.QTextCursor.KeepAnchor)
-            # selection.cursor.movePosition(QtGui.QTextCursor.EndOfLine, QtGui.QTextCursor.KeepAnchor)
-            self.setTextCursor(tc)
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format.setFontUnderline(True)
+            selection.format.setUnderlineColor(line_color)
+            selection.format.setUnderlineStyle(
+                QtGui.QTextCharFormat.WaveUnderline)
+            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                         QtCore.QVariant(True))
 
+            cursor = self.textCursor()
+            cursor.movePosition(QtGui.QTextCursor.Start)
+            cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1)
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
+            cursor.select(QtGui.QTextCursor.WordUnderCursor)
+            selection.cursor = cursor
             extra_selections.append(selection)
         self.setExtraSelections(extra_selections)
         return
