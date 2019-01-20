@@ -24,7 +24,7 @@ class RustHighlighter(QSyntaxHighlighter):
                             "\\buse\\b", "\\bimpl\\b", "\\bmatch\\b",
                             "\\bconst\\b", "\\bstatic\\b", "\\bstr\\b",
                             "\\bString\\b", "\\breturn\\b", "\\bwhere\\b",
-                            "\\benum\\b", "\\bmatch\\b",
+                            "\\benum\\b", "\\bmatch\\b", "\\btype\\b"
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bVec\\b", "\\bcontinue\\b", "\\bloop\\b",
                             "\\bin\\b", "\\belse\\b", "\\bif\\b")
