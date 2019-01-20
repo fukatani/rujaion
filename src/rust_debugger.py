@@ -414,6 +414,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         try:
             if self.proc is None:
                 self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
+                self.console.terminate_evcxr()
             else:
                 self.continue_process()
                 return
@@ -450,9 +451,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
                 self.proc.send(debug_input.encode())
             self.post_process()
+            self.console.run_evcxr()
 
         except subprocess.CalledProcessError as err:
             self.console.write(err, mode='error')
+            self.console.run_evcxr()
 
     def UpdateBreak(self, command):
         if self.proc is None:

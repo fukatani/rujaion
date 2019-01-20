@@ -19,6 +19,7 @@ Feature
 * Do online judge submission
 * Completer and jumper (based on racer) 
 * Auto Formatting (based on rustfmt)
+* Rust REPL (based on evcxr_repl)
 
 Software Requirements
 ==============================
@@ -26,6 +27,7 @@ Software Requirements
 * PyQt5
 * pexpect
 * online-judge-tools (0.1.36 or later)
+* evcxr_repl
 * rustfmt
 * racer
 
