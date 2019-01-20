@@ -257,6 +257,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.updateWindowTitle()
         else:
             self.saveFileAs()
+        self.compile()
 
     def addEditer(self, parent):
         self.editor = editor.RustEditter(parent)
