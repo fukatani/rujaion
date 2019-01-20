@@ -20,14 +20,13 @@ import console
 # TODO: highlight multi line comment
 # TODO: display dp
 # TODO: refactoring
-# TODO: highlight compile error and propose replace
 # TODO: display tree
 # TODO: highlight selecting variable
 # TODO: fix gdb hang (std)
 # TODO: progress bar
 # TODO: rustsym(find usage)r
-# TODO: rusti
-# TODO: parenthis
+# TODO: evcxr
+# TODO: highlight corresponding parenthesis
 
 
 class CustomMainWindow(QtWidgets.QMainWindow):
@@ -298,29 +297,40 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         else:
             command = ("rustc", "-g", self.editor.fname)
         try:
-            _ = subprocess.check_output(command,
+            out = subprocess.check_output(command,
                                         stderr=subprocess.STDOUT)
             self.console.write('Compile is finished successfully!',
                                mode='success')
+            error_places, warning_places = self.parse_compile_error(out.decode())
+            self.editor.highlight_compile_error(error_places, warning_places)
         except subprocess.CalledProcessError as err:
             self.console.write(err.output, mode='error')
-            invalid_places = self.parse_compile_error(err.output.decode())
-            self.editor.highlight_compile_error(invalid_places)
+            error_places, warning_places = self.parse_compile_error(err.output.decode())
+            self.editor.highlight_compile_error(error_places, warning_places)
             return False
         return True
 
     def parse_compile_error(self, error_message):
-        line_num_lines = []
+        error_disp_lines = []
+        warning_disp_lines = []
         lines = error_message.split('\n')
         for i, line in enumerate(lines):
             if line.startswith('error') and '-->' in lines[i + 1]:
-                    line_num_lines.append(i + 1)
+                error_disp_lines.append(i + 1)
+            elif line.startswith('warning') and '-->' in lines[i + 1]:
+                warning_disp_lines.append(i + 1)
 
-        invalid_places = []
-        for num in line_num_lines:
+        error_places = []
+        for num in error_disp_lines:
             invalid_line, invalid_pos = lines[num].split(':')[1:]
-            invalid_places.append((int(invalid_line), int(invalid_pos)))
-        return invalid_places
+            error_places.append((int(invalid_line), int(invalid_pos)))
+
+        warning_places = []
+        for num in warning_disp_lines:
+            invalid_line, invalid_pos = lines[num].split(':')[1:]
+            warning_places.append((int(invalid_line), int(invalid_pos)))
+
+        return error_places, warning_places
 
     def run(self):
         if self.proc is not None:
