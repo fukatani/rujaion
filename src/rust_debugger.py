@@ -543,8 +543,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         self.proc.send(b'p ' + name.encode() + b'\n')
         self.proc.expect('\(gdb\)')
-        value = ''.join(self.proc.before.decode().split('\n')[1:])
+        value = ''.join(self.proc.before.decode().split('\r\n')[1:])
         value = value.split(' = ')[-1]
+        # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 2, value)
 
         self.proc.send(b'pt ' + name.encode() + b'\n')
