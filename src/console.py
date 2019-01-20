@@ -27,7 +27,7 @@ class Console(QtWidgets.QTextEdit):
         elif mode == 'gdb':
             font.setBold(False)
             self.setTextColor(QtCore.Qt.black)
-            msg = '>>> ' + msg
+            msg = '(gdb) ' + msg
         self.setFont(font)
         msg = msg + '\n'
         self.insertPlainText(msg)
