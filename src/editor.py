@@ -87,17 +87,41 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def highlight_cursor_line(self):
         if self.parent().proc is not None:
             return
-        extraSelections = []
+        extra_selections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        lineColor = QtGui.QColor(Qt.yellow).lighter(180)
+        line_color = QtGui.QColor(Qt.yellow).lighter(180)
 
-        selection.format.setBackground(lineColor)
+        selection.format.setBackground(line_color)
         selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
                                      QtCore.QVariant(True))
         selection.cursor = self.textCursor()
         selection.cursor.clearSelection()
-        extraSelections.append(selection)
-        self.setExtraSelections(extraSelections)
+        extra_selections.append(selection)
+        self.setExtraSelections(extra_selections)
+
+    def highlight_compile_error(self, invalid_places):
+        extra_selections = []
+        line_color = QtGui.QColor(Qt.red).lighter(110)
+
+        for line, pos in invalid_places:
+            selection = QtWidgets.QTextEdit.ExtraSelection()
+            selection.format.setFontUnderline(True)
+            selection.format.setUnderlineColor(line_color)
+            selection.format.setUnderlineStyle(
+                QtGui.QTextCharFormat.WaveUnderline)
+            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                         QtCore.QVariant(True))
+
+            cursor = self.textCursor()
+            cursor.movePosition(QtGui.QTextCursor.Start)
+            cursor.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1)
+            cursor.movePosition(QtGui.QTextCursor.StartOfLine)
+            cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
+            cursor.select(QtGui.QTextCursor.WordUnderCursor)
+            selection.cursor = cursor
+            extra_selections.append(selection)
+        self.setExtraSelections(extra_selections)
+        return
 
     def eventFilter(self, obj, event):
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
