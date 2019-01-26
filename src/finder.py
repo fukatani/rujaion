@@ -108,9 +108,7 @@ class Find(QtWidgets.QDialog):
 
         # The actual search
         self.lastMatch = pattern.search(text, start)
-
         if self.lastMatch:
-
             start = self.lastMatch.start()
             end = self.lastMatch.end()
 
@@ -120,18 +118,12 @@ class Find(QtWidgets.QDialog):
             if self.wholeWords.isChecked():
                 start += 1
                 end -= 1
-
             self.moveCursor(start, end)
-
-        else:
-
-            # We set the cursor to the end if the search was unsuccessful
-            self.parent.text.moveCursor(QtGui.QTextCursor.End)
 
     def replace(self):
 
         # Grab the text cursor
-        cursor = self.parent.text.textCursor()
+        cursor = self.parent.textCursor()
 
         # Security
         if self.lastMatch and cursor.hasSelection():
@@ -140,7 +132,7 @@ class Find(QtWidgets.QDialog):
             cursor.insertText(self.replaceField.toPlainText())
 
             # And set the new cursor
-            self.parent.text.setTextCursor(cursor)
+            self.parent.setTextCursor(cursor)
 
     def replaceAll(self):
 
