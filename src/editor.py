@@ -272,7 +272,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def keyPressEvent(self, event):
         tc = self.textCursor()
-        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
+        if event.key() == 16777220 and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
