@@ -102,15 +102,15 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.login)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Download', self)
+        a = QtWidgets.QAction('Download (F6)', self)
         a.triggered.connect(self.download)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Test My Code', self)
+        a = QtWidgets.QAction('Test My Code (Ctrl+F4)', self)
         a.triggered.connect(self.testMyCode)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Debug With Test Data', self)
+        a = QtWidgets.QAction('Debug With Test Data (F4)', self)
         a.triggered.connect(self.debugWithTestData)
         filemenu.addAction(a)
 
@@ -173,8 +173,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.jump()
         elif event.key() == QtCore.Qt.Key_F3:
             self.editor.complete()
+        elif event.modifiers() and QtCore.Qt.ControlModifier and \
+                event.key() == QtCore.Qt.Key_F4:
+            self.testMyCode()
         elif event.key() == QtCore.Qt.Key_F4:
             self.debugWithLastCase()
+        elif event.key() == QtCore.Qt.Key_F6:
+            self.download()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif event.modifiers() and QtCore.Qt.ControlModifier and \
