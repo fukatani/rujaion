@@ -134,7 +134,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.addDisplay()
         self.last_used_testcase = ""
 
-    def updateWindowTitle(self, running=False):
+    def updateWindowTitle(self, running: bool=False):
         title = ""
         if self.editor.edited:
             title = "(*) "
@@ -219,14 +219,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         )[0]
         self.openFile(fname)
 
-    def openFile(self, fname):
+    def openFile(self, fname: str):
         if not fname:
             return
         self.editor.open_file(fname)
         self.settings.setValue("LastOpenedFile", fname)
         self.updateWindowTitle()
 
-    def askTerminateOrNot(self):
+    def askTerminateOrNot(self) -> bool:
         ret = QtWidgets.QMessageBox.information(
             None,
             "Debugging process is runnning",
@@ -575,7 +575,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         for i, _ in self.display_widget.name_iter():
             self.display_one_valuable(i)
 
-    def display_one_valuable(self, row_num):
+    def display_one_valuable(self, row_num: int):
         # Avoid infinity loop
         self.display_widget.cellChanged.disconnect(self.processDisplayEdited)
 

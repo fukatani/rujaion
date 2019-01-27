@@ -59,9 +59,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.lineNumberArea.installEventFilter(self)
 
         self.break_points = defaultdict(lambda: False)
-        self.edited = False
+        self.edited = False  # type: bool
         self.textChanged.connect(self.set_edited)
-        self.fname = ""
+        self.fname = ""  # type: str
         self.completer = RacerCompleter(self)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
@@ -115,7 +115,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setExtraSelections(extra_selections)
         return
 
-    def add_highlight_error(self, extra_selections, line, line_color, pos):
+    def add_highlight_error(self, extra_selections, line: int, line_color: QtGui.QColor, pos: int):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setFontUnderline(True)
         selection.format.setUnderlineColor(line_color)
@@ -134,7 +134,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         selection.cursor = cursor
         extra_selections.append(selection)
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj, event: QtCore.QEvent):
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
             self.drawLineNumbers()
             return True
@@ -191,7 +191,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
 
-    def highlight_executing_line(self, line_num):
+    def highlight_executing_line(self, line_num: int):
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(Qt.cyan)
