@@ -165,7 +165,7 @@ class Find(QtWidgets.QDialog):
         self.caseSens.setEnabled(True)
         self.wholeWords.setEnabled(True)
 
-    def moveCursor(self, start, end):
+    def moveCursor(self, start: int, end: int):
 
         # We retrieve the QTextCursor object from the parent's QTextEdit
         cursor = self.parent.textCursor()

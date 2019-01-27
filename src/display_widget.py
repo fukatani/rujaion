@@ -25,7 +25,7 @@ class ResultTableModel(QtWidgets.QTableWidget):
                 item.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.setItem(i, j, item)
 
-    def cell(self, var=""):
+    def cell(self, var: str=""):
         item = Qt.QTableWidgetItem()
         item.setText(var)
         return item

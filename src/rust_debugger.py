@@ -318,7 +318,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def newFile(self):
         self.editor.new_file("template.rs")
 
-    def compile(self, no_debug=False):
+    def compile(self, no_debug: bool=False) -> bool:
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         if no_debug:
@@ -337,7 +337,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def parse_compile_error(self, error_message):
+    def parse_compile_error(self, error_message: str):
         error_disp_lines = []
         warning_disp_lines = []
         lines = error_message.split("\n")

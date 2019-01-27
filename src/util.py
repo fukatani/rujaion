@@ -3,7 +3,7 @@ import subprocess
 from PyQt5 import QtWidgets
 
 
-def disp_error(message):
+def disp_error(message: str):
     error = QtWidgets.QErrorMessage()
     error.showMessage(message)
     error.exec_()

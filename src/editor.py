@@ -421,14 +421,14 @@ class RacerCompleter(QtWidgets.QCompleter):
         self.highlighted.connect(self.setHighlighted)
         self.parent = parent
 
-    def setHighlighted(self, text):
+    def setHighlighted(self, text: str):
         self.lastSelected = text
 
-    def getSelected(self):
+    def getSelected(self) -> bool:
         return self.lastSelected
 
     # this is heavy?
-    def setCompletionPrefix(self, text):
+    def setCompletionPrefix(self, text: str):
         fname = codecs.open("temp.rs", "w", "utf-8")
         fname.write(self.parent.toPlainText())
         fname.close()

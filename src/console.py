@@ -50,7 +50,7 @@ class Console(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.EndOfLine)
         self.ensureCursorVisible()
 
-    def write(self, msg, mode=""):
+    def write(self, msg, mode: str=""):
         if isinstance(msg, bytes):
             msg = msg.decode()
         font = QtGui.QFont()
@@ -73,7 +73,7 @@ class Console(QtWidgets.QTextEdit):
         self.moveCursor(QtGui.QTextCursor.End)
         self._buffer.write(msg)
 
-    def test_result_write(self, msg):
+    def test_result_write(self, msg: str):
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
