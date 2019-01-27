@@ -7,10 +7,12 @@ class LoginDialog(QtWidgets.QDialog):
     def __init__(self, *args, settings=None):
         super().__init__(*args)
         self.settings = settings
-        self.dialogs = (('Login Settings', None),
-                        ('URL', URLEdit(self.settings, self)),
-                        ('Account Name', AccountEdit(self.settings, self)),
-                        ('Password', PasswordEdit(self.settings, self)))
+        self.dialogs = (
+            ("Login Settings", None),
+            ("URL", URLEdit(self.settings, self)),
+            ("Account Name", AccountEdit(self.settings, self)),
+            ("Password", PasswordEdit(self.settings, self)),
+        )
         self.draw()
 
     def draw(self, *args, settings=None):
@@ -18,7 +20,8 @@ class LoginDialog(QtWidgets.QDialog):
         for name, widget in self.dialogs:
             if not widget:
                 l_widget = QtWidgets.QGroupBox(name)
-                l_widget.setStyleSheet('''
+                l_widget.setStyleSheet(
+                    """
                 QGroupBox {
                     color: white;
                     border: 1px solid gray;
@@ -31,14 +34,15 @@ class LoginDialog(QtWidgets.QDialog):
                     left: 10px;
                     padding: 0 3px 0 3px;
                 }
-                ''')
+                """
+                )
                 l_widget.setFlat(False)
                 section_layout = QtWidgets.QFormLayout()
                 l_widget.setLayout(section_layout)
                 main_layout.addWidget(l_widget)
             else:
                 section_layout.addRow(name, widget)
-        login_button = QtWidgets.QPushButton('Login')
+        login_button = QtWidgets.QPushButton("Login")
         login_button.clicked.connect(self.close)
         main_layout.addWidget(login_button)
         self.setLayout(main_layout)
@@ -50,9 +54,15 @@ class LoginDialog(QtWidgets.QDialog):
             except AttributeError:
                 pass
         self.settings.sync()
-        cmd = ('oj', 'l', '-u', self.settings.value('Account', type=str),
-               '-p', self.settings.value('Password', type=str),
-               self.settings.value('Login URL', type=str))
+        cmd = (
+            "oj",
+            "l",
+            "-u",
+            self.settings.value("Account", type=str),
+            "-p",
+            self.settings.value("Password", type=str),
+            self.settings.value("Login URL", type=str),
+        )
         out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self.parent().console.write(out)
         super().close()
@@ -63,11 +73,11 @@ class URLEdit(QtWidgets.QLineEdit):
         self.parent = parent
         self.settings = settings
         super().__init__()
-        v = settings.value('Login URL', type=str)
+        v = settings.value("Login URL", type=str)
         self.setText(v)
 
     def commit(self):
-        self.settings.setValue('Login URL', self.text())
+        self.settings.setValue("Login URL", self.text())
 
 
 class AccountEdit(QtWidgets.QLineEdit):
@@ -75,11 +85,11 @@ class AccountEdit(QtWidgets.QLineEdit):
         self.parent = parent
         self.settings = settings
         super().__init__()
-        v = settings.value('Account', type=str)
+        v = settings.value("Account", type=str)
         self.setText(v)
 
     def commit(self):
-        self.settings.setValue('Account', self.text())
+        self.settings.setValue("Account", self.text())
 
 
 class PasswordEdit(QtWidgets.QLineEdit):

@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets
 
 # TODO: width
 
+
 class ResultTableModel(QtWidgets.QTableWidget):
     def __init__(self, parent=None, *args):
         super().__init__(parent, *args)

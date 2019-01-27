@@ -5,12 +5,12 @@ from PyQt5.QtCore import Qt
 
 import pexpect
 
-class Console(QtWidgets.QTextEdit):
 
+class Console(QtWidgets.QTextEdit):
     def __init__(self, parent=None):
         super(Console, self).__init__(parent)
         font = QtGui.QFont()
-        font.setFamily('DejaVu Sans Mono')
+        font.setFamily("DejaVu Sans Mono")
         font.setFixedPitch(True)
         font.setPointSize(9)
         self.setFont(font)
@@ -28,11 +28,11 @@ class Console(QtWidgets.QTextEdit):
             self.evcxr_proc.terminate()
 
         try:
-            self.evcxr_proc = pexpect.spawn('evcxr')
+            self.evcxr_proc = pexpect.spawn("evcxr")
         except pexpect.exceptions.ExceptionPexpect as e:
             self.write(e.value)
             return
-        self.evcxr_proc.expect('>> ')
+        self.evcxr_proc.expect(">> ")
         self.write(self.evcxr_proc.before.decode())
         self.display_prefix()
 
@@ -50,25 +50,25 @@ class Console(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.EndOfLine)
         self.ensureCursorVisible()
 
-    def write(self, msg, mode=''):
+    def write(self, msg, mode=""):
         if isinstance(msg, bytes):
             msg = msg.decode()
         font = QtGui.QFont()
-        if mode == '':
+        if mode == "":
             font.setBold(False)
             self.setTextColor(QtCore.Qt.black)
-        elif mode == 'success':
+        elif mode == "success":
             font.setBold(True)
             self.setTextColor(QtCore.Qt.blue)
-        elif mode == 'error':
+        elif mode == "error":
             font.setBold(True)
             self.setTextColor(QtCore.Qt.red)
-        elif mode == 'gdb':
+        elif mode == "gdb":
             font.setBold(False)
             self.setTextColor(QtCore.Qt.black)
-            msg = '(gdb) ' + msg
+            msg = "(gdb) " + msg
         self.setFont(font)
-        msg = msg + '\n'
+        msg = msg + "\n"
         self.insertPlainText(msg)
         self.moveCursor(QtGui.QTextCursor.End)
         self._buffer.write(msg)
@@ -76,10 +76,10 @@ class Console(QtWidgets.QTextEdit):
     def test_result_write(self, msg):
         if isinstance(msg, bytes):
             msg = msg.decode()
-        for line in msg.split('\n'):
-            if line.startswith('[+]'):
+        for line in msg.split("\n"):
+            if line.startswith("[+]"):
                 self.write(line, mode="success")
-            elif line.startswith('[-]'):
+            elif line.startswith("[-]"):
                 self.write(line, mode="error")
             else:
                 self.write(line)
@@ -94,18 +94,28 @@ class Console(QtWidgets.QTextEdit):
 
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
-        menu.addAction(u'Clear', self.clear)
+        menu.addAction(u"Clear", self.clear)
 
     def keyPressEvent(self, event):
         tc = self.textCursor()
 
-        if event.key() == Qt.Key_Left and \
-                tc.blockNumber() == self.document().blockCount() - 1 and \
-                tc.columnNumber() <= 3 and \
-                self.evcxr_proc is not None:
+        if (
+            event.key() == Qt.Key_Left
+            and tc.blockNumber() == self.document().blockCount() - 1
+            and tc.columnNumber() <= 3
+            and self.evcxr_proc is not None
+        ):
             return
-        if event.key() in (Qt.Key_Left, Qt.Key_Right, Qt.Key_Up, Qt.Key_Down,
-                        Qt.Key_PageUp, Qt.Key_PageDown, Qt.Key_Home, Qt.Key_End):
+        if event.key() in (
+            Qt.Key_Left,
+            Qt.Key_Right,
+            Qt.Key_Up,
+            Qt.Key_Down,
+            Qt.Key_PageUp,
+            Qt.Key_PageDown,
+            Qt.Key_Home,
+            Qt.Key_End,
+        ):
             super().keyPressEvent(event)
             return
 
@@ -122,9 +132,9 @@ class Console(QtWidgets.QTextEdit):
                 command = self.document().toPlainText().split("\n")[-1][3:] + "\n"
                 self.evcxr_proc.send(command.encode())
                 # self.evcxr_proc.send(b'println!("hello")\n')
-                self.evcxr_proc.expect('>> ')
+                self.evcxr_proc.expect(">> ")
 
-                line = "\n".join(self.evcxr_proc.before.decode().split('\r\n')[1:-1])
+                line = "\n".join(self.evcxr_proc.before.decode().split("\r\n")[1:-1])
                 for word in self.color_words:
                     line = line.replace(word, "")
                 self.write("\n" + line)
@@ -142,7 +152,7 @@ class QMainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.console)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     main = QMainWindow()
     main.show()

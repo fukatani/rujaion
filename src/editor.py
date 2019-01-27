@@ -41,26 +41,27 @@ but does not refer to a specific project, bug, Sunday,
 or brand of soft drink.
 """
 
+
 class RustEditter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
 
     def __init__(self, *args):
         super().__init__(*args)
         font = QtGui.QFont()
-        font.setFamily('DejaVu Sans Mono')
+        font.setFamily("DejaVu Sans Mono")
         font.setFixedPitch(True)
         font.setPointSize(10)
         self.setFont(font)
 
-        self.lineNumberAreaWidth = self.fontMetrics().width('8') * 4
+        self.lineNumberAreaWidth = self.fontMetrics().width("8") * 4
         self.setViewportMargins(self.lineNumberAreaWidth, 0, 0, 0)
         self.lineNumberArea = QtWidgets.QWidget(self)
         self.lineNumberArea.installEventFilter(self)
 
-        self.break_points = defaultdict(lambda : False)
+        self.break_points = defaultdict(lambda: False)
         self.edited = False
         self.textChanged.connect(self.set_edited)
-        self.fname = ''
+        self.fname = ""
         self.completer = RacerCompleter(self)
         self.completer.setWidget(self)
         self.completer.insertText.connect(self.insertCompletion)
@@ -75,7 +76,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
-        menu.addAction(u'Go to declaration (F2)', self.jump)
+        menu.addAction(u"Go to declaration (F2)", self.jump)
 
     def find(self):
         finder.Find(self).show()
@@ -92,8 +93,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         line_color = QtGui.QColor(Qt.yellow).lighter(180)
 
         selection.format.setBackground(line_color)
-        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
-                                     QtCore.QVariant(True))
+        selection.format.setProperty(
+            QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
+        )
         selection.cursor = self.textCursor()
         selection.cursor.clearSelection()
         extra_selections.append(selection)
@@ -117,17 +119,17 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setFontUnderline(True)
         selection.format.setUnderlineColor(line_color)
-        selection.format.setUnderlineStyle(
-            QtGui.QTextCharFormat.WaveUnderline)
-        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
-                                     QtCore.QVariant(True))
+        selection.format.setUnderlineStyle(QtGui.QTextCharFormat.WaveUnderline)
+        selection.format.setProperty(
+            QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
+        )
         cursor = self.textCursor()
         cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(QtGui.QTextCursor.Down,
-                            QtGui.QTextCursor.MoveAnchor, line - 1)
+        cursor.movePosition(
+            QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1
+        )
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-        cursor.movePosition(QtGui.QTextCursor.Right,
-                            QtGui.QTextCursor.MoveAnchor, pos)
+        cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
         extra_selections.append(selection)
@@ -154,17 +156,20 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 disp = "b " + str(line_number)
             else:
                 disp = str(line_number)
-            painter.drawText(0, y, self.lineNumberAreaWidth,
-                             ht, Qt.AlignRight, disp)
+            painter.drawText(0, y, self.lineNumberAreaWidth, ht, Qt.AlignRight, disp)
             line_number += 1
             block = block.next()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self.lineNumberArea.setGeometry(QtCore.QRect(self.rect().left(),
-                                                     self.rect().top(),
-                                                     self.lineNumberAreaWidth,
-                                                     self.rect().height()))
+        self.lineNumberArea.setGeometry(
+            QtCore.QRect(
+                self.rect().left(),
+                self.rect().top(),
+                self.lineNumberAreaWidth,
+                self.rect().height(),
+            )
+        )
 
     def wheelEvent(self, event):
         super().wheelEvent(event)
@@ -190,9 +195,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(Qt.cyan)
-        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
-                                     QtCore.QVariant(True))
-        selection.cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num - 1))
+        selection.format.setProperty(
+            QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
+        )
+        selection.cursor = QtGui.QTextCursor(
+            self.document().findBlockByLineNumber(line_num - 1)
+        )
         selection.cursor.clearSelection()
         extraSelections.append(selection)
         self.setExtraSelections(extraSelections)
@@ -229,9 +237,16 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             # out = subprocess.check_output(("racer", "find-definition",
             #                                src_line_num, src_char_num,
             #                                self.fname))
-            out = subprocess.check_output("racer find-definition" + " " +
-                                          src_line_num + " " + src_char_num +
-                                          " " + self.fname, shell=True).decode()
+            out = subprocess.check_output(
+                "racer find-definition"
+                + " "
+                + src_line_num
+                + " "
+                + src_char_num
+                + " "
+                + self.fname,
+                shell=True,
+            ).decode()
         except Exception:
             return
         if not out.startswith("MATCH"):
@@ -239,10 +254,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         out = out[6:]
         words = out.split(",")
         line_num, char_num = int(words[1]), int(words[2])
-        cursor = QtGui.QTextCursor(
-            self.document().findBlockByLineNumber(line_num - 1))
-        cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                            QtGui.QTextCursor.MoveAnchor, char_num)
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num - 1))
+        cursor.movePosition(
+            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
+        )
         self.setTextCursor(cursor)
         self.ensureCursorVisible()
         self.repaint()
@@ -250,7 +265,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
-        extra = (len(completion) - len(self.completer.completionPrefix()))
+        extra = len(completion) - len(self.completer.completionPrefix())
         tc.movePosition(QtGui.QTextCursor.Left)
         tc.movePosition(QtGui.QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
@@ -264,11 +279,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def enter_with_auto_indent(self):
         tc = self.textCursor()
-        line_text = self.toPlainText().split('\n')[tc.blockNumber()]
-        indent_level = line_text.count('    ')
-        if line_text.endswith('{'):
+        line_text = self.toPlainText().split("\n")[tc.blockNumber()]
+        indent_level = line_text.count("    ")
+        if line_text.endswith("{"):
             indent_level += 1
-        self.insertPlainText('\n' + '    ' * indent_level)
+        self.insertPlainText("\n" + "    " * indent_level)
 
     def keyPressEvent(self, event):
         tc = self.textCursor()
@@ -285,7 +300,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             # Decrease indent level
             tc.movePosition(QtGui.QTextCursor.StartOfLine)
             for i in range(4):
-                if self.document().characterAt(tc.position()) == ' ':
+                if self.document().characterAt(tc.position()) == " ":
                     tc.deleteChar()
 
         if event.key() == Qt.Key_F5:
@@ -294,8 +309,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             return
 
         # comment out or uncomment
-        if event.modifiers() and QtCore.Qt.ControlModifier and \
-            event.key() == Qt.Key_Slash:
+        if (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key() == Qt.Key_Slash
+        ):
             tc = self.textCursor()
             if tc.selection().isEmpty():
                 selected_line_num = 1
@@ -303,12 +321,15 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 selected_line_num = tc.selection().toPlainText().count("\n") + 1
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
-                if self.document().characterAt(tc.position()) == ' ':
-                    tc.movePosition(QtGui.QTextCursor.NextWord,
-                                    QtGui.QTextCursor.MoveAnchor, 1)
-                if self.document().characterAt(tc.position()) == '/' and \
-                   self.document().characterAt(tc.position() + 1) == '/' and \
-                   self.document().characterAt(tc.position() + 2) == ' ':
+                if self.document().characterAt(tc.position()) == " ":
+                    tc.movePosition(
+                        QtGui.QTextCursor.NextWord, QtGui.QTextCursor.MoveAnchor, 1
+                    )
+                if (
+                    self.document().characterAt(tc.position()) == "/"
+                    and self.document().characterAt(tc.position() + 1) == "/"
+                    and self.document().characterAt(tc.position() + 2) == " "
+                ):
                     tc.deleteChar()
                     tc.deleteChar()
                     tc.deleteChar()
@@ -325,13 +346,14 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 selected_line_num = tc.selection().toPlainText().count("\n") + 1
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
-                if self.document().characterAt(tc.position()) == ' ':
+                if self.document().characterAt(tc.position()) == " ":
                     tc.deleteChar()
                     tc.deleteChar()
                     tc.deleteChar()
                     tc.deleteChar()
-                    tc.movePosition(QtGui.QTextCursor.Down,
-                                    QtGui.QTextCursor.MoveAnchor, 1)
+                    tc.movePosition(
+                        QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1
+                    )
             return
 
         if event.key() == Qt.Key_Tab:
@@ -343,8 +365,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
                 tc.insertText("    ")
-                tc.movePosition(QtGui.QTextCursor.Down,
-                                QtGui.QTextCursor.MoveAnchor, 1)
+                tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
         super().keyPressEvent(event)
@@ -352,18 +373,25 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         if event.key() == Qt.Key_Home:
             if self.textCursor().selectedText():
                 return
-            if self.document().characterAt(self.textCursor().position())  == ' ':
+            if self.document().characterAt(self.textCursor().position()) == " ":
                 cursor = self.textCursor()
-                cursor.movePosition(QtGui.QTextCursor.NextWord,
-                                    QtGui.QTextCursor.MoveAnchor, 1)
+                cursor.movePosition(
+                    QtGui.QTextCursor.NextWord, QtGui.QTextCursor.MoveAnchor, 1
+                )
                 self.setTextCursor(cursor)
 
         # need to repaint after cursor moved
-        if event.key() == Qt.Key_Right or event.key() == Qt.Key_Left or \
-            event.key() == Qt.Key_Up or event.key() == Qt.Key_Down or \
-            event.key() == Qt.Key_PageUp or event.key() == Qt.Key_PageDown or \
-            event.key() == Qt.Key_Home or event.key() == Qt.Key_End or \
-            event.key() == Qt.Key_Backspace:
+        if (
+            event.key() == Qt.Key_Right
+            or event.key() == Qt.Key_Left
+            or event.key() == Qt.Key_Up
+            or event.key() == Qt.Key_Down
+            or event.key() == Qt.Key_PageUp
+            or event.key() == Qt.Key_PageDown
+            or event.key() == Qt.Key_Home
+            or event.key() == Qt.Key_End
+            or event.key() == Qt.Key_Backspace
+        ):
             self.repaint()
             self.highlight_cursor_line()
 
@@ -373,10 +401,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         if len(tc.selectedText()) > 1:
             self.completer.setCompletionPrefix(tc.selectedText())
             popup = self.completer.popup()
-            popup.setCurrentIndex(self.completer.completionModel().index(0,0))
+            popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
 
-            cr.setWidth(self.completer.popup().sizeHintForColumn(0)
-            + self.completer.popup().verticalScrollBar().sizeHint().width())
+            cr.setWidth(
+                self.completer.popup().sizeHintForColumn(0)
+                + self.completer.popup().verticalScrollBar().sizeHint().width()
+            )
             self.completer.complete(cr)
         else:
             self.completer.popup().hide()
@@ -399,17 +429,17 @@ class RacerCompleter(QtWidgets.QCompleter):
 
     # this is heavy?
     def setCompletionPrefix(self, text):
-        fname = codecs.open('temp.rs', 'w', 'utf-8')
+        fname = codecs.open("temp.rs", "w", "utf-8")
         fname.write(self.parent.toPlainText())
         fname.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
         src_char_num = str(self.parent.textCursor().columnNumber())
 
         try:
-            out = subprocess.check_output("racer complete" + " " +
-                                          src_line_num + " " + src_char_num +
-                                          " temp.rs",
-                                          shell=True).decode()
+            out = subprocess.check_output(
+                "racer complete" + " " + src_line_num + " " + src_char_num + " temp.rs",
+                shell=True,
+            ).decode()
         except Exception:
             return
         candidates = []

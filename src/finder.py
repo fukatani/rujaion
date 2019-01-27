@@ -93,7 +93,7 @@ class Find(QtWidgets.QDialog):
         # If the 'Whole Words' checkbox is checked, we need to append
         # and prepend a non-alphanumeric character
         if self.wholeWords.isChecked():
-            query = r'\W' + query + r'\W'
+            query = r"\W" + query + r"\W"
 
         # By default regexes are case sensitive but usually a search isn't
         # case sensitive by default, so we need to switch this around here
@@ -175,8 +175,9 @@ class Find(QtWidgets.QDialog):
 
         # Next we move the Cursor by over the match and pass the KeepAnchor parameter
         # which will make the cursor select the the match's text
-        cursor.movePosition(QtGui.QTextCursor.Right,
-                            QtGui.QTextCursor.KeepAnchor, end - start)
+        cursor.movePosition(
+            QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, end - start
+        )
 
         # And finally we set this new cursor as the parent's
         self.parent.setTextCursor(cursor)

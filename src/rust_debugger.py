@@ -64,7 +64,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         nextbutton = self.edit_tool.addAction("Next...")
         nextbutton.triggered.connect(self.next)
 
-        stepinbutton =  self.edit_tool.addAction("Step In...")
+        stepinbutton = self.edit_tool.addAction("Step In...")
         stepinbutton.triggered.connect(self.stepIn)
 
         stepoutbutton = self.edit_tool.addAction("Step Out...")
@@ -78,54 +78,54 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         # Add MenuBar
         menuBar = self.menuBar()
-        filemenu = menuBar.addMenu('&File')
+        filemenu = menuBar.addMenu("&File")
 
-        a = QtWidgets.QAction('New', self)
+        a = QtWidgets.QAction("New", self)
         a.triggered.connect(self.newFile)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Open', self)
+        a = QtWidgets.QAction("Open", self)
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Save', self)
+        a = QtWidgets.QAction("Save", self)
         a.triggered.connect(self.saveFile)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Save as', self)
+        a = QtWidgets.QAction("Save as", self)
         a.triggered.connect(self.saveFileAs)
         filemenu.addAction(a)
 
-        filemenu = menuBar.addMenu('&Contest')
+        filemenu = menuBar.addMenu("&Contest")
 
-        a = QtWidgets.QAction('Login', self)
+        a = QtWidgets.QAction("Login", self)
         a.triggered.connect(self.login)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Download (F6)', self)
+        a = QtWidgets.QAction("Download (F6)", self)
         a.triggered.connect(self.download)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Test My Code (Ctrl+F4)', self)
+        a = QtWidgets.QAction("Test My Code (Ctrl+F4)", self)
         a.triggered.connect(self.testMyCode)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Debug With Test Data (F4)', self)
+        a = QtWidgets.QAction("Debug With Test Data (F4)", self)
         a.triggered.connect(self.debugWithTestData)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Clear Test Data', self)
+        a = QtWidgets.QAction("Clear Test Data", self)
         a.triggered.connect(self.clearTestData)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction('Submit', self)
+        a = QtWidgets.QAction("Submit", self)
         a.triggered.connect(self.submit)
         filemenu.addAction(a)
 
         self.proc = None
-        self.settings = QtCore.QSettings('RustDebugger', 'RustDebugger')
+        self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
         try:
-            self.openFile(self.settings.value('LastOpenedFile', type=str))
+            self.openFile(self.settings.value("LastOpenedFile", type=str))
         except FileNotFoundError:
             pass
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
@@ -135,17 +135,17 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.last_used_testcase = ""
 
     def updateWindowTitle(self, running=False):
-        title = ''
+        title = ""
         if self.editor.edited:
-            title = '(*) '
+            title = "(*) "
         if self.proc is not None:
-            title += '(Debugging...) '
+            title += "(Debugging...) "
         elif running:
-            title += '(Running...) '
+            title += "(Running...) "
         if self.editor.fname:
             title += self.editor.fname
         else:
-            title += 'Scratch'
+            title += "Scratch"
 
         self.setWindowTitle(title)
 
@@ -155,11 +155,17 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         e.accept()
 
     def keyPressEvent(self, event):
-        if event.modifiers() and QtCore.Qt.ShiftModifier and \
-                event.key == QtCore.Qt.Key_F8:
+        if (
+            event.modifiers()
+            and QtCore.Qt.ShiftModifier
+            and event.key == QtCore.Qt.Key_F8
+        ):
             self.stepOut()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                event.key == QtCore.Qt.Key_F9:
+        elif (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key == QtCore.Qt.Key_F9
+        ):
             self.run()
         elif event.key() == QtCore.Qt.Key_F9:
             self.debug()
@@ -173,8 +179,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.jump()
         elif event.key() == QtCore.Qt.Key_F3:
             self.editor.complete()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                event.key() == QtCore.Qt.Key_F4:
+        elif (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_F4
+        ):
             self.testMyCode()
         elif event.key() == QtCore.Qt.Key_F4:
             self.debugWithLastCase()
@@ -182,36 +191,49 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.download()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                 event.key() == QtCore.Qt.Key_O:
+        elif (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_O
+        ):
             self.showFileDialog()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                 event.key() == QtCore.Qt.Key_S:
+        elif (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_S
+        ):
             self.saveFile()
-        elif event.modifiers() and QtCore.Qt.ControlModifier and \
-                 event.key() == QtCore.Qt.Key_W:
+        elif (
+            event.modifiers()
+            and QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_W
+        ):
             self.saveFileAs()
         else:
             event.accept()
 
     def showFileDialog(self):
-        dirname = os.path.dirname(self.settings.value('LastOpenedFile', type=str))
-        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', dirname, 'Rust Files (*.rs)')[0]
+        dirname = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
+        fname = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Open", dirname, "Rust Files (*.rs)"
+        )[0]
         self.openFile(fname)
 
     def openFile(self, fname):
         if not fname:
             return
         self.editor.open_file(fname)
-        self.settings.setValue('LastOpenedFile', fname)
+        self.settings.setValue("LastOpenedFile", fname)
         self.updateWindowTitle()
 
     def askTerminateOrNot(self):
-        ret = QtWidgets.QMessageBox.information(None, "Debugging process is runnning",
-                                                "Do you want to terminate debug process"
-                                                " and start new process?",
-                                                QtWidgets.QMessageBox.Yes,
-                                                QtWidgets.QMessageBox.No)
+        ret = QtWidgets.QMessageBox.information(
+            None,
+            "Debugging process is runnning",
+            "Do you want to terminate debug process" " and start new process?",
+            QtWidgets.QMessageBox.Yes,
+            QtWidgets.QMessageBox.No,
+        )
 
         if ret == QtWidgets.QMessageBox.Yes:
             return True
@@ -226,16 +248,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         char_num = cursor.columnNumber()
         self.editor.open_file(self.editor.fname)
         cursor = QtGui.QTextCursor(
-            self.editor.document().findBlockByLineNumber(line_num))
-        cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                            QtGui.QTextCursor.MoveAnchor, char_num)
+            self.editor.document().findBlockByLineNumber(line_num)
+        )
+        cursor.movePosition(
+            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
+        )
         self.editor.setTextCursor(cursor)
 
     def saveFileAs(self):
-        savename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save file', '')[0]
+        savename = QtWidgets.QFileDialog.getSaveFileName(self, "Save file", "")[0]
         if not savename:
             return
-        fname = codecs.open(savename, 'w', 'utf-8')
+        fname = codecs.open(savename, "w", "utf-8")
         fname.write(self.editor.toPlainText())
         self.editor.fname = savename
         self.editor.edited = False
@@ -244,13 +268,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def saveFile(self):
         if self.editor.fname:
             scroll_value = self.editor.verticalScrollBar().value()
-            f = codecs.open(self.editor.fname, 'w', 'utf-8')
+            f = codecs.open(self.editor.fname, "w", "utf-8")
             f.write(self.editor.toPlainText())
             f.close()
             try:
-                out = subprocess.check_output("rustfmt " + self.editor.fname,
-                                              shell=True,
-                                              stderr=subprocess.STDOUT)
+                out = subprocess.check_output(
+                    "rustfmt " + self.editor.fname, shell=True, stderr=subprocess.STDOUT
+                )
             except Exception as err:
                 self.console.write(err.output)
             self.reflesh()
@@ -302,14 +326,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         else:
             command = ("rustc", "-g", self.editor.fname)
         try:
-            out = subprocess.check_output(command,
-                                        stderr=subprocess.STDOUT)
-            self.console.write('Compile is finished successfully!',
-                               mode='success')
+            out = subprocess.check_output(command, stderr=subprocess.STDOUT)
+            self.console.write("Compile is finished successfully!", mode="success")
             error_places, warning_places = self.parse_compile_error(out.decode())
             self.editor.highlight_compile_error(error_places, warning_places)
         except subprocess.CalledProcessError as err:
-            self.console.write(err.output, mode='error')
+            self.console.write(err.output, mode="error")
             error_places, warning_places = self.parse_compile_error(err.output.decode())
             self.editor.highlight_compile_error(error_places, warning_places)
             return False
@@ -318,21 +340,21 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def parse_compile_error(self, error_message):
         error_disp_lines = []
         warning_disp_lines = []
-        lines = error_message.split('\n')
+        lines = error_message.split("\n")
         for i, line in enumerate(lines):
-            if line.startswith('error') and '-->' in lines[i + 1]:
+            if line.startswith("error") and "-->" in lines[i + 1]:
                 error_disp_lines.append(i + 1)
-            elif line.startswith('warning') and '-->' in lines[i + 1]:
+            elif line.startswith("warning") and "-->" in lines[i + 1]:
                 warning_disp_lines.append(i + 1)
 
         error_places = []
         for num in error_disp_lines:
-            invalid_line, invalid_pos = lines[num].split(':')[1:]
+            invalid_line, invalid_pos = lines[num].split(":")[1:]
             error_places.append((int(invalid_line), int(invalid_pos)))
 
         warning_places = []
         for num in warning_disp_lines:
-            invalid_line, invalid_pos = lines[num].split(':')[1:]
+            invalid_line, invalid_pos = lines[num].split(":")[1:]
             warning_places.append((int(invalid_line), int(invalid_pos)))
 
         return error_places, warning_places
@@ -346,18 +368,17 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         self.updateWindowTitle(True)
-        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            output = subprocess.check_output((
-                'env',
-                'RUST_BACKTRACE=1',
-                './' + compiled_file,),
-                stderr=subprocess.STDOUT)
+            output = subprocess.check_output(
+                ("env", "RUST_BACKTRACE=1", "./" + compiled_file),
+                stderr=subprocess.STDOUT,
+            )
             self.console.write(output)
         except subprocess.CalledProcessError as err:
-            self.console.write(err.output, mode='error')
+            self.console.write(err.output, mode="error")
         self.updateWindowTitle(False)
 
     def debug(self):
@@ -368,27 +389,29 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
             assert self.proc is None
-            self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
-            self.proc.expect('\(gdb\)')
+            self.proc = pexpect.spawn(
+                "env RUST_BACKTRACE=1 rust-gdb  ./" + compiled_file
+            )
+            self.proc.expect("\(gdb\)")
             self.console.write(self.proc.before.decode())
 
             for com in self.editor.generateBreak():
                 self.proc.send(com)
-                self.proc.expect('\(gdb\)')
-                self.console.write(self.proc.before.decode(), mode='gdb')
+                self.proc.expect("\(gdb\)")
+                self.console.write(self.proc.before.decode(), mode="gdb")
 
-            print('run ' + compiled_file)
-            self.proc.send(b'run\n')
+            print("run " + compiled_file)
+            self.proc.send(b"run\n")
             self.updateWindowTitle()
             self.post_process()
 
         except subprocess.CalledProcessError as err:
-            self.console.write(err, mode='error')
+            self.console.write(err, mode="error")
 
     def debugWithLastCase(self):
         self.debugWithTestData(True)
@@ -404,8 +427,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         if use_lastcase and self.last_used_testcase:
             fname = self.last_used_testcase
         else:
-            fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Open', './test',
-                                                          'Test data (*.in)')[0]
+            fname = QtWidgets.QFileDialog.getOpenFileName(
+                self, "Open", "./test", "Test data (*.in)"
+            )[0]
         if not fname:
             return
         self.last_used_testcase = fname
@@ -413,44 +437,48 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         with open(fname) as fr:
             inputs = [line for line in fr if line]
 
-        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
             if self.proc is None:
-                self.proc = pexpect.spawn('env RUST_BACKTRACE=1 rust-gdb  ./' + compiled_file)
+                self.proc = pexpect.spawn(
+                    "env RUST_BACKTRACE=1 rust-gdb  ./" + compiled_file
+                )
                 self.console.terminate_evcxr()
             else:
                 self.continue_process()
                 return
-            self.proc.expect('\(gdb\)')
+            self.proc.expect("\(gdb\)")
             for com in self.editor.generateBreak():
                 self.proc.send(com)
-                self.proc.expect('\(gdb\)')
-                self.console.write(self.proc.before.decode(), mode='gdb')
+                self.proc.expect("\(gdb\)")
+                self.console.write(self.proc.before.decode(), mode="gdb")
 
-            print('run ' + compiled_file)
-            self.proc.send(b'run\n')
+            print("run " + compiled_file)
+            self.proc.send(b"run\n")
             self.updateWindowTitle()
             for i, debug_input in enumerate(inputs):
                 try:
-                    self.proc.expect('\(gdb\)', timeout=0.5)
+                    self.proc.expect("\(gdb\)", timeout=0.5)
                 except:
                     pass
                 msg = self.proc.before.decode()
-                for line in msg.split('\r\n'):
-                    self.console.write(line, mode='gdb')
+                for line in msg.split("\r\n"):
+                    self.console.write(line, mode="gdb")
 
-                for line in reversed(msg.split('\r\n')):
+                for line in reversed(msg.split("\r\n")):
                     if line.endswith("exited normally]"):
-                        if i != len(inputs) -1:
-                            self.console.write("Partial input is rejected",
-                                               mode="error")
+                        if i != len(inputs) - 1:
+                            self.console.write(
+                                "Partial input is rejected", mode="error"
+                            )
                         self.terminate()
                         return
                     if "exited with code" in line:
-                        self.console.write("Process is finished with error",
-                                           mode="error")
+                        self.console.write(
+                            "Process is finished with error", mode="error"
+                        )
                         self.terminate()
                         return
 
@@ -459,7 +487,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.console.run_evcxr()
 
         except subprocess.CalledProcessError as err:
-            self.console.write(err, mode='error')
+            self.console.write(err, mode="error")
             self.console.run_evcxr()
 
     def UpdateBreak(self, command):
@@ -467,81 +495,79 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         if command.startswith(b"b "):
             self.proc.send(command)
-            self.proc.expect('\(gdb\)')
+            self.proc.expect("\(gdb\)")
         else:
             self.proc.send("i b\n".encode())
-            self.proc.expect('\(gdb\)')
-            for line in self.proc.before.decode().split('\r\n'):
-                if line.rstrip('\n').endswith(":" + command.decode()):
+            self.proc.expect("\(gdb\)")
+            for line in self.proc.before.decode().split("\r\n"):
+                if line.rstrip("\n").endswith(":" + command.decode()):
                     self.proc.send(("d " + line.split(" ")[0] + "\n").encode())
-                    self.proc.expect('\(gdb\)')
+                    self.proc.expect("\(gdb\)")
                     break
 
     def next(self):
-        print('next')
+        print("next")
         if self.proc is None:
             return
-        self.proc.send(b'n\n')
+        self.proc.send(b"n\n")
         self.post_process()
 
     def stepIn(self):
-        print('step in')
+        print("step in")
         if self.proc is None:
             return
-        self.proc.send(b's\n')
+        self.proc.send(b"s\n")
         self.post_process()
 
     def stepOut(self):
-        print('step out')
+        print("step out")
         if self.proc is None:
             return
-        self.proc.send(b'fin\n')
+        self.proc.send(b"fin\n")
         self.post_process()
 
     def terminate(self):
-        print('quit')
+        print("quit")
         if self.proc is None:
             return
-        self.proc.send(b'quit\n')
+        self.proc.send(b"quit\n")
         self.proc.terminate()
         self.proc = None
-        self.console.write("Debug process was successfully terminated.",
-                           mode='success')
+        self.console.write("Debug process was successfully terminated.", mode="success")
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
 
     def continue_process(self):
-        print('continue')
+        print("continue")
         if self.proc is None:
             return
-        self.proc.send(b'c\n')
+        self.proc.send(b"c\n")
         self.post_process()
 
     def post_process(self):
         assert self.proc is not None
         try:
-            self.proc.expect('\(gdb\)', timeout=3)
+            self.proc.expect("\(gdb\)", timeout=3)
         except:
             print(str(self.proc))
         msg = self.proc.before.decode()
-        for line in msg.split('\r\n'):
-            self.console.write(line, mode='gdb')
+        for line in msg.split("\r\n"):
+            self.console.write(line, mode="gdb")
 
-        for line in reversed(msg.split('\r\n')):
+        for line in reversed(msg.split("\r\n")):
             if line.endswith("exited normally]"):
                 self.terminate()
                 return
-            elif line.endswith('No such file or directory.'):
+            elif line.endswith("No such file or directory."):
                 self.stepOut()
                 return
             elif "exited with code" in line:
-                self.console.write("Process is finished with error",
-                                   mode="error")
+                self.console.write("Process is finished with error", mode="error")
                 self.terminate()
                 return
             else:
                 try:
-                    line_num = int(line.split('\t')[0])
+                    line_num = int(line.split("\t")[0])
                 except ValueError:
                     continue
                 self.editor.highlight_executing_line(line_num)
@@ -559,18 +585,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.display_widget.set_cell(row_num, 2, "")
             self.display_widget.cellChanged.connect(self.processDisplayEdited)
             return
-        self.proc.send(b'p ' + name.encode() + b'\n')
-        self.proc.expect('\(gdb\)')
-        value = ''.join(self.proc.before.decode().split('\r\n')[1:])
-        value = value.split(' = ')[-1]
+        self.proc.send(b"p " + name.encode() + b"\n")
+        self.proc.expect("\(gdb\)")
+        value = "".join(self.proc.before.decode().split("\r\n")[1:])
+        value = value.split(" = ")[-1]
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 2, value)
 
-        self.proc.send(b'pt ' + name.encode() + b'\n')
-        self.proc.expect('\(gdb\)')
-        type = ''.join(self.proc.before.decode().split('\n')[1:])
-        type = type.split(' = ')[-1]
-        type = type.split(' {')[0]
+        self.proc.send(b"pt " + name.encode() + b"\n")
+        self.proc.expect("\(gdb\)")
+        type = "".join(self.proc.before.decode().split("\n")[1:])
+        type = type.split(" = ")[-1]
+        type = type.split(" {")[0]
         self.display_widget.set_cell(row_num, 1, type)
 
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
@@ -579,26 +605,26 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.jump()
 
     def download(self):
-        text = (self.settings.value("contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"))
-        text, ok = QtWidgets.QInputDialog.getText(self,
-                                                  'Text Input Dialog',
-                                                  'Contest task URL:',
-                                                  text=text)
+        text = self.settings.value(
+            "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
+        )
+        text, ok = QtWidgets.QInputDialog.getText(
+            self, "Text Input Dialog", "Contest task URL:", text=text
+        )
         self.settings.setValue("contest url", text)
         if not ok:
             return
 
         try:
             self.clearTestData()
-            out = subprocess.check_output(("oj",
-                                           "download",
-                                           text),
-                                          stderr=subprocess.STDOUT).decode()
+            out = subprocess.check_output(
+                ("oj", "download", text), stderr=subprocess.STDOUT
+            ).decode()
         except Exception as err:
             self.console.write(err.output)
             return
         self.console.write(out)
-        self.console.write("Downloaded Test data", mode='success')
+        self.console.write("Downloaded Test data", mode="success")
 
     def login(self):
         login.LoginDialog(self, settings=self.settings).show()
@@ -611,13 +637,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
     def testMyCode(self):
         if not self.compile(no_debug=True):
             return
-        compiled_file = os.path.basename(self.editor.fname).replace('.rs', '')
+        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
         try:
-            #TODO: configurable timeout
-            out = subprocess.check_output(("oj", "test", "-c",
-                                           './' + compiled_file),
-                                          stderr=subprocess.STDOUT,
-                                          timeout=4.0).decode()
+            # TODO: configurable timeout
+            out = subprocess.check_output(
+                ("oj", "test", "-c", "./" + compiled_file),
+                stderr=subprocess.STDOUT,
+                timeout=4.0,
+            ).decode()
         except subprocess.TimeoutExpired:
             self.console.test_result_write("[-] Test is Timeout")
             return
@@ -627,27 +654,25 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.console.test_result_write(out)
 
     def submit(self):
-        text = (self.settings.value("contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"))
-        text, ok = QtWidgets.QInputDialog.getText(self,
-                                                  'Text Input Dialog',
-                                                  'Contest task URL:',
-                                                  text=text)
+        text = self.settings.value(
+            "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
+        )
+        text, ok = QtWidgets.QInputDialog.getText(
+            self, "Text Input Dialog", "Contest task URL:", text=text
+        )
         if not ok:
             return
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", "rust",
-               "-y", text, self.editor.fname)
+        cmd = ("oj", "s", "-l", "rust", "-y", text, self.editor.fname)
         try:
-            out = subprocess.check_output(cmd,
-                                          stderr=subprocess.STDOUT,
-                                          ).decode()
+            out = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except Exception as err:
             self.console.write(err.output)
             return
         self.console.write(out)
-        self.console.write("submitted", mode='success')
+        self.console.write("submitted", mode="success")
 
 
 def main():
@@ -657,5 +682,5 @@ def main():
     app.exec_()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
