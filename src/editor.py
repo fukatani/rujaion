@@ -298,10 +298,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         if event.key() == Qt.Key_BraceRight:
             # Decrease indent level
-            tc.movePosition(QtGui.QTextCursor.StartOfLine)
-            for i in range(4):
-                if self.document().characterAt(tc.position()) == " ":
-                    tc.deleteChar()
+            if tc.position() > 0 and self.document().characterAt(tc.position() - 1) != "{":
+                tc.movePosition(QtGui.QTextCursor.StartOfLine)
+                for i in range(4):
+                    if self.document().characterAt(tc.position()) == " ":
+                        tc.deleteChar()
 
         if event.key() == Qt.Key_F5:
             line_num = tc.blockNumber() + 1

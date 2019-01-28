@@ -17,6 +17,7 @@ import login
 import util
 import console
 
+# TODO: watch selected variable
 # TODO: highlight multi line comment
 # TODO: display dp
 # TODO: refactoring
@@ -25,7 +26,6 @@ import console
 # TODO: fix gdb hang (std)
 # TODO: progress bar
 # TODO: rustsym(find usage)r
-# TODO: evcxr
 # TODO: highlight corresponding parenthesis
 
 
