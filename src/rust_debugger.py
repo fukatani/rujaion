@@ -497,9 +497,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         else:
             self.proc.send("i b\n".encode())
             self.proc.expect("\(gdb\)")
+            print(self.proc.before.decode())
+            last_num = -1
             for line in self.proc.before.decode().split("\r\n"):
+                if line.split(" ")[0].isdecimal():
+                    last_num = int(line.split(" ")[0])
                 if line.rstrip("\n").endswith(":" + command.decode()):
-                    self.proc.send(("d " + line.split(" ")[0] + "\n").encode())
+                    assert last_num != -1
+                    self.proc.send(("d " + str(last_num) + "\n").encode())
                     self.proc.expect("\(gdb\)")
                     break
 
