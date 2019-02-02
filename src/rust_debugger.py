@@ -573,6 +573,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                     line_num = int(line.split("\t")[0])
                 except ValueError:
                     continue
+                self.editor.repaint()
                 self.editor.highlight_executing_line(line_num)
 
         for i, _ in self.display_widget.name_iter():
