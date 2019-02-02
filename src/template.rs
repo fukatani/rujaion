@@ -1,13 +1,7 @@
 #[allow(unused_imports)]
 use std::cmp::*;
+#[allow(unused_imports)]
 use std::collections::*;
-
-#[allow(unused_macros)]
-macro_rules! debug {
-    ($($a:expr),*) => {
-        eprintln!(concat!($(stringify!($a), " = {:?}, "),*), $($a),*);
-    }
-}
 
 fn read<T: std::str::FromStr>() -> T {
     let mut s = String::new();
@@ -16,12 +10,14 @@ fn read<T: std::str::FromStr>() -> T {
 }
 
 fn read_vec<T: std::str::FromStr>() -> Vec<T> {
-    read::<String>().split_whitespace()
-        .map(|e| e.parse().ok().unwrap()).collect()
+    read::<String>()
+        .split_whitespace()
+        .map(|e| e.parse().ok().unwrap())
+        .collect()
 }
 
 fn main() {
-  let mut a: Vec<i32> = read_vec();
-  println!("{0}", ans);
+    let mut a: Vec<i32> = read_vec();
+    println!("{0}", ans);
 }
 
