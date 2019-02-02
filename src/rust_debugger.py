@@ -262,6 +262,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.editor.fname = savename
         self.editor.edited = False
         self.updateWindowTitle()
+        self.compile()
 
     def saveFile(self):
         if self.editor.fname:
@@ -281,9 +282,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.editor.repaint()
             self.editor.highlight_cursor_line()
             self.updateWindowTitle()
+            self.compile()
         else:
             self.saveFileAs()
-        self.compile()
 
     def addEditer(self, parent):
         self.editor = editor.RustEditter(parent)
