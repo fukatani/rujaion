@@ -77,6 +77,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
         menu.addAction(u"Go to declaration (F2)", self.jump)
+        if self.textCursor().selectedText() and "\u2029" not in self.textCursor().selectedText():
+            menu.addAction(u"Add to watches", self.add_to_watch)
+
+    def add_to_watch(self):
+        var = self.textCursor().selectedText()
+        self.parent().display_widget.add_var(var)
 
     def find(self):
         finder.Find(self).show()

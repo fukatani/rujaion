@@ -38,5 +38,11 @@ class ResultTableModel(QtWidgets.QTableWidget):
             if self.item(i, 0) is not None:
                 yield i, self.item(i, 0).text()
 
+    def add_var(self, var):
+        for i in range(self.row_size):
+            if self.item(i, 0) is None:
+                self.set_cell(i, 0, var)
+                return
+
     def keyPressEvent(self, event):
         pass
