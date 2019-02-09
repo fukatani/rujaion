@@ -52,11 +52,11 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         # compilebutton = self.edit_tool.addAction("Compile...")
         # compilebutton.triggered.connect(self.compile)
 
-        runbutton = self.edit_tool.addAction("Run...")
-        runbutton.triggered.connect(self.run)
+        testbutton = self.edit_tool.addAction("Test...")
+        testbutton.triggered.connect(self.testMyCode)
 
-        debugbutton = self.edit_tool.addAction("Debug...")
-        debugbutton.triggered.connect(self.debug)
+        debugbutton = self.edit_tool.addAction("Debug TestCase...")
+        debugbutton.triggered.connect(self.debugWithTestData)
 
         continuebutton = self.edit_tool.addAction("Continue...")
         continuebutton.triggered.connect(self.continue_process)
@@ -118,8 +118,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.clearTestData)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction("Submit", self)
+        a = QtWidgets.QAction("Submit!", self)
         a.triggered.connect(self.submit)
+        filemenu.addAction(a)
+
+        filemenu = menuBar.addMenu("&Program")
+
+        a = QtWidgets.QAction("Run (Ctrl+F9)", self)
+        a.triggered.connect(self.run)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction("Debug (F9)", self)
+        a.triggered.connect(self.debug)
         filemenu.addAction(a)
 
         self.proc = None
@@ -616,7 +626,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
         )
         text, ok = QtWidgets.QInputDialog.getText(
-            self, "Text Input Dialog", "Contest task URL:", text=text
+            self, "Download Testcases", "Contest task URL:", text=text
         )
         self.settings.setValue("contest url", text)
         if not ok:
@@ -665,7 +675,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
         )
         text, ok = QtWidgets.QInputDialog.getText(
-            self, "Text Input Dialog", "Contest task URL:", text=text
+            self, "Submit program", "Contest task URL:", text=text
         )
         if not ok:
             return
