@@ -114,9 +114,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         for line, pos in error_places:
             self.add_highlight_error(extra_selections, line, line_color, pos)
 
-        line_color = QtGui.QColor(Qt.yellow).darker(180)
-        for line, pos in warning_places:
-            self.add_highlight_error(extra_selections, line, line_color, pos)
+        # line_color = QtGui.QColor(Qt.yellow).darker(180)
+        # for line, pos in warning_places:
+        #     self.add_highlight_error(extra_selections, line, line_color, pos)
 
         self.setExtraSelections(extra_selections)
         return
