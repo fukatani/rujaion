@@ -379,6 +379,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.console.write(output)
         except subprocess.CalledProcessError as err:
             self.console.write(err.output, mode="error")
+        self.console.write("Run process is finished successfully!", mode="success")
         self.updateWindowTitle(False)
 
     def debug(self):
