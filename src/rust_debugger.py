@@ -259,6 +259,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             return
         fname = codecs.open(savename, "w", "utf-8")
         fname.write(self.editor.toPlainText())
+        fname.close()
         self.editor.fname = savename
         self.editor.edited = False
         self.updateWindowTitle()
