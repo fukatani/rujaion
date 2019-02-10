@@ -38,9 +38,10 @@ Usage
 ==============================
 
 ```bash
-git clone https://github.com/fukatani/rust-gui-debugger.git
-cd rust-gui-debugger/src
-python3 ./rust_debugger.py
+$ git clone https://github.com/fukatani/rujaion.git
+$ cd rujaion
+$ python3 setup.py install
+$ rujaion_main.py
 ```
 
 KeyBinds

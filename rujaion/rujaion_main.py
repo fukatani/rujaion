@@ -10,12 +10,12 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 import pexpect
 
-import display_widget
-import syntax
-import editor
-import login
-import util
-import console
+from rujaion import display_widget
+from rujaion import syntax
+from rujaion import editor
+from rujaion import login
+from rujaion import util
+from rujaion import console
 
 # TODO: watch selected variable
 # TODO: highlight multi line comment
