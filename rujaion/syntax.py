@@ -22,7 +22,7 @@ class RustHighlighter(QSyntaxHighlighter):
         keyword_patterns = ("\\bi32\\b", "\\bi64\\b", "\\bi16\\b",
                             "\\bu16\\b", "\\bu32\\b", "\\bu64\\b",
                             "\\bf16\\b", "\\bf32\\b", "\\bf64\\b",
-                            "\\busize\\b", "\\bchar\\b",
+                            "\\busize\\b", "\\bchar\\b", "\\bbool\\b",
                             "\\blet\\b", "\\bmut\\b",
                             "\\bfn\\b", "\\bstruct\\b", "\\bpub\\b",
                             "\\buse\\b", "\\bimpl\\b", "\\bmatch\\b",
