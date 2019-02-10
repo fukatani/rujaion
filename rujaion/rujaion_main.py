@@ -329,7 +329,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dock)
 
     def newFile(self):
-        self.editor.new_file("template.rs")
+        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
 
     def compile(self, no_debug=False):
         if not self.editor.fname:
