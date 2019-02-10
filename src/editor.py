@@ -77,7 +77,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
         menu.addAction(u"Go to declaration (F2)", self.jump)
-        if self.textCursor().selectedText() and "\u2029" not in self.textCursor().selectedText():
+        if (
+            self.textCursor().selectedText()
+            and "\u2029" not in self.textCursor().selectedText()
+        ):
             menu.addAction(u"Add to watches", self.add_to_watch)
 
     def add_to_watch(self):
@@ -304,7 +307,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         if event.key() == Qt.Key_BraceRight:
             # Decrease indent level
-            if tc.position() > 0 and self.document().characterAt(tc.position() - 1) != "{":
+            if (
+                tc.position() > 0
+                and self.document().characterAt(tc.position() - 1) != "{"
+            ):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
                 for i in range(4):
                     if self.document().characterAt(tc.position()) == " ":
@@ -405,8 +411,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     # TODO here is slow.
     def start_complete_process(self, event, tc):
-        if event.text().isalnum() and \
-                not self.document().characterAt(tc.position() + 1).isalnum():
+        if (
+            event.text().isalnum()
+            and not self.document().characterAt(tc.position() + 1).isalnum()
+        ):
             tc.select(QtGui.QTextCursor.WordUnderCursor)
             if len(tc.selectedText()) <= 1:
                 return
