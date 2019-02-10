@@ -401,15 +401,19 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         ):
             self.repaint()
             self.highlight_cursor_line()
+        self.start_complete_process(event, tc)
 
-        tc.select(QtGui.QTextCursor.WordUnderCursor)
-        cr = self.cursorRect()
-
-        if len(tc.selectedText()) > 1:
+    # TODO here is slow.
+    def start_complete_process(self, event, tc):
+        if event.text().isalnum() and \
+                not self.document().characterAt(tc.position() + 1).isalnum():
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if len(tc.selectedText()) <= 1:
+                return
             self.completer.setCompletionPrefix(tc.selectedText())
             popup = self.completer.popup()
             popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
-
+            cr = self.cursorRect()
             cr.setWidth(
                 self.completer.popup().sizeHintForColumn(0)
                 + self.completer.popup().verticalScrollBar().sizeHint().width()
