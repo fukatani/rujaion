@@ -3,6 +3,8 @@ Online judge aware Rust IDE
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
+[![Travis](https://img.shields.io/travis/fukatani/rujaion.svg)](https://travis-ci.org/fukatani/rujaion)
+
 ![screen_shot](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/debug.png)
 
 Introduction
