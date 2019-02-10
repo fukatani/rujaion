@@ -11,7 +11,7 @@ class RustHighlighter(QSyntaxHighlighter):
         function_format.setFontItalic(True)
         function_format.setForeground(Qt.blue)
         self.highlight_rules.append(
-            (QRegExp("\\b[A-Za-z0-9_:<>\+ ]+(?=\\()"), function_format)
+            (QRegExp("\\b[A-Za-z][A-Za-z0-9_:<>\+ ]+(?=\\()"), function_format)
         )
 
         keyword_format = QTextCharFormat()
