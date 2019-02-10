@@ -27,7 +27,7 @@ class ResultTableModel(QtWidgets.QTableWidget):
 
     def cell(self, var=""):
         item = Qt.QTableWidgetItem()
-        item.setText(var)
+        item.setText(var.replace("true", "T").replace("false", "F"))
         return item
 
     def set_cell(self, i, j, var=""):
