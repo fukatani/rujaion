@@ -1,4 +1,4 @@
 *.pyc
 src/test/*
 src/temp.rs
-
+src/.mypy_cache/*
