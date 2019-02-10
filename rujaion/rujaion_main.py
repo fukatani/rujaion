@@ -29,17 +29,15 @@ from rujaion import console
 # TODO: highlight corresponding parenthesis
 
 
-class CustomMainWindow(QtWidgets.QMainWindow):
+class RujaionMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
-        super(CustomMainWindow, self).__init__(parent)
+        super(RujaionMainWindow, self).__init__(parent)
 
         self.setWindowTitle("RustGUIDebugger")
         self.setStyleSheet("background-color: white")
         self.addCentral()
 
         self.file_tool = self.addToolBar("File")
-        self.edit_tool = self.addToolBar("Exit")
-
         newbutton = self.file_tool.addAction("New...")
         newbutton.triggered.connect(self.newFile)
 
@@ -52,28 +50,33 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         # compilebutton = self.edit_tool.addAction("Compile...")
         # compilebutton.triggered.connect(self.compile)
 
-        testbutton = self.edit_tool.addAction("Test...")
+        self.contest_tool = self.addToolBar("Contest")
+        testbutton = self.contest_tool.addAction("Test...")
         testbutton.triggered.connect(self.testMyCode)
 
-        debugbutton = self.edit_tool.addAction("Debug TestCase...")
+        debugbutton = self.contest_tool.addAction("Debug TestCase...")
         debugbutton.triggered.connect(self.debugWithTestData)
 
-        continuebutton = self.edit_tool.addAction("Continue...")
+        submitbutton = self.contest_tool.addAction("Submit!...")
+        submitbutton.triggered.connect(self.submit)
+
+        self.debug_tool = self.addToolBar("Debug")
+        continuebutton = self.debug_tool.addAction("Continue...")
         continuebutton.triggered.connect(self.continue_process)
 
-        nextbutton = self.edit_tool.addAction("Next...")
+        nextbutton = self.debug_tool.addAction("Next...")
         nextbutton.triggered.connect(self.next)
 
-        stepinbutton = self.edit_tool.addAction("Step In...")
+        stepinbutton = self.debug_tool.addAction("Step In...")
         stepinbutton.triggered.connect(self.stepIn)
 
-        stepoutbutton = self.edit_tool.addAction("Step Out...")
+        stepoutbutton = self.debug_tool.addAction("Step Out...")
         stepoutbutton.triggered.connect(self.stepOut)
 
-        terminatebutton = self.edit_tool.addAction("Terminate...")
+        terminatebutton = self.debug_tool.addAction("Terminate...")
         terminatebutton.triggered.connect(self.terminate)
 
-        findbutton = self.edit_tool.addAction("Find...")
+        findbutton = self.debug_tool.addAction("Find...")
         findbutton.triggered.connect(self.editor.find)
 
         # Add MenuBar
@@ -94,6 +97,16 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction("Save as", self)
         a.triggered.connect(self.saveFileAs)
+        filemenu.addAction(a)
+
+        filemenu = menuBar.addMenu("&Program")
+
+        a = QtWidgets.QAction("Run (Ctrl+F9)", self)
+        a.triggered.connect(self.run)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction("Debug (F9)", self)
+        a.triggered.connect(self.debug)
         filemenu.addAction(a)
 
         filemenu = menuBar.addMenu("&Contest")
@@ -120,16 +133,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction("Submit!", self)
         a.triggered.connect(self.submit)
-        filemenu.addAction(a)
-
-        filemenu = menuBar.addMenu("&Program")
-
-        a = QtWidgets.QAction("Run (Ctrl+F9)", self)
-        a.triggered.connect(self.run)
-        filemenu.addAction(a)
-
-        a = QtWidgets.QAction("Debug (F9)", self)
-        a.triggered.connect(self.debug)
         filemenu.addAction(a)
 
         self.proc = None
@@ -694,7 +697,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    main = CustomMainWindow()
+    main = RujaionMainWindow()
     main.show()
     app.exec_()
 
