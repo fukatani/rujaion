@@ -1,4 +1,4 @@
 *.pyc
-src/test/*
-src/temp.rs
-src/.mypy_cache/*
+rujaion/test/*
+rujaion/temp.rs
+rujaion/.mypy_cache/*

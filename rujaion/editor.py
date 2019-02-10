@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
 
-import finder
+from rujaion import finder
 
 """
 Fixing Some Bugs on a Sunday Evening
