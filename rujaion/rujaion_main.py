@@ -666,7 +666,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 stderr=subprocess.STDOUT,
                 timeout=4.0,
             ).decode()
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as e:
+            self.console.test_result_write(e.output)
             self.console.test_result_write("[-] Test is Timeout")
             return
         except Exception as e:
