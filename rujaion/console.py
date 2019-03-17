@@ -51,6 +51,7 @@ class Console(QtWidgets.QTextEdit):
         self.ensureCursorVisible()
 
     def write(self, msg, mode=""):
+        self.moveCursor(QtGui.QTextCursor.End)
         if isinstance(msg, bytes):
             msg = msg.decode()
         font = QtGui.QFont()
@@ -67,10 +68,10 @@ class Console(QtWidgets.QTextEdit):
             font.setBold(False)
             self.setTextColor(QtCore.Qt.black)
             msg = "(gdb) " + msg
+
         self.setFont(font)
         msg = msg + "\n"
         self.insertPlainText(msg)
-        self.moveCursor(QtGui.QTextCursor.End)
         self._buffer.write(msg)
 
     def test_result_write(self, msg):
