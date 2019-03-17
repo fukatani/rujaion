@@ -438,13 +438,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        if use_lastcase and self.last_used_testcase:
+        if use_lastcase and self.last_used_testcase and os.path.isfile(self.last_used_testcase):
             fname = self.last_used_testcase
         else:
             fname = QtWidgets.QFileDialog.getOpenFileName(
                 self, "Open", "./test", "Test data (*.in)"
             )[0]
         if not fname:
+            self.last_used_testcase = ""
             return
         self.last_used_testcase = fname
 
