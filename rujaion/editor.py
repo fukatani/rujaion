@@ -1,5 +1,6 @@
 import codecs
 from collections import defaultdict
+import os
 import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -433,6 +434,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
 class RacerCompleter(QtWidgets.QCompleter):
     insertText = QtCore.pyqtSignal(str)
+    temp_text = os.path.join(os.path.dirname(__file__), "temp.rs")
 
     def __init__(self, parent=None):
         super().__init__((), parent)
@@ -448,7 +450,7 @@ class RacerCompleter(QtWidgets.QCompleter):
 
     # this is heavy?
     def setCompletionPrefix(self, text):
-        fname = codecs.open("temp.rs", "w", "utf-8")
+        fname = codecs.open(self.temp_text, "w", "utf-8")
         fname.write(self.parent.toPlainText())
         fname.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
@@ -456,7 +458,8 @@ class RacerCompleter(QtWidgets.QCompleter):
 
         try:
             out = subprocess.check_output(
-                "racer complete" + " " + src_line_num + " " + src_char_num + " temp.rs",
+                "racer complete" + " " + src_line_num + " " + src_char_num +
+                " " + self.temp_text,
                 shell=True,
             ).decode()
         except Exception:
