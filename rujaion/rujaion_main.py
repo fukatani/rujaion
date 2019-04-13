@@ -332,6 +332,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
 
     def compile(self, no_debug=False):
+        self.console.clear()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         if no_debug:
@@ -396,6 +397,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.updateWindowTitle(False)
 
     def debug(self):
+        self.console.clear()
         if not self.compile():
             return
         if self.proc is not None:
@@ -431,6 +433,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.debugWithTestData(True)
 
     def debugWithTestData(self, use_lastcase=False):
+        self.console.clear()
         if not self.compile():
             return
         if self.proc is not None:
@@ -660,6 +663,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             shutil.rmtree(test_data_dir)
 
     def testMyCode(self):
+        self.console.clear()
         if not self.compile(no_debug=True):
             return
         compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
