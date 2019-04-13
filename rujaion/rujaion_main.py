@@ -506,6 +506,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
                 self.proc.send(debug_input.encode())
             self.post_process()
+            self.updateWindowTitle()
             self.console.run_evcxr()
 
         except subprocess.CalledProcessError as err:
@@ -597,8 +598,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                     line_num = int(line.split("\t")[0])
                 except ValueError:
                     continue
-                self.editor.repaint()
                 self.editor.highlight_executing_line(line_num)
+                self.editor.repaint()
+                break
 
         for i, _ in self.display_widget.name_iter():
             self.display_one_valuable(i)
