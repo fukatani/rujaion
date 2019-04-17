@@ -405,6 +405,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             or event.key() == Qt.Key_Home
             or event.key() == Qt.Key_End
             or event.key() == Qt.Key_Backspace
+            or event.key() == Qt.Key_Delete
+            or (event.key() == Qt.Key_V and QtCore.Qt.ControlModifier)
+            or (event.key() == Qt.Key_X and QtCore.Qt.ControlModifier)
+            or (event.key() == Qt.Key_Z and QtCore.Qt.ControlModifier)
         ):
             self.repaint()
             self.highlight_cursor_line()
