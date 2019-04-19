@@ -43,11 +43,11 @@ class LoginDialog(QtWidgets.QDialog):
             else:
                 section_layout.addRow(name, widget)
         login_button = QtWidgets.QPushButton("Login")
-        login_button.clicked.connect(self.close)
+        login_button.clicked.connect(self.login)
         main_layout.addWidget(login_button)
         self.setLayout(main_layout)
 
-    def close(self):
+    def login(self):
         for name, widget in self.dialogs:
             try:
                 widget.commit()
@@ -65,7 +65,7 @@ class LoginDialog(QtWidgets.QDialog):
         )
         out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self.parent().console.write(out)
-        super().close()
+        self.close()
 
 
 class URLEdit(QtWidgets.QLineEdit):
