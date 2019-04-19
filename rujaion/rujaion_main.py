@@ -267,7 +267,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.setTextCursor(cursor)
 
     def saveFileAs(self):
-        savename = QtWidgets.QFileDialog.getSaveFileName(self, "Save file", "")[0]
+        savename = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Save file", os.path.dirname(self.editor.fname), "Rust Files (*.rs)"
+        )[0]
         if not savename:
             return
         fname = codecs.open(savename, "w", "utf-8")
