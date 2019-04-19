@@ -704,7 +704,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.write_oj_result(err.output)
             return
         self.console.write_oj_result(out)
-        self.console.write_oj_result("submitted", mode="success")
+        self.console.write("submitted", mode="success")
 
 
 def main():
