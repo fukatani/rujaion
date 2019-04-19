@@ -462,8 +462,13 @@ class RacerCompleter(QtWidgets.QCompleter):
 
         try:
             out = subprocess.check_output(
-                "racer complete" + " " + src_line_num + " " + src_char_num +
-                " " + self.temp_text,
+                "racer complete"
+                + " "
+                + src_line_num
+                + " "
+                + src_char_num
+                + " "
+                + self.temp_text,
                 shell=True,
             ).decode()
         except Exception:
