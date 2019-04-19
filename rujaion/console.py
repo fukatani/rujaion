@@ -74,7 +74,7 @@ class Console(QtWidgets.QTextEdit):
         self.insertPlainText(msg)
         self._buffer.write(msg)
 
-    def test_result_write(self, msg):
+    def write_oj_result(self, msg):
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):

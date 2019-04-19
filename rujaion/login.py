@@ -64,7 +64,7 @@ class LoginDialog(QtWidgets.QDialog):
             self.settings.value("Login URL", type=str),
         )
         out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        self.parent().console.write(out)
+        self.parent().console.write_oj_result(out)
         self.close()
 
 

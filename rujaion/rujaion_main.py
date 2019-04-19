@@ -651,9 +651,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 ("oj", "download", text), stderr=subprocess.STDOUT
             ).decode()
         except Exception as err:
-            self.console.write(err.output)
+            self.console.write_oj_result(err.output)
             return
-        self.console.write(out)
+        self.console.write_oj_result(out)
         self.console.write("Downloaded Test data", mode="success")
 
     def login(self):
@@ -677,13 +677,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 timeout=4.0,
             ).decode()
         except subprocess.TimeoutExpired as e:
-            self.console.test_result_write(e.output)
-            self.console.test_result_write("[-] Test is Timeout")
+            self.console.write_oj_result(e.output)
+            self.console.write_oj_result("[-] Test is Timeout")
             return
         except Exception as e:
-            self.console.test_result_write(e.output)
+            self.console.write_oj_result(e.output)
             return
-        self.console.test_result_write(out)
+        self.console.write_oj_result(out)
 
     def submit(self):
         text = self.settings.value(
@@ -701,10 +701,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         try:
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except Exception as err:
-            self.console.write(err.output)
+            self.console.write_oj_result(err.output)
             return
-        self.console.write(out)
-        self.console.write("submitted", mode="success")
+        self.console.write_oj_result(out)
+        self.console.write_oj_result("submitted", mode="success")
 
 
 def main():
