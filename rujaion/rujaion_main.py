@@ -285,8 +285,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             f.write(self.editor.toPlainText())
             f.close()
             try:
-                out = subprocess.check_output(
-                    "rustfmt " + self.editor.fname, shell=True, stderr=subprocess.STDOUT
+                subprocess.check_output(
+                    ("rustfmt", self.editor.fname), stderr=subprocess.STDOUT
                 )
             except Exception as err:
                 self.console.write(err.output)
