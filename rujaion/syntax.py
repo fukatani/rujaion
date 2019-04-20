@@ -63,6 +63,7 @@ class RustHighlighter(QSyntaxHighlighter):
         quotation_format = QTextCharFormat()
         quotation_format.setForeground(Qt.darkGreen)
         self.highlight_rules.append((QRegExp('".*"'), quotation_format))
+        self.highlight_rules.append((QRegExp("'.*'"), quotation_format))
 
         macro_format = QTextCharFormat()
         macro_format.setFontItalic(True)
