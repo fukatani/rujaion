@@ -146,6 +146,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addConsole()
         self.addDisplay()
         self.last_used_testcase = ""
+        self.gdb_timeout = 4.0
 
     def updateWindowTitle(self, running=False):
         title = ""
@@ -483,10 +484,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.proc.send(b"run\n")
             self.updateWindowTitle()
             for i, debug_input in enumerate(inputs):
-                try:
-                    self.proc.expect("\(gdb\)", timeout=0.5)
-                except:
-                    pass
                 msg = self.proc.before.decode()
                 for line in msg.split("\r\n"):
                     self.console.write(line, mode="gdb")
@@ -577,9 +574,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def post_process(self):
         assert self.proc is not None
         try:
-            self.proc.expect("\(gdb\)", timeout=3)
+            self.proc.expect("\(gdb\)", timeout=self.gdb_timeout)
         except:
             print(str(self.proc))
+            self.console.write("Debug process is timeout", mode="error")
+            self.terminate()
+            return
         msg = self.proc.before.decode()
         for line in msg.split("\r\n"):
             self.console.write(line, mode="gdb")
