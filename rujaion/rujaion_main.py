@@ -1,4 +1,5 @@
 import codecs
+import glob
 import os
 import shutil
 import subprocess
@@ -97,6 +98,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction("Save as", self)
         a.triggered.connect(self.saveFileAs)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction("Clear Backup", self)
+        a.triggered.connect(self.clearBackup)
         filemenu.addAction(a)
 
         filemenu = menuBar.addMenu("&Program")
@@ -227,7 +232,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
         fname = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open", dirname, "Rust Files (*.rs)"
+            self, "Open", dirname, "Rust Files (*.rs *.bak)"
         )[0]
         self.openFile(fname)
 
@@ -237,6 +242,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.open_file(fname)
         self.settings.setValue("LastOpenedFile", fname)
         self.updateWindowTitle()
+
+    def clearBackup(self):
+        if not self.editor.fname:
+            return
+        for fname in glob.glob(os.path.dirname(self.editor.fname) + "/*.bak"):
+            os.remove(fname)
 
     def askTerminateOrNot(self):
         ret = QtWidgets.QMessageBox.information(
@@ -284,6 +295,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def saveFile(self):
         if self.editor.fname:
             scroll_value = self.editor.verticalScrollBar().value()
+            if self.editor.edited:
+                for i in range(50):
+                    backup_name = self.editor.fname + "." + str(i) + ".bak"
+                    if not os.path.exists(backup_name):
+                        shutil.copy(self.editor.fname, backup_name)
+                        break
             f = codecs.open(self.editor.fname, "w", "utf-8")
             f.write(self.editor.toPlainText())
             f.close()
