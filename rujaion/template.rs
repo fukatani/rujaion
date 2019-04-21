@@ -17,7 +17,6 @@ fn read_vec<T: std::str::FromStr>() -> Vec<T> {
 }
 
 fn main() {
-    let mut a: Vec<i32> = read_vec();
-    println!("{0}", ans);
+    let v: Vec<usize> = read_vec();
 }
 
