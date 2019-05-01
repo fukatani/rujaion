@@ -65,3 +65,11 @@ KeyBinds
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
 - Toggle Dock Widget (F11)
+
+Contest Task Browsing
+==============================
+![browse](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/browse.png)
+
+You can browse contest task by Dock Browser Widget.
+If you want to hide (or show) browser, press F11 key.
+You can download task test cases by right click menu.
