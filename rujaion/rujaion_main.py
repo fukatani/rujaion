@@ -473,6 +473,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.dock.setWidget(self.display_widget)
             func(self, *args, **kwargs)
             self.dock.setWidget(self.browser_widget)
+
         return wrapper
 
     @with_debug_display
@@ -753,7 +754,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    icon_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../img/icon.png")
+    icon_path = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)), "../img/icon.png"
+    )
     app.setWindowIcon(QIcon(icon_path))
     main = RujaionMainWindow()
     main.show()
