@@ -461,6 +461,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def debugWithLastCase(self):
         self.debugWithTestData(True)
 
+    def with_debug_display(func):
+        def wrapper(self, *args, **kwargs):
+            self.dock.setWidget(self.display_widget)
+            func(self, *args, **kwargs)
+            self.dock.setWidget(self.browser_widget)
+        return wrapper
+
+    @with_debug_display
     def debugWithTestData(self, use_lastcase=False):
         self.console.clear()
         if not self.compile():
