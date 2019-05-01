@@ -2,13 +2,10 @@ from PyQt5 import QtCore, Qt
 from PyQt5 import QtWidgets
 
 
-# TODO: width
-
-
 class ResultTableModel(QtWidgets.QTableWidget):
     def __init__(self, parent=None, *args):
         super().__init__(parent, *args)
-        self.setFixedWidth(320)
+        self.resize(350, 800)
         self.row_size = 15
         self.column_size = 3
         self.setRowCount(self.row_size)

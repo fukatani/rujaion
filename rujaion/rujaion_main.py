@@ -12,12 +12,13 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 import pexpect
 
+from rujaion import console
 from rujaion import display_widget
-from rujaion import syntax
 from rujaion import editor
 from rujaion import login
+from rujaion import syntax
 from rujaion import util
-from rujaion import console
+from rujaion import webview_widget
 
 # TODO: watch selected variable
 # TODO: highlight multi line comment
@@ -149,10 +150,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             pass
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
-        self.addConsole()
-        self.addDisplay()
         self.last_used_testcase = ""
         self.gdb_timeout = 4.0
+        self.addConsole()
+        self.dock = QtWidgets.QDockWidget("", self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        self.addDisplay()
+        self.addBrowser()
 
     def updateWindowTitle(self, running=False):
         title = ""
@@ -334,10 +338,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def addDisplay(self):
         self.display_widget = display_widget.ResultTableModel(self)
-        dock = QtWidgets.QDockWidget("Display", self)
-        dock.setWidget(self.display_widget)
-        self.addDockWidget(Qt.RightDockWidgetArea, dock)
+        self.dock.setWidget(self.display_widget)
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
+
+    def addBrowser(self):
+        self.browser_widget = webview_widget.WebViewWindow(self)
+        self.dock.setWidget(self.browser_widget)
+        url = self.settings.value("contest url", "")
+        self.browser_widget.changePage(url)
 
     def processDisplayEdited(self, row_num, column_num):
         if self.proc is not None:
@@ -655,26 +663,27 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.jump()
 
     def download(self):
-        text = self.settings.value(
+        url = self.settings.value(
             "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
         )
-        text, ok = QtWidgets.QInputDialog.getText(
-            self, "Download Testcases", "Contest task URL:", text=text
+        url, ok = QtWidgets.QInputDialog.getText(
+            self, "Download Testcases", "Contest task URL:", text=url
         )
-        self.settings.setValue("contest url", text)
+        self.settings.setValue("contest url", url)
         if not ok:
             return
 
         try:
             self.clearTestData()
             out = subprocess.check_output(
-                ("oj", "download", text), stderr=subprocess.STDOUT
+                ("oj", "download", url), stderr=subprocess.STDOUT
             ).decode()
         except Exception as err:
             self.console.write_oj_result(err.output)
             return
         self.console.write_oj_result(out)
         self.console.write("Downloaded Test data", mode="success")
+        self.browser_widget.changePage(url)
 
     def login(self):
         login.LoginDialog(self, settings=self.settings).show()
