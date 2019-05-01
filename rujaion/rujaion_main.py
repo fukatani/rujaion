@@ -152,6 +152,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
         self.gdb_timeout = 4.0
+        self.show_dock = True
         self.addConsole()
         self.dock = QtWidgets.QDockWidget("", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.dock)
@@ -211,6 +212,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.debugWithLastCase()
         elif event.key() == QtCore.Qt.Key_F6:
             self.download()
+        elif event.key() == QtCore.Qt.Key_F11:
+            self.show_dock = not self.show_dock
+            if self.show_dock:
+                self.dock.show()
+            else:
+                self.dock.hide()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif (

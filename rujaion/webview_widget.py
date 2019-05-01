@@ -12,7 +12,6 @@ class WebViewWindow(QWidget):
         self.browser = QWebEngineView()
         self.browser.load(QUrl(self.url))
         self.browser.resize(1000,600)
-        self.browser.move(200,200)
         self.browser.setWindowTitle("Task")
 
         grid = QGridLayout()
