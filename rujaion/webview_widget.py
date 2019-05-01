@@ -11,7 +11,6 @@ class CustomWebEngineView(QWebEngineView):
         menu.addSeparator()
         menu.addAction(u"Download This Task", self.parent().download_task)
         menu.exec(a0.globalPos())
-        #menu.popup(a0.globalPos())
 
 
 class WebViewWindow(QWidget):
