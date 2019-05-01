@@ -287,14 +287,26 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         fname = codecs.open(savename, "w", "utf-8")
         fname.write(self.editor.toPlainText())
         fname.close()
-        self.editor.fname = savename
+        self.savePostProcess()
+
+    def savePostProcess(self):
+        try:
+            subprocess.check_output(
+                ("rustfmt", self.editor.fname), stderr=subprocess.STDOUT
+            )
+        except Exception as err:
+            self.console.write(err.output)
+        self.reflesh()
         self.editor.edited = False
+        scroll_value = self.editor.verticalScrollBar().value()
+        self.editor.verticalScrollBar().setValue(scroll_value)
+        self.editor.repaint()
+        self.editor.highlight_cursor_line()
         self.updateWindowTitle()
         self.compile()
 
     def saveFile(self):
         if self.editor.fname:
-            scroll_value = self.editor.verticalScrollBar().value()
             if self.editor.edited:
                 for i in range(50):
                     backup_name = self.editor.fname + "." + str(i) + ".bak"
@@ -304,19 +316,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             f = codecs.open(self.editor.fname, "w", "utf-8")
             f.write(self.editor.toPlainText())
             f.close()
-            try:
-                subprocess.check_output(
-                    ("rustfmt", self.editor.fname), stderr=subprocess.STDOUT
-                )
-            except Exception as err:
-                self.console.write(err.output)
-            self.reflesh()
-            self.editor.edited = False
-            self.editor.verticalScrollBar().setValue(scroll_value)
-            self.editor.repaint()
-            self.editor.highlight_cursor_line()
-            self.updateWindowTitle()
-            self.compile()
+            self.savePostProcess()
         else:
             self.saveFileAs()
 
