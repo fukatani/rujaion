@@ -1,14 +1,24 @@
 import sys
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+
+class CustomWebEngineView(QWebEngineView):
+    def contextMenuEvent(self, a0: QtGui.QContextMenuEvent) -> None:
+        menu = self.page().createStandardContextMenu()
+        menu.addSeparator()
+        menu.addAction(u"Download This Task", self.parent().download_task)
+        menu.exec(a0.globalPos())
+        #menu.popup(a0.globalPos())
 
 
 class WebViewWindow(QWidget):
     def __init__(self, parent=None, *args):
         super().__init__(parent, *args)
         self.url = ""
-        self.browser = QWebEngineView()
+        self.browser = CustomWebEngineView(self)
         self.browser.load(QUrl(self.url))
         self.browser.resize(1000, 600)
         self.browser.setWindowTitle("Task")
@@ -17,6 +27,10 @@ class WebViewWindow(QWidget):
         grid.addWidget(self.browser, 2, 0, 5, 15)
         self.setLayout(grid)
         self.resize(500, 800)
+
+    def download_task(self):
+        self.url = self.browser.url().toString()
+        self.parent().parent().download(self.url)
 
     def loadPage(self):
         if self.url:

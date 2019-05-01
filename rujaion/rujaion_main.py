@@ -678,16 +678,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def jump(self):
         self.editor.jump()
 
-    def download(self):
-        url = self.settings.value(
-            "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
-        )
-        url, ok = QtWidgets.QInputDialog.getText(
-            self, "Download Testcases", "Contest task URL:", text=url
-        )
+    def download(self, url=None):
+        if url is None:
+            url = self.settings.value(
+                "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
+            )
+            url, ok = QtWidgets.QInputDialog.getText(
+                self, "Download Testcases", "Contest task URL:", text=url
+            )
+            if not ok:
+                return
         self.settings.setValue("contest url", url)
-        if not ok:
-            return
 
         try:
             self.clearTestData()
