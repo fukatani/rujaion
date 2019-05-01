@@ -27,10 +27,11 @@ Feature
 
 Software Requirements
 ==============================
-* Python (3.4 or later)
+* Python (3.5 or later)
 * PyQt5
+* PyQtWebEngine
 * pexpect
-* online-judge-tools (0.1.36 or later)
+* online-judge-tools (6.1 or later)
 * evcxr_repl
 * rustfmt
 * racer
@@ -62,3 +63,4 @@ KeyBinds
 - Set break point (double click on text)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
+- Toggle Dock Widget (F11)
