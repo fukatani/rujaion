@@ -24,6 +24,7 @@ Feature
 * Completer and jumper (based on racer) 
 * Auto Formatting (based on rustfmt)
 * Rust REPL (based on evcxr_repl)
+* Contest Task Browsing
 
 Software Requirements
 ==============================
