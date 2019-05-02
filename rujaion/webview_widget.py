@@ -32,7 +32,7 @@ class WebViewWindow(QtWidgets.QWidget):
 
     def download_task(self):
         self.url_edit.setText(self.browser.url().toString())
-        self.parent().parent().download(self.url)
+        self.parent().parent().download(self.url_edit.text())
 
     def loadPage(self):
         if self.url_edit.text():
