@@ -65,7 +65,8 @@ KeyBinds
 - Set break point (double click on text)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
-- Toggle Dock Widget (F11)
+- Toggle Show/Hide Browser Widget (F11)
+- Toggle Show/Hide Console Widget (F12)
 
 Contest Task Browsing
 ==============================

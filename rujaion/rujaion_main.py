@@ -152,12 +152,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
         self.gdb_timeout = 4.0
-        self.show_dock = True
-        self.addConsole()
-        self.dock = QtWidgets.QDockWidget("", self)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        self.show_browser = True
+        self.browser_dock = QtWidgets.QDockWidget("", self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.browser_dock)
         self.addDisplay()
         self.addBrowser()
+        self.show_console = True
+        self.addConsole()
 
     def updateWindowTitle(self, running=False):
         title = ""
@@ -213,11 +214,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_F6:
             self.download()
         elif event.key() == QtCore.Qt.Key_F11:
-            self.show_dock = not self.show_dock
-            if self.show_dock:
-                self.dock.show()
+            self.show_browser = not self.show_browser
+            if self.show_browser:
+                self.browser_dock.show()
             else:
-                self.dock.hide()
+                self.browser_dock.hide()
+        elif event.key() == QtCore.Qt.Key_F12:
+            self.show_console = not self.show_console
+            if self.show_console:
+                self.console_dock.show()
+            else:
+                self.console_dock.hide()
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif (
@@ -345,12 +352,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def addDisplay(self):
         self.display_widget = display_widget.ResultTableModel(self)
-        self.dock.setWidget(self.display_widget)
+        self.browser_dock.setWidget(self.display_widget)
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
 
     def addBrowser(self):
         self.browser_widget = webview_widget.WebViewWindow(self)
-        self.dock.setWidget(self.browser_widget)
+        self.browser_dock.setWidget(self.browser_widget)
         url = self.settings.value("contest url", "")
         self.browser_widget.changePage(url)
 
@@ -360,9 +367,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def addConsole(self):
         self.console = console.Console(self)
-        dock = QtWidgets.QDockWidget("Console", self)
-        dock.setWidget(self.console)
-        self.addDockWidget(Qt.BottomDockWidgetArea, dock)
+        self.console_dock = QtWidgets.QDockWidget("Console", self)
+        self.console_dock.setWidget(self.console)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
         self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
@@ -434,13 +441,23 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def with_debug_display(func):
         def wrapper(self, *args, **kwargs):
-            self.dock.setWidget(self.display_widget)
+            self.browser_dock.setWidget(self.display_widget)
             func(self, *args, **kwargs)
-            self.dock.setWidget(self.browser_widget)
+            self.browser_dock.setWidget(self.browser_widget)
+
+        return wrapper
+
+    def with_console(func):
+        def wrapper(self, *args, **kwargs):
+            if not self.show_console:
+                self.show_console = True
+                self.console_dock.show()
+            func(self, *args, **kwargs)
 
         return wrapper
 
     @with_debug_display
+    @with_console
     def debug(self):
         self.console.clear()
         if not self.compile():
@@ -478,6 +495,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.debugWithTestData(True)
 
     @with_debug_display
+    @with_console
     def debugWithTestData(self, use_lastcase=False):
         self.console.clear()
         if not self.compile():
@@ -679,6 +697,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def jump(self):
         self.editor.jump()
 
+    @with_console
     def download(self, url=None):
         if url is None:
             url = self.settings.value(
@@ -711,6 +730,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if os.path.isdir(test_data_dir):
             shutil.rmtree(test_data_dir)
 
+    @with_console
     def testMyCode(self):
         self.console.clear()
         if not self.compile(no_debug=True):
@@ -732,6 +752,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         self.console.write_oj_result(out)
 
+    @with_console
     def submit(self):
         text = self.settings.value(
             "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
