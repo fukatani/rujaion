@@ -1,6 +1,7 @@
 import codecs
 import os
 import subprocess
+from xml.etree import ElementTree
 
 from PyQt5 import QtWidgets, QtCore
 
@@ -8,12 +9,14 @@ from PyQt5 import QtWidgets, QtCore
 class RacerCompleter(QtWidgets.QCompleter):
     insertText = QtCore.pyqtSignal(str)
     temp_text = os.path.join(os.path.dirname(__file__), "temp.rs")
+    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates.xml")
 
     def __init__(self, parent=None):
         super().__init__((), parent)
-        self.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
+        self.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
         self.highlighted.connect(self.setHighlighted)
         self.parent = parent
+        self.live_templates = load_template(self.live_template_file)
 
     def setHighlighted(self, text):
         self.lastSelected = text
@@ -46,7 +49,48 @@ class RacerCompleter(QtWidgets.QCompleter):
         for line in out.split("\n"):
             if line.startswith("MATCH"):
                 candidates.append(line[6:].split(",")[0])
+        for live_template in self.live_templates:
+            if text in live_template.name:
+                candidates.append(live_template.template)
         if len(candidates) >= 6 or text in candidates:
             candidates = []
         self.setModel(QtCore.QStringListModel(candidates))
         super().setCompletionPrefix(text)
+
+
+class LiveTemplate:
+    def __init__(self):
+        self.name = ""
+        self.body = ""
+        self.variables = []
+        self.default_values = []
+        self.template = ""
+
+    def generate(self):
+        self.template = self.body
+        for var, value in zip(self.variables, self.default_values):
+            if value is not None:
+                self.template = self.template.replace("$" + var + "$", value)
+        self.template = self.template.replace("$END$", "")
+
+
+def load_template(xml_file_name):
+    if not os.path.isfile(xml_file_name):
+        return []
+    with open(xml_file_name) as f:
+        xml = f.read()
+    root = ElementTree.fromstring(xml)
+    templates = []
+    for template in root.findall("template"):
+        new_template = LiveTemplate()
+        new_template.name = template.get("name")
+        new_template.body = template.get("value")
+        for variable in template.findall("variable"):
+            new_template.variables.append(variable.get("name"))
+            if "defaultValue" in variable.keys():
+                new_template.default_values.append(variable.get("defaultValue"))
+            else:
+                new_template.default_values.append(None)
+        new_template.generate()
+        templates.append(new_template)
+    return templates

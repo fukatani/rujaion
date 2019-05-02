@@ -1,0 +1,14 @@
+<templateSet group="Rust">
+  <template name="f" value="for $iter$ in 0..$LAST$ {&#10;    $END$;&#10;}" description="for loop" toReformat="false" toShortenFQNames="true">
+    <variable name="iter" expression="" defaultValue="i" alwaysStopAt="true" />
+    <variable name="LAST" expression="" defaultValue="n" alwaysStopAt="true" />
+  </template>
+  <template name="lm" value="let mut " description="let mut;" toReformat="false" toShortenFQNames="true" />
+  <template name="cond" value="let a = if { } else { };" description="conditional operator" toReformat="false" toShortenFQNames="true" />
+  <template name="imap" value=".map(|&amp;x| x)" description="map iterator" toReformat="false" toShortenFQNames="true" />
+  <template name="vv" value="let mut dp = vec![vec![; ]; ];" description="2d vec" toReformat="false" toShortenFQNames="true" />
+  <template name="vvv" value="let mut dp = vec![vec![vec![; ]; ];];" description="2d vec" toReformat="false" toShortenFQNames="true" />
+  <template name="print" value="println!(&quot;{:?}&quot;, $VAR$);" description="p" toReformat="false" toShortenFQNames="true">
+    <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
+  </template>
+</templateSet>

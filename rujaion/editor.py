@@ -276,10 +276,15 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def insertCompletion(self, completion):
         tc = self.textCursor()
-        extra = len(completion) - len(self.completer.completionPrefix())
-        tc.movePosition(QtGui.QTextCursor.Left)
+
+        # First we should remove char since some live templates'
+        # completion does not start with completion prefix.
+        for i in range(len(self.completer.completionPrefix())):
+            tc.movePosition(QtGui.QTextCursor.Left)
+            tc.deleteChar()
+
         tc.movePosition(QtGui.QTextCursor.EndOfWord)
-        tc.insertText(completion[-extra:])
+        tc.insertText(completion)
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
