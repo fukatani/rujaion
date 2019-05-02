@@ -25,8 +25,8 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit.returnPressed.connect(self.loadPage)
 
         grid = QtWidgets.QGridLayout()
-        grid.addWidget(self.url_edit, 1, 1, 1, 10)
-        grid.addWidget(self.browser, 2, 0, 5, 15)
+        grid.addWidget(self.url_edit, 0, 0, 1, 15)
+        grid.addWidget(self.browser, 1, 0, 5, 15)
         self.setLayout(grid)
         self.resize(500, 800)
 
