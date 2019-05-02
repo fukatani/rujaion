@@ -444,6 +444,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.browser_dock.setWidget(self.display_widget)
             func(self, *args, **kwargs)
             self.browser_dock.setWidget(self.browser_widget)
+
         return wrapper
 
     def with_console(func):
@@ -452,6 +453,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.show_console = True
                 self.console_dock.show()
             func(self, *args, **kwargs)
+
         return wrapper
 
     @with_debug_display
