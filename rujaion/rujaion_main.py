@@ -756,7 +756,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.write_oj_result(out)
 
     @with_console
-    def submit(self):
+    def submit(self, *args):
         text = self.settings.value(
             "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
         )
