@@ -441,9 +441,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def with_debug_display(func):
         def wrapper(self, *args, **kwargs):
+            self.browser_dock.show()
             self.browser_dock.setWidget(self.display_widget)
             func(self, *args, **kwargs)
-            self.browser_dock.setWidget(self.browser_widget)
 
         return wrapper
 
@@ -624,6 +624,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.write("Debug process was successfully terminated.", mode="success")
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
+        self.browser_dock.setWidget(self.browser_widget)
+        if not self.show_browser:
+            self.browser_dock.hide()
 
     def continue_process(self):
         print("continue")
