@@ -731,7 +731,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             shutil.rmtree(test_data_dir)
 
     @with_console
-    def testMyCode(self):
+    def testMyCode(self, *args):
         self.console.clear()
         if not self.compile(no_debug=True):
             return
