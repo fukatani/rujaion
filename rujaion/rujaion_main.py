@@ -690,14 +690,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         value = "".join(self.proc.before.decode().split("\r\n")[1:])
         value = value.split(" = ")[-1]
         # value = ''.join(value.split(' = ')[1:])
-        self.display_widget.set_cell(row_num, 2, value)
+        self.display_widget.set_cell(row_num, 1, value)
 
         self.proc.send(b"pt " + name.encode() + b"\n")
         self.proc.expect("\(gdb\)")
         type = "".join(self.proc.before.decode().split("\n")[1:])
         type = type.split(" = ")[-1]
         type = type.split(" {")[0]
-        self.display_widget.set_cell(row_num, 1, type)
+        self.display_widget.set_cell(row_num, 2, type)
 
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
 

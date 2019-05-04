@@ -10,7 +10,7 @@ class ResultTableModel(QtWidgets.QTableWidget):
         self.column_size = 3
         self.setRowCount(self.row_size)
         self.setColumnCount(self.column_size)
-        self.setHorizontalHeaderLabels(["Name", "Type", "Value"])
+        self.setHorizontalHeaderLabels(["Name", "Value", "Type"])
         self.setVerticalHeaderLabels([""] * self.row_size)
 
         for i in range(self.row_size):
