@@ -301,7 +301,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if self.editor.fname:
             default_dir = os.path.dirname(self.editor.fname)
         else:
-            default_dir = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
+            default_dir = os.path.dirname(
+                self.settings.value("LastOpenedFile", type=str)
+            )
         savename = QtWidgets.QFileDialog.getSaveFileName(
             self, "Save file", default_dir, "Rust Files (*.rs)"
         )[0]
