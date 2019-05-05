@@ -23,6 +23,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.browser.setWindowTitle("Task")
         self.url_edit = QtWidgets.QLineEdit()
         self.url_edit.returnPressed.connect(self.loadPage)
+        self.browser.urlChanged.connect(self.updateCurrentUrl)
 
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.url_edit, 0, 0, 1, 15)
@@ -41,6 +42,12 @@ class WebViewWindow(QtWidgets.QWidget):
     def changePage(self, url):
         self.url_edit.setText(url)
         self.loadPage()
+
+    def updateCurrentUrl(self):
+        """ rewriting url_edit when you move different web page.
+        """
+        self.url_edit.clear()
+        self.url_edit.insert(self.browser.url().toString())
 
 
 if __name__ == "__main__":
