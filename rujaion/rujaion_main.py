@@ -316,6 +316,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("LastOpenedFile", savename)
 
     def savePostProcess(self):
+        scroll_value = self.editor.verticalScrollBar().value()
         try:
             subprocess.check_output(
                 ("rustfmt", self.editor.fname), stderr=subprocess.STDOUT
@@ -324,7 +325,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.write(err.output)
         self.reflesh()
         self.editor.edited = False
-        scroll_value = self.editor.verticalScrollBar().value()
         self.editor.verticalScrollBar().setValue(scroll_value)
         self.editor.repaint()
         self.editor.highlight_cursor_line()
