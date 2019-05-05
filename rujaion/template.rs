@@ -1,7 +1,24 @@
-#[allow(unused_imports)]
+#![allow(unused_imports)]
+#![allow(non_snake_case)]
 use std::cmp::*;
-#[allow(unused_imports)]
 use std::collections::*;
+use std::io::Write;
+
+#[allow(unused_macros)]
+macro_rules! debug {
+    ($($e:expr),*) => {
+        #[cfg(debug_assertions)]
+        $({
+            let (e, mut err) = (stringify!($e), std::io::stderr());
+            writeln!(err, "{} = {:?}", e, $e).unwrap()
+        })*
+    };
+}
+
+fn main() {
+    let n = read::<usize>();
+    let v = read_vec::<usize>();
+}
 
 fn read<T: std::str::FromStr>() -> T {
     let mut s = String::new();
@@ -14,9 +31,5 @@ fn read_vec<T: std::str::FromStr>() -> Vec<T> {
         .split_whitespace()
         .map(|e| e.parse().ok().unwrap())
         .collect()
-}
-
-fn main() {
-    let v: Vec<usize> = read_vec();
 }
 
