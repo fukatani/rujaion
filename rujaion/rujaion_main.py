@@ -464,7 +464,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     @with_debug_display
     @with_console
-    def debug(self):
+    def debug(self, *args, **kwargs):
         self.console.clear()
         if not self.compile():
             return
