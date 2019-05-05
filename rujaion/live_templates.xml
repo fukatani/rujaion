@@ -1,5 +1,5 @@
 <templateSet group="Rust">
-  <template name="f" value="for $iter$ in 0..$LAST$ {&#10;    $END$;&#10;}" description="for loop" toReformat="false" toShortenFQNames="true">
+  <template name="for" value="for $iter$ in 0..$LAST$ {&#10;    $END$;&#10;}" description="for loop" toReformat="false" toShortenFQNames="true">
     <variable name="iter" expression="" defaultValue="i" alwaysStopAt="true" />
     <variable name="LAST" expression="" defaultValue="n" alwaysStopAt="true" />
   </template>
@@ -8,6 +8,8 @@
   <template name="imap" value=".map(|&amp;x| x)" description="map iterator" toReformat="false" toShortenFQNames="true" />
   <template name="vv" value="let mut dp = vec![vec![; ]; ];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="vvv" value="let mut dp = vec![vec![vec![; ]; ];];" description="2d vec" toReformat="false" toShortenFQNames="true" />
+  <template name="chars" value="chars().collect::&lt;Vec&lt;_&gt;&gt;();" description="collect chars" toReformat="false" toShortenFQNames="true"/>
+  <template name="turbo" value="::&lt;&gt;" description="collect chars" toReformat="false" toShortenFQNames="true"/>
   <template name="print" value="println!(&quot;{:?}&quot;, $VAR$);" description="p" toReformat="false" toShortenFQNames="true">
     <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
   </template>
