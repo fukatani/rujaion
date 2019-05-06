@@ -110,19 +110,15 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         extra_selections.append(selection)
         self.setExtraSelections(extra_selections)
 
-    def highlight_compile_error(self, error_places, warning_places):
+    def highlight_compile_error(self, highlight_places, is_warning=True):
         extra_selections = []
-
-        line_color = QtGui.QColor(Qt.red).lighter(110)
-        for line, pos in error_places:
+        if is_warning:
+            line_color = QtGui.QColor(Qt.yellow).darker(180)
+        else:
+            line_color = QtGui.QColor(Qt.red).lighter(110)
+        for line, pos in highlight_places:
             self.add_highlight_error(extra_selections, line, line_color, pos)
-
-        # line_color = QtGui.QColor(Qt.yellow).darker(180)
-        # for line, pos in warning_places:
-        #     self.add_highlight_error(extra_selections, line, line_color, pos)
-
         self.setExtraSelections(extra_selections)
-        return
 
     def add_highlight_error(self, extra_selections, line, line_color, pos):
         selection = QtWidgets.QTextEdit.ExtraSelection()
