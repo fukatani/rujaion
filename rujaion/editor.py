@@ -1,6 +1,4 @@
-import codecs
 from collections import defaultdict
-import os
 import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore

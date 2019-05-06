@@ -49,10 +49,12 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit.clear()
         self.url_edit.insert(self.browser.url().toString())
         # auto task download
-        self.parent().parent().download(self.url_edit.text())
+        if self.parent() is not None:
+            self.parent().parent().download(self.url_edit.text())
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ex = WebViewWindow()
+    ex.show()
     sys.exit(app.exec_())

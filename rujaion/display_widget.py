@@ -14,9 +14,7 @@ class ResultTableModel(QtWidgets.QTableWidget):
         self.setVerticalHeaderLabels([""] * self.row_size)
 
         for i in range(self.row_size):
-            for j in range(self.column_size):
-                if j == 0:
-                    continue
+            for j in range(1, self.column_size):
                 item = self.cell()
                 # execute the line below to every item you need locked
                 item.setFlags(QtCore.Qt.ItemIsEnabled)
