@@ -68,6 +68,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
+        self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -110,7 +111,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         extra_selections.append(selection)
         self.setExtraSelections(extra_selections)
 
-    def highlight_compile_error(self, highlight_places, is_warning=True):
+    def highlight_compile_error(self, highlight_places, is_warning):
         extra_selections = []
         if is_warning:
             line_color = QtGui.QColor(Qt.yellow).darker(180)
@@ -128,13 +129,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         selection.format.setProperty(
             QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
         )
-        cursor = self.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(
-            QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, line - 1
-        )
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line - 1))
+        self.setTextCursor(cursor)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-        cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos)
+        cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos - 1)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
         extra_selections.append(selection)

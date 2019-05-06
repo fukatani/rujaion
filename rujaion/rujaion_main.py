@@ -392,11 +392,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             out = subprocess.check_output(command, stderr=subprocess.STDOUT)
             self.console.write("Compile is finished successfully!", mode="success")
             error_places, warning_places = self.parse_compile_error(out.decode())
-            self.editor.highlight_compile_error(warning_places)
+            self.editor.highlight_compile_error(warning_places, is_warning=True)
         except subprocess.CalledProcessError as err:
             self.console.write(err.output, mode="error")
             error_places, warning_places = self.parse_compile_error(err.output.decode())
-            self.editor.highlight_compile_error(error_places)
+            self.editor.highlight_compile_error(error_places, is_warning=False)
             return False
         return True
 
