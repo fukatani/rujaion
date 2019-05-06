@@ -152,13 +152,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
         self.gdb_timeout = 4.0
+        self.show_console = True
         self.show_browser = True
         self.browser_dock = QtWidgets.QDockWidget("", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.browser_dock)
+        self.addConsole()
         self.addDisplay()
         self.addBrowser()
-        self.show_console = True
-        self.addConsole()
 
     def updateWindowTitle(self, running=False):
         title = ""
