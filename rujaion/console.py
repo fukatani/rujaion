@@ -109,7 +109,11 @@ class Console(QtWidgets.QTextEdit):
             else:
                 return
             cur_idx = len(self.command_history) - self.history_pointer
-            last_command = self.command_history[cur_idx]
+            try:
+                last_command = self.command_history[cur_idx]
+            except IndexError:
+                self.history_pointer = 0
+                return
             tc.select(QtGui.QTextCursor.LineUnderCursor)
             tc.removeSelectedText()
             self.display_prefix()
@@ -119,7 +123,11 @@ class Console(QtWidgets.QTextEdit):
             if self.history_pointer >= 1:
                 self.history_pointer -= 1
             cur_idx = len(self.command_history) - self.history_pointer
-            last_command = self.command_history[cur_idx]
+            try:
+                last_command = self.command_history[cur_idx]
+            except IndexError:
+                self.history_pointer = 0
+                return
             tc.select(QtGui.QTextCursor.LineUnderCursor)
             tc.removeSelectedText()
             self.display_prefix()
