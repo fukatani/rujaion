@@ -10,7 +10,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 class CustomWebEngineView(QWebEngineView):
     def contextMenuEvent(self, a0: QtGui.QContextMenuEvent) -> None:
         menu = QtWidgets.QMenu()
-        menu.addAction(u"Download This Task", self.parent().download_task)
+        menu.addAction(u"Go Next Task", self.parent().goNextTask)
+        menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
         menu.exec(a0.globalPos())
 
 
@@ -43,8 +44,36 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit.setText(url)
         self.loadPage()
 
+    def goNextTask(self):
+        """ Go next contest task.
+        ex.
+        https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_e ->
+        https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_f
+
+        This function is note tested except AtCoder.
+        """
+        current_url = self.browser.url().toString()
+        if current_url[-1] == "z":
+            return
+        current_url = current_url[:-1] + chr(ord(current_url[-1]) + 1)
+        self.changePage(current_url)
+
+    def goPreviousTask(self):
+        """ Go previous contest task.
+        ex.
+        https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_b ->
+        https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_a
+
+        This function is note tested except AtCoder.
+        """
+        current_url = self.browser.url().toString()
+        if current_url[-1] == "a":
+            return
+        current_url = current_url[:-1] + chr(ord(current_url[-1]) - 1)
+        self.changePage(current_url)
+
     def updateCurrentUrl(self):
-        """ rewriting url_edit when you move different web page.
+        """ Rewriting url_edit when you move different web page.
         """
         self.url_edit.clear()
         self.url_edit.insert(self.browser.url().toString())
