@@ -1,3 +1,4 @@
+from collections import deque
 import sys
 from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -20,8 +21,11 @@ class Console(QtWidgets.QTextEdit):
         self.customContextMenuRequested.connect(self.__contextMenu)
         self.evcxr_proc = None
         self.run_evcxr()
+
+        self.command_history = deque(maxlen=10)
         # HACK
         self.color_words = ("\033[91m", "\033[94m", "\033[0m")
+        self.history_pointer = 0
 
     def run_evcxr(self):
         if self.evcxr_proc is not None:
@@ -99,6 +103,29 @@ class Console(QtWidgets.QTextEdit):
 
     def keyPressEvent(self, event):
         tc = self.textCursor()
+        if event.key() == Qt.Key_Up:
+            if self.history_pointer < len(self.command_history) - 1:
+                self.history_pointer += 1
+            else:
+                return
+            cur_idx = len(self.command_history) - self.history_pointer
+            last_command = self.command_history[cur_idx]
+            tc.select(QtGui.QTextCursor.LineUnderCursor)
+            tc.removeSelectedText()
+            self.display_prefix()
+            self.insertPlainText(last_command)
+            return
+        if event.key() == Qt.Key_Down:
+            if self.history_pointer >= 1:
+                self.history_pointer -= 1
+            cur_idx = len(self.command_history) - self.history_pointer
+            last_command = self.command_history[cur_idx]
+            tc.select(QtGui.QTextCursor.LineUnderCursor)
+            tc.removeSelectedText()
+            self.display_prefix()
+            self.insertPlainText(last_command)
+            return
+        self.history_pointer = 0
 
         if (
             event.key() == Qt.Key_Left
@@ -110,8 +137,8 @@ class Console(QtWidgets.QTextEdit):
         if event.key() in (
             Qt.Key_Left,
             Qt.Key_Right,
-            Qt.Key_Up,
-            Qt.Key_Down,
+            # Qt.Key_Up,
+            # Qt.Key_Down,
             Qt.Key_PageUp,
             Qt.Key_PageDown,
             Qt.Key_Home,
@@ -132,6 +159,7 @@ class Console(QtWidgets.QTextEdit):
                 print("execute")
                 command = self.document().toPlainText().split("\n")[-1][3:] + "\n"
                 self.evcxr_proc.send(command.encode())
+                self.command_history.append(self.document().toPlainText().split("\n")[-1][3:])
                 # self.evcxr_proc.send(b'println!("hello")\n')
                 self.evcxr_proc.expect(">> ")
 
