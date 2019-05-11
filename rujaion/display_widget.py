@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, Qt
+from PyQt5 import QtCore, Qt, QtGui
 from PyQt5 import QtWidgets
 
 
@@ -12,6 +12,8 @@ class ResultTableModel(QtWidgets.QTableWidget):
         self.setColumnCount(self.column_size)
         self.setHorizontalHeaderLabels(["Name", "Value", "Type"])
         self.setVerticalHeaderLabels([""] * self.row_size)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.__contextMenu)
 
         for i in range(self.row_size):
             for j in range(1, self.column_size):
@@ -19,6 +21,15 @@ class ResultTableModel(QtWidgets.QTableWidget):
                 # execute the line below to every item you need locked
                 item.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.setItem(i, j, item)
+
+    def __contextMenu(self):
+        menu = QtWidgets.QMenu()
+        self._addCustomMenuItems(menu)
+        menu.exec_(QtGui.QCursor.pos())
+
+    def _addCustomMenuItems(self, menu):
+        menu.addSeparator()
+        menu.addAction(u"Clear", self.clear)
 
     def cell(self, var=""):
         item = Qt.QTableWidgetItem()
@@ -32,6 +43,10 @@ class ResultTableModel(QtWidgets.QTableWidget):
         for i in range(self.row_size):
             if self.item(i, 0) is not None:
                 yield i, self.item(i, 0).text()
+
+    def clear(self):
+        for i in range(self.row_size):
+            self.set_cell(i, 0, var="")
 
     def add_var(self, var):
         for i in range(self.row_size):
