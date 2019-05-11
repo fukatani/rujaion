@@ -130,9 +130,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
         )
         cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line - 1))
-        self.setTextCursor(cursor)
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
         cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos - 1)
+        # self.setTextCursor(cursor)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
         extra_selections.append(selection)
