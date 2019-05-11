@@ -93,9 +93,9 @@ class Console(QtWidgets.QTextEdit):
         return getattr(self._buffer, attr)
 
     def __contextMenu(self):
-        self._normalMenu = self.createStandardContextMenu()
-        self._addCustomMenuItems(self._normalMenu)
-        self._normalMenu.exec_(QtGui.QCursor.pos())
+        menu = self.createStandardContextMenu()
+        self._addCustomMenuItems(menu)
+        menu.exec_(QtGui.QCursor.pos())
 
     def _addCustomMenuItems(self, menu):
         menu.addSeparator()
