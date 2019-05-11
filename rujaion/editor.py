@@ -69,6 +69,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
         self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
+        self.compile_error_selections = []
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -107,21 +108,20 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             QtGui.QTextFormat.FullWidthSelection, QtCore.QVariant(True)
         )
         selection.cursor = self.textCursor()
-        selection.cursor.clearSelection()
+        # selection.cursor.clearSelection()
         extra_selections.append(selection)
-        self.setExtraSelections(extra_selections)
+        self.setExtraSelections(extra_selections + self.compile_error_selections)
 
     def highlight_compile_error(self, highlight_places, is_warning):
-        extra_selections = []
         if is_warning:
             line_color = QtGui.QColor(Qt.yellow).darker(180)
         else:
             line_color = QtGui.QColor(Qt.red).lighter(110)
         for line, pos in highlight_places:
-            self.add_highlight_error(extra_selections, line, line_color, pos)
-        self.setExtraSelections(extra_selections)
+            self.add_highlight_error(line, line_color, pos)
+        self.setExtraSelections(self.compile_error_selections)
 
-    def add_highlight_error(self, extra_selections, line, line_color, pos):
+    def add_highlight_error(self, line, line_color, pos):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setFontUnderline(True)
         selection.format.setUnderlineColor(line_color)
@@ -135,7 +135,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         # self.setTextCursor(cursor)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
-        extra_selections.append(selection)
+        self.compile_error_selections.append(selection)
 
     def eventFilter(self, obj, event):
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
