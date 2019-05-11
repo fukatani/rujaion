@@ -167,7 +167,9 @@ class Console(QtWidgets.QTextEdit):
                 print("execute")
                 command = self.document().toPlainText().split("\n")[-1][3:] + "\n"
                 self.evcxr_proc.send(command.encode())
-                self.command_history.append(self.document().toPlainText().split("\n")[-1][3:])
+                self.command_history.append(
+                    self.document().toPlainText().split("\n")[-1][3:]
+                )
                 # self.evcxr_proc.send(b'println!("hello")\n')
                 self.evcxr_proc.expect(">> ")
 
