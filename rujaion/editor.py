@@ -131,7 +131,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         )
         cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line - 1))
         cursor.movePosition(QtGui.QTextCursor.StartOfLine)
-        cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos - 1)
+        cursor.movePosition(
+            QtGui.QTextCursor.Right, QtGui.QTextCursor.MoveAnchor, pos - 1
+        )
         # self.setTextCursor(cursor)
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
