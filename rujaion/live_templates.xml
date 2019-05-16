@@ -9,8 +9,10 @@
   <template name="vv" value="let mut dp = vec![vec![; ]; ];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="vvv" value="let mut dp = vec![vec![vec![; ]; ];];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="chars" value="chars().collect::&lt;Vec&lt;_&gt;&gt;();" description="collect chars" toReformat="false" toShortenFQNames="true"/>
+  <template name="collect" value="collect::&lt;Vec&lt;_&gt;&gt;();" description="collect vector" toReformat="false" toShortenFQNames="true"/>
   <template name="turbo" value="::&lt;&gt;" description="collect chars" toReformat="false" toShortenFQNames="true"/>
   <template name="print" value="println!(&quot;{:?}&quot;, $VAR$);" description="p" toReformat="false" toShortenFQNames="true">
     <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
   </template>
+  <template name="return" value="return" description="return" toReformat="false" toShortenFQNames="true" />
 </templateSet>
