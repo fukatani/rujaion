@@ -182,15 +182,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def keyPressEvent(self, event):
         if (
-            event.modifiers()
-            and QtCore.Qt.ShiftModifier
-            and event.key == QtCore.Qt.Key_F8
+            event.modifiers() == QtCore.Qt.ShiftModifier
+            and event.key() == QtCore.Qt.Key_F8
         ):
             self.stepOut()
         elif (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
-            and event.key == QtCore.Qt.Key_F9
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_F9
         ):
             self.run()
         elif event.key() == QtCore.Qt.Key_F9:
@@ -204,8 +202,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_F2:
             self.jump()
         elif (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
+            event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_F4
         ):
             self.testMyCode()
@@ -228,20 +225,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_Escape:
             self.terminate()
         elif (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
+            event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_O
         ):
             self.showFileDialog()
         elif (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
+            event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_S
         ):
             self.saveFile()
         elif (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
+            event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_W
         ):
             self.saveFileAs()

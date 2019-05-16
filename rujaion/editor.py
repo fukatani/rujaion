@@ -324,8 +324,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         # comment out or uncomment
         if (
-            event.modifiers()
-            and QtCore.Qt.ControlModifier
+            event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == Qt.Key_Slash
         ):
             tc = self.textCursor()
