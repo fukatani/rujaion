@@ -103,7 +103,10 @@ class Console(QtWidgets.QTextEdit):
 
     def keyPressEvent(self, event):
         tc = self.textCursor()
-        if event.key() == Qt.Key_Up and tc.blockNumber() == self.document().blockCount() - 1:
+        if (
+            event.key() == Qt.Key_Up
+            and tc.blockNumber() == self.document().blockCount() - 1
+        ):
             if self.history_pointer < len(self.command_history) - 1:
                 self.history_pointer += 1
             else:
@@ -119,7 +122,10 @@ class Console(QtWidgets.QTextEdit):
             self.display_prefix()
             self.insertPlainText(last_command)
             return
-        if event.key() == Qt.Key_Down and tc.blockNumber() == self.document().blockCount() - 1:
+        if (
+            event.key() == Qt.Key_Down
+            and tc.blockNumber() == self.document().blockCount() - 1
+        ):
             if self.history_pointer >= 1:
                 self.history_pointer -= 1
             cur_idx = len(self.command_history) - self.history_pointer
