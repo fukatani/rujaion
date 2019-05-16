@@ -239,6 +239,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             and event.key() == QtCore.Qt.Key_W
         ):
             self.saveFileAs()
+        elif (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_F
+        ):
+            self.editor.find()
         else:
             event.accept()
 
