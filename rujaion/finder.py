@@ -49,6 +49,7 @@ class Find(QtWidgets.QDialog):
         # The field into which to type the query
         self.findField = FindTextEdit(self, self.find)
         self.findField.resize(250, 50)
+        self.findField.setFocus()
 
         # The field into which to type the text to replace the
         # queried text
