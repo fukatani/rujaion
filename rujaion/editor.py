@@ -224,12 +224,14 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.fname = fname
 
     def new_file(self, template_file_name=""):
+        self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
         self.fname = ""
         if template_file_name:
             with open(template_file_name) as f:
                 self.setPlainText(f.read())
+        self.repaint()
 
     def set_edited(self):
         self.edited = True
