@@ -254,7 +254,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         )[0]
         self.openFile(fname)
 
-    def openFile(self, fname):
+    def openFile(self, fname: str):
         if not fname:
             return
         self.editor.open_file(fname)
@@ -303,8 +303,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             default_dir = os.path.dirname(
                 self.settings.value("LastOpenedFile", type=str)
             )
+        default_file_name = os.path.join(default_dir, "test1.rs")
         savename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Save file", default_dir, "Rust Files (*.rs)"
+            self, "Save file", default_file_name, "Rust Files (*.rs)"
         )[0]
         if not savename:
             return
