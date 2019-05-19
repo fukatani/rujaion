@@ -15,6 +15,9 @@ class FindTextEdit(QtWidgets.QTextEdit):
         if e.key() == 16777220:  # Enter
             self.enter_action()
             return
+        if e.key() == Qt.Key_Tab:
+            self.parent().toggle_focus()
+            return
         super().keyPressEvent(e)
 
 class Find(QtWidgets.QDialog):
@@ -31,7 +34,7 @@ class Find(QtWidgets.QDialog):
         findButton.clicked.connect(self.find)
 
         # Button to replace the last finding
-        replaceButton = QtWidgets.QPushButton("Replace", self)
+        replaceButton = QtWidgets.QPushButton("Find and Replace", self)
         replaceButton.clicked.connect(self.replace)
 
         # Button to remove all findings
@@ -94,6 +97,12 @@ class Find(QtWidgets.QDialog):
         # By default the normal mode is activated
         self.normalRadio.setChecked(True)
 
+    def toggle_focus(self):
+        if self.findField.hasFocus():
+            self.replaceField.setFocus()
+        else:
+            self.findField.setFocus()
+
     def find(self):
 
         # Grab the parent's text
@@ -133,6 +142,7 @@ class Find(QtWidgets.QDialog):
             self.moveCursor(start, end)
 
     def replace(self):
+        self.find()
 
         # Grab the text cursor
         cursor = self.parent.textCursor()
