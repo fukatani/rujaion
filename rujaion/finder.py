@@ -6,6 +6,17 @@ from PyQt5.QtCore import Qt
 import re
 
 
+class FindTextEdit(QtWidgets.QTextEdit):
+    def __init__(self, parent, enter_action):
+        self.enter_action = enter_action
+        super().__init__(parent=parent)
+
+    def keyPressEvent(self, e: QtGui.QKeyEvent) -> None:
+        if e.key() == 16777220:  # Enter
+            self.enter_action()
+            return
+        super().keyPressEvent(e)
+
 class Find(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -36,12 +47,12 @@ class Find(QtWidgets.QDialog):
         self.regexRadio.toggled.connect(self.regexMode)
 
         # The field into which to type the query
-        self.findField = QtWidgets.QTextEdit(self)
+        self.findField = FindTextEdit(self, self.find)
         self.findField.resize(250, 50)
 
         # The field into which to type the text to replace the
         # queried text
-        self.replaceField = QtWidgets.QTextEdit(self)
+        self.replaceField = FindTextEdit(self, self.replace)
         self.replaceField.resize(250, 50)
 
         optionsLabel = QtWidgets.QLabel("Options: ", self)
