@@ -139,7 +139,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         selection.cursor = cursor
         self.compile_error_selections.append(selection)
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj, event: QtGui.QKeyEvent) -> bool:
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
             self.drawLineNumbers()
             return True
@@ -165,7 +165,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             line_number += 1
             block = block.next()
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QtGui.QKeyEvent):
         super().resizeEvent(event)
         self.lineNumberArea.setGeometry(
             QtCore.QRect(
@@ -176,11 +176,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             )
         )
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, event: QtGui.QKeyEvent):
         super().wheelEvent(event)
         self.repaint()
 
-    def toggleBreak(self, line_num):
+    def toggleBreak(self, line_num: int):
         self.break_points[line_num] = not self.break_points[line_num]
         self.repaint()
         if self.break_points[line_num]:
@@ -196,7 +196,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 commands.append(("b " + str(i) + "\n").encode())
         return commands
 
-    def highlight_executing_line(self, line_num):
+    def highlight_executing_line(self, line_num: int):
         extraSelections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setBackground(Qt.cyan)
@@ -216,14 +216,14 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def clear_highlight_line(self):
         self.setExtraSelections([])
 
-    def open_file(self, fname):
+    def open_file(self, fname: str):
         assert fname
         f = open(fname)
         self.setPlainText(f.read())
         self.edited = False
         self.fname = fname
 
-    def new_file(self, template_file_name=""):
+    def new_file(self, template_file_name: str = ""):
         self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
@@ -284,7 +284,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
-    def focusInEvent(self, event):
+    def focusInEvent(self, event: QtGui.QKeyEvent):
         if self.completer:
             self.completer.setWidget(self)
         super().focusInEvent(event)
@@ -297,7 +297,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             indent_level += 1
         self.insertPlainText("\n" + "    " * indent_level)
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
         if event.key() == 16777220 and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
@@ -416,7 +416,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.start_complete_process(event, tc)
 
     # TODO here is slow.
-    def start_complete_process(self, event, tc):
+    def start_complete_process(self, event: QtGui.QKeyEvent, tc: QtGui.QTextCursor):
         if (
             event.text().isalnum()
             and not self.document().characterAt(tc.position() + 1).isalnum()

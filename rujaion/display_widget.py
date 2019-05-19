@@ -31,12 +31,12 @@ class ResultTableModel(QtWidgets.QTableWidget):
         menu.addSeparator()
         menu.addAction(u"Clear", self.clear)
 
-    def cell(self, var=""):
+    def cell(self, var: str = "") -> Qt.QTableWidgetItem:
         item = Qt.QTableWidgetItem()
         item.setText(var.replace("true", "T").replace("false", "F"))
         return item
 
-    def set_cell(self, i, j, var=""):
+    def set_cell(self, i: int, j: int, var: str = ""):
         self.setItem(i, j, self.cell(var))
 
     def name_iter(self):
@@ -48,11 +48,11 @@ class ResultTableModel(QtWidgets.QTableWidget):
         for i in range(self.row_size):
             self.set_cell(i, 0, var="")
 
-    def add_var(self, var):
+    def add_var(self, var: str):
         for i in range(self.row_size):
             if self.item(i, 0) is None:
                 self.set_cell(i, 0, var)
                 return
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
         pass

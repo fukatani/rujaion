@@ -1,5 +1,7 @@
 from collections import deque
 import sys
+from typing import *
+
 from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
@@ -54,7 +56,7 @@ class Console(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.EndOfLine)
         self.ensureCursorVisible()
 
-    def write(self, msg, mode=""):
+    def write(self, msg: str, mode: str = ""):
         self.moveCursor(QtGui.QTextCursor.End)
         if isinstance(msg, bytes):
             msg = msg.decode()
@@ -78,7 +80,7 @@ class Console(QtWidgets.QTextEdit):
         self.insertPlainText(msg)
         self._buffer.write(msg)
 
-    def write_oj_result(self, msg):
+    def write_oj_result(self, msg: Union[str, bytes]):
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
@@ -97,11 +99,11 @@ class Console(QtWidgets.QTextEdit):
         self._addCustomMenuItems(menu)
         menu.exec_(QtGui.QCursor.pos())
 
-    def _addCustomMenuItems(self, menu):
+    def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
         menu.addAction(u"Clear", self.clear)
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
         if (
             event.key() == Qt.Key_Up

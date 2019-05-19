@@ -78,7 +78,7 @@ class RustHighlighter(QSyntaxHighlighter):
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("//[^\n]*"), line_comment_format))
 
-    def highlightBlock(self, text):
+    def highlightBlock(self, text: str):
         for pattern, format in self.highlight_rules:
             expression = QRegExp(pattern)
             index = expression.indexIn(text)

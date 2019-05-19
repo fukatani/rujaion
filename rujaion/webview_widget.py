@@ -40,7 +40,7 @@ class WebViewWindow(QtWidgets.QWidget):
         if self.url_edit.text():
             self.browser.load(QUrl(self.url_edit.text()))
 
-    def changePage(self, url):
+    def changePage(self, url: str):
         self.url_edit.setText(url)
         self.loadPage()
 

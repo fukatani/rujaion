@@ -157,11 +157,6 @@ class Find(QtWidgets.QDialog):
             self.parent.setTextCursor(cursor)
 
     def replaceAll(self):
-
-        # Set lastMatch to None so that the search
-        # starts from the beginning of the document
-        self.lastMatch = None
-
         # Initial find() call so that lastMatch is
         # potentially not None anymore
         self.find()

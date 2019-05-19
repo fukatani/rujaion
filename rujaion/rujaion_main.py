@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+from  typing import *
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -160,7 +161,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDisplay()
         self.addBrowser()
 
-    def updateWindowTitle(self, running=False):
+    def updateWindowTitle(self, running: bool = False):
         title = ""
         if self.editor.edited:
             title = "(*) "
@@ -172,15 +173,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             title += self.editor.fname
         else:
             title += "Scratch"
-
         self.setWindowTitle(title)
 
-    def closeEvent(self, e):
+    def closeEvent(self, e: QtGui.QKeyEvent):
         self.settings.setValue("size", self.size())
         self.settings.setValue("pos", self.pos())
         e.accept()
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
         if (
             event.modifiers() == QtCore.Qt.ShiftModifier
             and event.key() == QtCore.Qt.Key_F8
@@ -267,7 +267,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         for fname in glob.glob(os.path.dirname(self.editor.fname) + "/*.bak"):
             os.remove(fname)
 
-    def askTerminateOrNot(self):
+    def askTerminateOrNot(self) -> bool:
         ret = QtWidgets.QMessageBox.information(
             None,
             "Debugging process is runnning",
@@ -379,7 +379,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def newFile(self):
         self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
 
-    def compile(self, no_debug=False):
+    def compile(self, no_debug: bool = False):
         self.console.clear()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
@@ -706,7 +706,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.jump()
 
     @with_console
-    def download(self, url=None):
+    def download(self, url: Optional[str] = None):
         if url is None:
             url = self.settings.value(
                 "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"

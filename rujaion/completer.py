@@ -1,6 +1,7 @@
 import codecs
 import os
 import subprocess
+from typing import *
 from xml.etree import ElementTree
 
 from PyQt5 import QtWidgets, QtCore
@@ -18,14 +19,14 @@ class RacerCompleter(QtWidgets.QCompleter):
         self.parent = parent
         self.live_templates = load_template(self.live_template_file)
 
-    def setHighlighted(self, text):
+    def setHighlighted(self, text: str):
         self.lastSelected = text
 
     def getSelected(self):
         return self.lastSelected
 
     # this is heavy?
-    def setCompletionPrefix(self, text):
+    def setCompletionPrefix(self, text: str):
         fname = codecs.open(self.temp_text, "w", "utf-8")
         fname.write(self.parent.toPlainText())
         fname.close()
@@ -74,7 +75,7 @@ class LiveTemplate:
         self.template = self.template.replace("$END$", "")
 
 
-def load_template(xml_file_name):
+def load_template(xml_file_name: str) -> List[LiveTemplate]:
     if not os.path.isfile(xml_file_name):
         return []
     with open(xml_file_name) as f:
