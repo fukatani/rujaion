@@ -4,7 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
-from  typing import *
+from typing import *
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui

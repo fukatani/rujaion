@@ -20,6 +20,7 @@ class FindTextEdit(QtWidgets.QTextEdit):
             return
         super().keyPressEvent(e)
 
+
 class Find(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
