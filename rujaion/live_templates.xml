@@ -15,4 +15,5 @@
     <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
   </template>
   <template name="return" value="return" description="return" toReformat="false" toShortenFQNames="true" />
+  <template name="swap" value="std::mem::swap(&amp;mut a, &amp;mut b);" description="swap" toReformat="false" toShortenFQNames="true" />
 </templateSet>
