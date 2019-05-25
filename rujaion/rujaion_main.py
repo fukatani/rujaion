@@ -447,19 +447,20 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def with_debug_display(func):
         def wrapper(self, *args, **kwargs):
-            self.browser_dock.show()
-            self.browser_dock.setWidget(self.display_widget)
             func(self, *args, **kwargs)
+            if self.proc is not None:
+                self.browser_dock.show()
+                self.browser_dock.setWidget(self.display_widget)
 
         return wrapper
 
     def with_console(func):
         def wrapper(self, *args, **kwargs):
-            if not self.show_console:
-                self.show_console = True
-                self.console_dock.show()
             func(self, *args, **kwargs)
-
+            if self.proc is not None:
+                if not self.show_console:
+                    self.show_console = True
+                    self.console_dock.show()
         return wrapper
 
     @with_debug_display
