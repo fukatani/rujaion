@@ -461,6 +461,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 if not self.show_console:
                     self.show_console = True
                     self.console_dock.show()
+
         return wrapper
 
     @with_debug_display

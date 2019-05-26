@@ -18,7 +18,7 @@ class RacerCompleter(QtWidgets.QCompleter):
         self.highlighted.connect(self.setHighlighted)
         self.parent = parent
         self.live_templates = load_template(self.live_template_file)
-        self.ng_words = ('core')
+        self.ng_words = "core"
 
     def setHighlighted(self, text: str):
         self.lastSelected = text
@@ -53,7 +53,7 @@ class RacerCompleter(QtWidgets.QCompleter):
                 cand = line[6:].split(",")[0]
                 if cand not in self.ng_words:
                     candidates.append(line[6:].split(",")[0])
-        search_word = out.split('\n')[0].split(',')[2]
+        search_word = out.split("\n")[0].split(",")[2]
         for live_template in self.live_templates:
             if search_word in live_template.name:
                 candidates.append(live_template.template)

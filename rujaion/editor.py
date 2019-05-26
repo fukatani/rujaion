@@ -288,7 +288,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             tc.movePosition(QtGui.QTextCursor.Left)
             tc.deleteChar()
 
-        tc.movePosition(QtGui.QTextCursor.EndOfWord)
+        # tc.movePosition(QtGui.QTextCursor.EndOfWord)
         tc.insertText(completion)
         self.setTextCursor(tc)
         self.completer.popup().hide()
@@ -430,7 +430,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             event.text().isalnum()
             and not self.document().characterAt(tc.position() + 1).isalnum()
         ):
-            tc.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 1);
+            tc.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 1)
             tc.select(QtGui.QTextCursor.WordUnderCursor)
             if len(tc.selectedText()) <= 1:
                 return
