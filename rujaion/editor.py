@@ -430,6 +430,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             event.text().isalnum()
             and not self.document().characterAt(tc.position() + 1).isalnum()
         ):
+            tc.movePosition(QtGui.QTextCursor.Left, QtGui.QTextCursor.MoveAnchor, 1);
             tc.select(QtGui.QTextCursor.WordUnderCursor)
             if len(tc.selectedText()) <= 1:
                 return

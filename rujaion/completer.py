@@ -18,6 +18,7 @@ class RacerCompleter(QtWidgets.QCompleter):
         self.highlighted.connect(self.setHighlighted)
         self.parent = parent
         self.live_templates = load_template(self.live_template_file)
+        self.ng_words = ('core')
 
     def setHighlighted(self, text: str):
         self.lastSelected = text
@@ -49,14 +50,17 @@ class RacerCompleter(QtWidgets.QCompleter):
         candidates = []
         for line in out.split("\n"):
             if line.startswith("MATCH"):
-                candidates.append(line[6:].split(",")[0])
+                cand = line[6:].split(",")[0]
+                if cand not in self.ng_words:
+                    candidates.append(line[6:].split(",")[0])
+        search_word = out.split('\n')[0].split(',')[2]
         for live_template in self.live_templates:
-            if text in live_template.name:
+            if search_word in live_template.name:
                 candidates.append(live_template.template)
-        if len(candidates) >= 6 or text in candidates:
+        if len(candidates) >= 6 or search_word in candidates:
             candidates = []
         self.setModel(QtCore.QStringListModel(candidates))
-        super().setCompletionPrefix(text)
+        super().setCompletionPrefix(search_word)
 
 
 class LiveTemplate:
