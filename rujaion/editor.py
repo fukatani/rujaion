@@ -1,4 +1,5 @@
 from collections import defaultdict
+import os
 import subprocess
 
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -44,6 +45,7 @@ or brand of soft drink.
 
 class RustEditter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
+    default_file_name = "test1.rs"
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -223,11 +225,18 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.edited = False
         self.fname = fname
 
+    def reset_file_name(self) -> bool:
+        if self.fname:
+            default_dir = os.path.dirname(self.fname)
+            self.fname = os.path.join(default_dir, self.default_file_name)
+            return True
+        return False
+
     def new_file(self, template_file_name: str = ""):
         self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
-        self.fname = ""
+        self.reset_file_name()
         if template_file_name:
             with open(template_file_name) as f:
                 self.setPlainText(f.read())
