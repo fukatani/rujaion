@@ -34,6 +34,8 @@ from rujaion import webview_widget
 
 
 class RujaionMainWindow(QtWidgets.QMainWindow):
+    test_data_dir = "./test"
+    test_case_editor = "gedit"
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
 
@@ -133,6 +135,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction("Debug With Test Data (F4)", self)
         a.triggered.connect(self.debugWithTestData)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction("Add Test", self)
+        a.triggered.connect(self.addTest)
         filemenu.addAction(a)
 
         a = QtWidgets.QAction("Clear Test Data", self)
@@ -526,7 +532,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             fname = self.last_used_testcase
         else:
             fname = QtWidgets.QFileDialog.getOpenFileName(
-                self, "Open", "./test", "Test data (*.in)"
+                self, "Open", self.test_data_dir, "Test data (*.in)"
             )[0]
         if not fname:
             self.last_used_testcase = ""
@@ -585,6 +591,15 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         except subprocess.CalledProcessError as err:
             self.console.write(err, mode="error")
             self.console.run_evcxr()
+
+    def addTest(self):
+        test_data_files = set(os.listdir(self.test_data_dir))
+        for i in range(1, 100):
+            if not "sample-{}.in".format(i) in test_data_files:
+                subprocess.Popen(("gedit", "sample-{}.in".format(i), "sample-{}.out".format(i)),
+                                 stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL)
+                break
 
     def UpdateBreak(self, command):
         if self.proc is None:
@@ -742,9 +757,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         login.LoginDialog(self, settings=self.settings).show()
 
     def clearTestData(self):
-        test_data_dir = "./test"
-        if os.path.isdir(test_data_dir):
-            shutil.rmtree(test_data_dir)
+        if os.path.isdir(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
 
     @with_console
     def testMyCode(self, *args):
