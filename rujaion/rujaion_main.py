@@ -36,6 +36,7 @@ from rujaion import webview_widget
 class RujaionMainWindow(QtWidgets.QMainWindow):
     test_data_dir = "./test"
     test_case_editor = "gedit"
+
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
 
@@ -596,9 +597,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         test_data_files = set(os.listdir(self.test_data_dir))
         for i in range(1, 100):
             if not "sample-{}.in".format(i) in test_data_files:
-                subprocess.Popen(("gedit", "sample-{}.in".format(i), "sample-{}.out".format(i)),
-                                 stdout=subprocess.DEVNULL,
-                                 stderr=subprocess.DEVNULL)
+                subprocess.Popen(
+                    ("gedit", "sample-{}.in".format(i), "sample-{}.out".format(i)),
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
                 break
 
     def UpdateBreak(self, command):
