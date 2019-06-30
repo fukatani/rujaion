@@ -597,8 +597,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         test_data_files = set(os.listdir(self.test_data_dir))
         for i in range(1, 100):
             if not "sample-{}.in".format(i) in test_data_files:
+                in_file = os.path.join(self.test_data_dir, "sample-{}.in".format(i))
+                out_file = os.path.join(self.test_data_dir, "sample-{}.out".format(i))
                 subprocess.Popen(
-                    ("gedit", "sample-{}.in".format(i), "sample-{}.out".format(i)),
+                    ("gedit", in_file, out_file),
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
