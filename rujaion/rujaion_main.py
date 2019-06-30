@@ -765,6 +765,15 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if os.path.isdir(self.test_data_dir):
             shutil.rmtree(self.test_data_dir)
 
+    def exists_float_output(self) -> bool:
+        """ If "." character found in any *.out file, return True.
+        """
+        try:
+            subprocess.check_output("grep -F . {}/*.out".format(self.test_data_dir), shell=True)
+        except subprocess.CalledProcessError:
+            return False
+        return True
+
     @with_console
     def testMyCode(self, *args):
         self.console.clear()
@@ -772,11 +781,15 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
         try:
+            command = ["oj", "test", "-c", "./" + compiled_file]
+            if self.exists_float_output():
+                error = 0.00000001
+                command += ["-e", str(error)]
+                self.console.write_oj_result("[.] Found float expectation")
+                self.console.write_oj_result("[.] Allow {} error".format(error))
             # TODO: configurable timeout
-            out = subprocess.check_output(
-                ("oj", "test", "-c", "./" + compiled_file),
-                stderr=subprocess.STDOUT,
-                timeout=4.0,
+            out = subprocess.check_output(command,
+                stderr=subprocess.STDOUT, timeout=4.0,
             ).decode()
         except subprocess.TimeoutExpired as e:
             self.console.write_oj_result(e.output)
