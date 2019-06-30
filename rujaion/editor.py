@@ -293,11 +293,6 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
-    def focusInEvent(self, event: QtGui.QKeyEvent):
-        if self.completer:
-            self.completer.setWidget(self)
-        super().focusInEvent(event)
-
     def enter_with_auto_indent(self):
         tc = self.textCursor()
         line_text = self.toPlainText().split("\n")[tc.blockNumber()]
