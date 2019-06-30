@@ -66,7 +66,6 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.fname = ""
         self.completer = completer.RacerCompleter(self)
         self.completer.setWidget(self)
-        self.completer.insertText.connect(self.insertCompletion)
 
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
@@ -279,7 +278,8 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.repaint()
         self.highlight_cursor_line()
 
-    def insertCompletion(self, completion):
+    def insertCompletion(self):
+        text = self.completer.getSelected()
         tc = self.textCursor()
 
         # First we should remove char since some live templates'
@@ -289,7 +289,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             tc.deleteChar()
 
         # tc.movePosition(QtGui.QTextCursor.EndOfWord)
-        tc.insertText(completion)
+        tc.insertText(text)
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
@@ -304,7 +304,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
         if event.key() == 16777220 and self.completer.popup().isVisible():
-            self.completer.insertText.emit(self.completer.getSelected())
+            self.insertCompletion()
             self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 

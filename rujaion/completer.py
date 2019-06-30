@@ -8,7 +8,6 @@ from PyQt5 import QtWidgets, QtCore
 
 
 class RacerCompleter(QtWidgets.QCompleter):
-    insertText = QtCore.pyqtSignal(str)
     temp_text = os.path.join(os.path.dirname(__file__), "temp.rs")
     live_template_file = os.path.join(os.path.dirname(__file__), "live_templates.xml")
 
