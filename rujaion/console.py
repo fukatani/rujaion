@@ -96,8 +96,8 @@ class Console(QtWidgets.QTextEdit):
                 self.write(line, mode="error")
             else:
                 self.write(line)
-        if last_submission is not None:
-            self.popup = CustomPopup(self.parent(), url=last_submission)
+        if last_submission is not None and "atcoder" in last_submission:
+            self.popup = CustomPopup(None, url=last_submission)
             self.popup.show()
 
     def __getattr__(self, attr):

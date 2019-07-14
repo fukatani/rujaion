@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import time
 
@@ -40,6 +41,7 @@ class CustomPopup(QtWidgets.QWidget):
         self.move(QtGui.QCursor.pos())
         # self.submission = atcoder.AtCoderSubmission.from_url(self.url)
         self.submission = None
+        self.finished = False
         self.update()
         self.run()
 
@@ -63,13 +65,24 @@ class CustomPopup(QtWidgets.QWidget):
             "</font>"
         )
 
+
         if self.submission.get_status() == "AC":
             self.setStyleSheet("background-color: green")
+            self.finished = True
         elif self.submission.get_status() == "WJ" or "/" in self.submission.get_status():
             self.setStyleSheet("background-color: grey")
         else:
             self.setStyleSheet("background-color: orange")
+            if not self.finished:
+                subprocess.check_call(["sensible-browser", self.submission.get_url()],
+                                      stdin=sys.stdin, stdout=sys.stdout,
+                                      stderr=sys.stderr)
+            self.finished = True
         self.repaint()
+        if self.finished:
+            # self.ext.exit(0)
+            time.sleep(3)
+            self.close()
 
     def mousePressEvent(self, event):
         self.close()
