@@ -814,6 +814,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.editor.fname:
             util.disp_error("Please save this file")
         cmd = ("oj", "s", "-l", "rust", "-y", text, self.editor.fname)
+        print(cmd)
         try:
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except Exception as err:

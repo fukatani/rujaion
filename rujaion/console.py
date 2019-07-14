@@ -5,8 +5,9 @@ from typing import *
 from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt
-
 import pexpect
+
+from rujaion.custom_popup import CustomPopup
 
 
 class Console(QtWidgets.QTextEdit):
@@ -28,6 +29,7 @@ class Console(QtWidgets.QTextEdit):
         # HACK
         self.color_words = ("\033[91m", "\033[94m", "\033[0m")
         self.history_pointer = 0
+        self.popup = None
 
     def run_evcxr(self):
         if self.evcxr_proc is not None:
@@ -81,15 +83,22 @@ class Console(QtWidgets.QTextEdit):
         self._buffer.write(msg)
 
     def write_oj_result(self, msg: Union[str, bytes]):
+        last_submission = None
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
             if line.startswith("[+]"):
+                submit_result_prefix = "[+] success: result: "
+                if line.startswith(submit_result_prefix):
+                    last_submission = line[len(submit_result_prefix):]
                 self.write(line, mode="success")
             elif line.startswith("[-]"):
                 self.write(line, mode="error")
             else:
                 self.write(line)
+        if last_submission is not None:
+            self.popup = CustomPopup(self.parent(), url=last_submission)
+            self.popup.show()
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
