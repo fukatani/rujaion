@@ -1,6 +1,6 @@
 # From https://www.binpress.com/building-text-editor-pyqt-3/
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 import re
@@ -9,7 +9,7 @@ import re
 class FindTextEdit(QtWidgets.QTextEdit):
     def __init__(self, parent, enter_action):
         self.enter_action = enter_action
-        super().__init__(parent=parent)
+        super().__init__(parent)
 
     def keyPressEvent(self, e: QtGui.QKeyEvent) -> None:
         if e.key() == 16777220:  # Enter
