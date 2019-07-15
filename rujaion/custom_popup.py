@@ -9,12 +9,20 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 
 class External(QThread):
-    updateRequest = pyqtSignal()
+    updateRequest = pyqtSignal(object)
+    def __init__(self, submission, url):
+        super().__init__()
+        self.submission = submission
+        self.url = url
+
     def run(self):
-        self.updateRequest.emit()
-        for i in range(20):
-            time.sleep(3)
-            self.updateRequest.emit()
+        with with_cookiejar(new_session_with_our_user_agent(),
+                                  path=default_cookie_path) as sess:
+            for i in range(20):
+                time.sleep(2)
+                self.submission = atcoder.AtCoderSubmission.from_url(self.url)
+                self.updateRequest.emit((self.submission.get_status(session=sess),
+                                         self.submission._problem_id))
 
 
 class CustomPopup(QtWidgets.QWidget):
@@ -37,56 +45,51 @@ class CustomPopup(QtWidgets.QWidget):
         self.setAutoFillBackground(True)
 
         # set label
-        self.label = QtWidgets.QLabel("", self)
+        self.label = QtWidgets.QLabel(" " * 50, self)
         self.url = kwargs["url"]
         self.move(QtGui.QCursor.pos())
-        # self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-        self.submission = None
+        self.submission = atcoder.AtCoderSubmission.from_url(self.url)
         self.finished = False
-        self.update()
         self.run()
 
     def run(self):
-        self.ext = External()
+        self.ext = External(self.submission, self.url)
         self.ext.updateRequest.connect(self.update)
         self.ext.start()
 
-    def update(self):
+    def update(self, result):
+        result, problem_id = result
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
         self.label.setFont(font)
         self.label.move(25, 35)
 
-        with with_cookiejar(new_session_with_our_user_agent(),
-                                  path=default_cookie_path) as sess:
-            self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-            result = self.submission.get_status(session=sess)
-            print("submit result: " + result)
-            self.label.setText(
-                "<font color='white'>" +
-                self.submission._problem_id + ": " + result +
-                "</font>"
-            )
+        print("submit result: " + problem_id + " " + result)
+        self.label.setText(
+            "<font color='white'>" +
+            problem_id + ": " + result +
+            "</font>"
+        )
 
-            if result == "AC":
-                self.setStyleSheet("background-color: green")
-                self.finished = True
-            elif result == "WJ" or \
-                ("/" in result and "WA" not in result):
-                self.setStyleSheet("background-color: grey")
-            else:
-                self.setStyleSheet("background-color: orange")
-                if not self.finished:
-                    subprocess.check_call(["sensible-browser", self.submission.get_url()],
-                                          stdin=sys.stdin, stdout=sys.stdout,
-                                          stderr=sys.stderr)
-                self.finished = True
-            self.repaint()
-            if self.finished:
-                # self.ext.exit(0)
-                time.sleep(3)
-                self.close()
+        if result == "AC":
+            self.setStyleSheet("background-color: green")
+            self.finished = True
+        elif result == "WJ" or \
+            ("/" in result and "WA" not in result and "RE" not in result):
+            self.setStyleSheet("background-color: grey")
+        else:
+            self.setStyleSheet("background-color: orange")
+            if not self.finished:
+                subprocess.check_call(["sensible-browser", self.submission.get_url()],
+                                      stdin=sys.stdin, stdout=sys.stdout,
+                                      stderr=sys.stderr)
+            self.finished = True
+        self.repaint()
+        if self.finished:
+            # self.ext.exit(0)
+            time.sleep(3)
+            self.close()
 
     def mousePressEvent(self, event):
         self.close()
