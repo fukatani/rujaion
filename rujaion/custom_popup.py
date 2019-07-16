@@ -10,19 +10,34 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
 class External(QThread):
     updateRequest = pyqtSignal(object)
+    finishRequest = pyqtSignal()
     def __init__(self, submission, url):
         super().__init__()
         self.submission = submission
         self.url = url
 
     def run(self):
+        finished = False
         with with_cookiejar(new_session_with_our_user_agent(),
                                   path=default_cookie_path) as sess:
             for i in range(20):
                 time.sleep(2)
                 self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-                self.updateRequest.emit((self.submission.get_status(session=sess),
+                result = self.submission.get_status(session=sess)
+                self.updateRequest.emit((result,
                                          self.submission._problem_id))
+                if result == "AC" or "WA" in result or "RE" in result:
+                    finished = True
+                if "WA" in result or "RE" in result:
+                    subprocess.check_call(
+                        ["sensible-browser", self.submission.get_url()],
+                        stdin=sys.stdin, stdout=sys.stdout,
+                        stderr=sys.stderr)
+                    finished = True
+                if finished:
+                    time.sleep(3)
+                    self.finishRequest.emit()
+                    break
 
 
 class CustomPopup(QtWidgets.QWidget):
@@ -49,12 +64,12 @@ class CustomPopup(QtWidgets.QWidget):
         self.url = kwargs["url"]
         self.move(QtGui.QCursor.pos())
         self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-        self.finished = False
         self.run()
 
     def run(self):
         self.ext = External(self.submission, self.url)
         self.ext.updateRequest.connect(self.update)
+        self.ext.finishRequest.connect(self.finish)
         self.ext.start()
 
     def update(self, result):
@@ -74,25 +89,20 @@ class CustomPopup(QtWidgets.QWidget):
 
         if result == "AC":
             self.setStyleSheet("background-color: green")
-            self.finished = True
         elif result == "WJ" or \
             ("/" in result and "WA" not in result and "RE" not in result):
             self.setStyleSheet("background-color: grey")
         else:
             self.setStyleSheet("background-color: orange")
-            if not self.finished:
-                subprocess.check_call(["sensible-browser", self.submission.get_url()],
-                                      stdin=sys.stdin, stdout=sys.stdout,
-                                      stderr=sys.stderr)
-            self.finished = True
         self.repaint()
-        if self.finished:
-            # self.ext.exit(0)
-            time.sleep(3)
-            self.close()
+
+    def finish(self):
+        self.ext.exit(0)
+        self.close()
 
     def mousePressEvent(self, event):
         self.close()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
