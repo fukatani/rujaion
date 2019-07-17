@@ -4,13 +4,14 @@ from typing import *
 
 from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 import pexpect
 
 from rujaion.custom_popup import CustomPopup
 
 
 class Console(QtWidgets.QTextEdit):
+    writeOjSignal = pyqtSignal(object)
     def __init__(self, parent=None):
         super(Console, self).__init__(parent)
         font = QtGui.QFont()
@@ -22,6 +23,7 @@ class Console(QtWidgets.QTextEdit):
         self._buffer = StringIO()
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
+        self.writeOjSignal.connect(self.write_oj_result)
         self.evcxr_proc = None
         self.run_evcxr()
 
