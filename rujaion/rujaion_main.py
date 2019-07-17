@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread
 import pexpect
 
 from rujaion import console
@@ -167,6 +167,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addConsole()
         self.addDisplay()
         self.addBrowser()
+
+        self.submitter = Submitter(self.console)
 
     def updateWindowTitle(self, running: bool = False):
         title = ""
@@ -813,14 +815,26 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", "rust", "-y", text, self.editor.fname)
+        cmd = ("oj", "s", "-l", "rust", "-y", text, self.editor.fname, "--no-open")
+        print(cmd)
+        self.console.write("start submit")
+        self.submitter.cmd = cmd
+        self.submitter.start()
+
+
+class Submitter(QThread):
+    def __init__(self, console):
+        super().__init__()
+        self.console = console
+        self.cmd = ""
+
+    def run(self):
         try:
-            out = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+            out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
         except Exception as err:
-            self.console.write_oj_result(err.output)
+            self.console.writeOjSignal.emit(err.output)
             return
-        self.console.write_oj_result(out)
-        self.console.write("submitted", mode="success")
+        self.console.writeOjSignal.emit(out)
 
 
 def main():

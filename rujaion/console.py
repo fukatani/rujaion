@@ -4,12 +4,14 @@ from typing import *
 
 from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import Qt
-
+from PyQt5.QtCore import Qt, pyqtSignal
 import pexpect
+
+from rujaion.custom_popup import CustomPopup
 
 
 class Console(QtWidgets.QTextEdit):
+    writeOjSignal = pyqtSignal(object)
     def __init__(self, parent=None):
         super(Console, self).__init__(parent)
         font = QtGui.QFont()
@@ -21,6 +23,7 @@ class Console(QtWidgets.QTextEdit):
         self._buffer = StringIO()
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
+        self.writeOjSignal.connect(self.write_oj_result)
         self.evcxr_proc = None
         self.run_evcxr()
 
@@ -28,6 +31,7 @@ class Console(QtWidgets.QTextEdit):
         # HACK
         self.color_words = ("\033[91m", "\033[94m", "\033[0m")
         self.history_pointer = 0
+        self.popup = None
 
     def run_evcxr(self):
         if self.evcxr_proc is not None:
@@ -81,15 +85,22 @@ class Console(QtWidgets.QTextEdit):
         self._buffer.write(msg)
 
     def write_oj_result(self, msg: Union[str, bytes]):
+        last_submission = None
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
             if line.startswith("[+]"):
+                submit_result_prefix = "[+] success: result: "
+                if line.startswith(submit_result_prefix):
+                    last_submission = line[len(submit_result_prefix):]
                 self.write(line, mode="success")
             elif line.startswith("[-]"):
                 self.write(line, mode="error")
             else:
                 self.write(line)
+        if last_submission is not None and "atcoder" in last_submission:
+            self.popup = CustomPopup(None, url=last_submission)
+            self.popup.show()
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
