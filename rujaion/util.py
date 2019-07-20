@@ -1,6 +1,10 @@
+import os
 import subprocess
 
 from PyQt5 import QtWidgets
+
+
+TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
 
 
 def disp_error(message: str):
