@@ -15,6 +15,7 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 class External(QThread):
     updateRequest = pyqtSignal(object)
     finishRequest = pyqtSignal()
+    failed_words = ("WA", "RE", "TLE", "MLE", "RE", "CE")
 
     def __init__(self, submission, url):
         super().__init__()
@@ -26,14 +27,15 @@ class External(QThread):
         with with_cookiejar(
             new_session_with_our_user_agent(), path=default_cookie_path
         ) as sess:
-            for i in range(20):
+            for i in range(40):
                 time.sleep(2)
                 self.submission = atcoder.AtCoderSubmission.from_url(self.url)
                 result = self.submission.get_status(session=sess)
                 self.updateRequest.emit((result, self.submission._problem_id))
-                if result == "AC" or "WA" in result or "RE" in result:
+                failed = any([word in result for word in self.failed_words])
+                if result == "AC" or failed:
                     finished = True
-                if "WA" in result or "RE" in result:
+                if failed:
                     subprocess.check_call(
                         ["sensible-browser", self.submission.get_url()],
                         stdin=sys.stdin,
@@ -45,6 +47,8 @@ class External(QThread):
                     time.sleep(3)
                     self.finishRequest.emit()
                     break
+            time.sleep(3)
+            self.finishRequest.emit()
 
 
 class CustomPopup(QtWidgets.QWidget):
