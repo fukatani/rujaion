@@ -295,21 +295,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         else:
             return False
 
-    def reflesh(self):
-        if not self.editor.fname:
-            return
-        cursor = self.editor.textCursor()
-        line_num = cursor.blockNumber()
-        char_num = cursor.columnNumber()
-        self.editor.open_file(self.editor.fname)
-        cursor = QtGui.QTextCursor(
-            self.editor.document().findBlockByLineNumber(line_num)
-        )
-        cursor.movePosition(
-            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
-        )
-        self.editor.setTextCursor(cursor)
-
     def saveFileAs(self):
         if self.editor.fname:
             default_dir = os.path.dirname(self.editor.fname)
@@ -330,18 +315,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("LastOpenedFile", savename)
 
     def savePostProcess(self):
-        scroll_value = self.editor.verticalScrollBar().value()
-        try:
-            subprocess.check_output(
-                ("rustfmt", self.editor.fname), stderr=subprocess.STDOUT
-            )
-        except Exception as err:
-            self.console.write(err.output)
-        self.reflesh()
-        self.editor.edited = False
-        self.editor.verticalScrollBar().setValue(scroll_value)
-        self.editor.repaint()
-        self.editor.highlight_cursor_line()
+        self.editor.save_post_process()
         self.updateWindowTitle()
         self.compile()
 

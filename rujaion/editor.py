@@ -1,3 +1,4 @@
+import codecs
 from collections import defaultdict
 import os
 import subprocess
@@ -453,3 +454,45 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         cursor.select(QtGui.QTextCursor.LineUnderCursor)
         cursor.removeSelectedText()
         cursor.deletePreviousChar()
+
+    def save_post_process(self):
+        # Get formatted Text
+        temp_file = codecs.open("temp.rs", "w", "utf-8")
+        temp_file.write(self.toPlainText())
+        temp_file.close()
+        try:
+            subprocess.check_output(
+                ("rustfmt", "temp.rs"), stderr=subprocess.STDOUT
+            )
+        except Exception:
+            return
+        temp_file = codecs.open("temp.rs", "r", "utf-8")
+        all_text = "".join([line for line in temp_file.readlines()])
+        temp_file.close()
+
+        # Save cursor and scroll bar status
+        cursor = self.textCursor()
+        line_num = cursor.blockNumber()
+        char_num = cursor.columnNumber()
+        scroll_value = self.verticalScrollBar().value()
+
+        cursor.movePosition(QtGui.QTextCursor.Start)
+        cursor.movePosition(
+            QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1
+        )
+        cursor.removeSelectedText()
+        # self.clear()
+        self.insertPlainText(all_text)
+
+        # recover cursor and scroll bar status
+        cursor = QtGui.QTextCursor(
+            self.document().findBlockByLineNumber(line_num)
+        )
+        cursor.movePosition(
+            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
+        )
+        self.setTextCursor(cursor)
+        self.verticalScrollBar().setValue(scroll_value)
+        self.edited = False
+        self.repaint()
+        self.highlight_cursor_line()
