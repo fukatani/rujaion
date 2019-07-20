@@ -56,13 +56,13 @@ KeyBinds
 - Set or unset brake point (F5)
 - Start Debug or continue (F9)
 - Start Debug with downloaded testcase (F4)
+- Download sample testcases (F6)
 - Run (Ctrl + F9)
 - Next (F8)
 - Step in (F7)
 - Step out (Shift + F8)
 - Jump to definition (F2)
 - Terminate debug process (Esc)
-- Set break point (double click on text)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
 - Toggle Show/Hide Browser Widget (F11)
@@ -74,4 +74,4 @@ Contest Task Browsing
 
 You can browse contest task by Dock Browser Widget.
 You can hide (or show) browser, press F11 key.
-If page URL is contest task page, contest task is downloaded by online-judge-tools.
+If page URL is contest task page, contest task is downloaded automatically by online-judge-tools.
