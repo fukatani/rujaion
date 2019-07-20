@@ -69,3 +69,9 @@ def exec_command(lang: str) -> List[str]:
         return ["env", "RUST_BACKTRACE=1"]
     else:
         return []
+
+
+def get_submit_lang(lang: str) -> str:
+    if lang == "cpp":
+        return "C++14 (GCC 5.4.1)"
+    return lang

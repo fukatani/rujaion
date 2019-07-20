@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt
 
 from rujaion import completer
 from rujaion import finder
+from rujaion import syntax
 from rujaion import util
 
 """
@@ -83,8 +84,10 @@ class Editter(QtWidgets.QPlainTextEdit):
     def set_completer(self):
         if self.lang == "rust":
             self.completer = completer.RacerCompleter(self)
+            self.highlighter = syntax.RustHighlighter(self.document())
         else:
             self.completer = QtWidgets.QCompleter(self)
+            self.highlighter = syntax.CppHighlighter(self.document())
         self.completer.setWidget(self)
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):

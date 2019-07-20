@@ -17,7 +17,6 @@ from rujaion import console
 from rujaion import display_widget
 from rujaion import editor
 from rujaion import login
-from rujaion import syntax
 from rujaion import util
 from rujaion import webview_widget
 
@@ -336,10 +335,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def addEditer(self, parent):
         self.editor = editor.Editter(parent)
-        if self.editor.lang == "rust":
-            self.highlighter = syntax.RustHighlighter(self.editor.document())
-        else:
-            self.highlighter = syntax.CppHighlighter(self.editor.document())
         self.editor.toggleBreakSignal.connect(self.UpdateBreak)
         self.edited = False
         self.editor.textChanged.connect(self.updateWindowTitle)
@@ -764,7 +759,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.clear()
         if not self.compile(no_debug=True):
             return
-        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         try:
             command = ["oj", "test", "-c", "./" + compiled_file]
             if self.exists_float_output():
@@ -798,7 +793,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", self.editor.lang, "-y", text, self.editor.fname, "--no-open")
+        cmd = ("oj", "s", "-l", util.get_submit_lang(self.editor.lang), "-y", text, self.editor.fname, "--no-open")
         print(cmd)
         self.console.write("start submit")
         self.submitter.cmd = cmd

@@ -112,7 +112,7 @@ class CppHighlighter(QSyntaxHighlighter):
                             "\\bauto\\b", "\\bstruct\\b", "\\bswitch\\b",
                             "\\bconst\\b", "\\bstatic\\b", "\\bstr\\b",
                             "\\bString\\b", "\\breturn\\b", "\\busing\\b",
-                            "\\benum\\b", "\\btypedef\\b",
+                            "\\benum\\b", "\\btypedef\\b", "\\bnamespace\\b",
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bcontinue\\b", "\\belse\\b", "\\bif\\b",
                             )
