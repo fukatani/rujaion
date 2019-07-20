@@ -15,8 +15,11 @@ Current version is alpha, some function is not implemented.
 
 Support one file project only.
 
+(C++ feature is experimental)
+
 Feature
 ==============================
+* Rust / C++ (If you opened *.cpp file, rujaion handles it as C++ source file. Otherwise, handles as Rust) 
 * GUI debug
 * Online judge testcases downloading and testing. (based on online-judge-tools)
 * Debug with online judge testcases
@@ -33,12 +36,12 @@ Software Requirements
 * PyQt5
 * PyQtWebEngine
 * pexpect
-* online-judge-tools (6.1 or later)
+* online-judge-tools (6.6.0 or later)
 * evcxr_repl
 * rustfmt
 * racer
 
-Though C++ Feature is experimental, if you want to use C++, in addition, you need
+If you want to use C++, in addition, you need
 * clang-format
 * g++
 
