@@ -18,7 +18,6 @@ class CustomWebEngineView(QWebEngineView):
 class WebViewWindow(QtWidgets.QWidget):
     def __init__(self, parent=None, *args):
         super().__init__(parent, *args)
-        self.url = ""
         self.browser = CustomWebEngineView(self)
         self.browser.resize(1000, 600)
         self.browser.setWindowTitle("Task")
@@ -30,7 +29,7 @@ class WebViewWindow(QtWidgets.QWidget):
         grid.addWidget(self.url_edit, 0, 0, 1, 15)
         grid.addWidget(self.browser, 1, 0, 5, 15)
         self.setLayout(grid)
-        self.resize(500, 800)
+        self.resize(800, 800)
 
     def download_task(self):
         self.url_edit.setText(self.browser.url().toString())

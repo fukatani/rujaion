@@ -477,12 +477,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         char_num = cursor.columnNumber()
         scroll_value = self.verticalScrollBar().value()
 
+        # Clear all Text and insert format result
         cursor.movePosition(QtGui.QTextCursor.Start)
         cursor.movePosition(
             QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1
         )
         cursor.removeSelectedText()
-        # self.clear()
         self.insertPlainText(all_text)
 
         # recover cursor and scroll bar status
