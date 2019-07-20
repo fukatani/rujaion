@@ -7,8 +7,9 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
 
-from rujaion import finder
 from rujaion import completer
+from rujaion import finder
+from rujaion import util
 
 """
 Fixing Some Bugs on a Sunday Evening
@@ -457,16 +458,16 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
     def save_post_process(self):
         # Get formatted Text
-        temp_file = codecs.open("temp.rs", "w", "utf-8")
+        temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
         temp_file.write(self.toPlainText())
         temp_file.close()
         try:
             subprocess.check_output(
-                ("rustfmt", "temp.rs"), stderr=subprocess.STDOUT
+                ("rustfmt", util.TEMPFILE), stderr=subprocess.STDOUT
             )
         except Exception:
             return
-        temp_file = codecs.open("temp.rs", "r", "utf-8")
+        temp_file = codecs.open(util.TEMPFILE, "r", "utf-8")
         all_text = "".join([line for line in temp_file.readlines()])
         temp_file.close()
 

@@ -6,10 +6,10 @@ from xml.etree import ElementTree
 
 from PyQt5 import QtWidgets, QtCore
 
+from rujaion import util
 
 class RacerCompleter(QtWidgets.QCompleter):
     # temp file for racer input
-    temp_file_name = os.path.join(os.path.dirname(__file__), "temp.rs")
     live_template_file = os.path.join(os.path.dirname(__file__), "live_templates.xml")
 
     def __init__(self, parent=None):
@@ -30,7 +30,7 @@ class RacerCompleter(QtWidgets.QCompleter):
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
-        temp_file = codecs.open(self.temp_file_name, "w", "utf-8")
+        temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
         temp_file.write(self.parent.toPlainText())
         temp_file.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
