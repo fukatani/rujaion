@@ -40,7 +40,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
 
-        self.setWindowTitle("RustGUIDebugger")
+        self.setWindowTitle("Rujaion")
         self.setStyleSheet("background-color: white")
         self.addCentral()
 
@@ -264,7 +264,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
         fname = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open", dirname, "Rust Files (*.rs *.bak)"
+            self, "Open", dirname, "Source Files (*.rs *.cpp *.bak)"
         )[0]
         self.openFile(fname)
 
@@ -304,7 +304,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             )
         default_file_name = os.path.join(default_dir, self.editor.default_file_name)
         savename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Save file", default_file_name, "Rust Files (*.rs)"
+            self, "Save file", default_file_name, "Source Files (*.rs) (*.cpp)"
         )[0]
         if not savename:
             return
@@ -334,8 +334,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.saveFileAs()
 
     def addEditer(self, parent):
-        self.editor = editor.RustEditter(parent)
-        self.highlighter = syntax.RustHighlighter(self.editor.document())
+        self.editor = editor.Editter(parent)
+        if self.editor.lang == "rust":
+            self.highlighter = syntax.RustHighlighter(self.editor.document())
+        else:
+            self.highlighter = syntax.CppHighlighter(self.editor.document())
         self.editor.toggleBreakSignal.connect(self.UpdateBreak)
         self.edited = False
         self.editor.textChanged.connect(self.updateWindowTitle)
@@ -372,10 +375,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.clear()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
-        if no_debug:
-            command = ("rustc", self.editor.fname)
-        else:
-            command = ("rustc", "-g", self.editor.fname)
+        command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname,]
         try:
             out = subprocess.check_output(command, stderr=subprocess.STDOUT)
             self.console.write("Compile is finished successfully!", mode="success")
@@ -419,12 +419,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         self.updateWindowTitle(True)
-        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
             output = subprocess.check_output(
-                ("env", "RUST_BACKTRACE=1", "./" + compiled_file),
+                util.exec_command(self.editor.lang) + [compiled_file,],
                 stderr=subprocess.STDOUT,
             )
             self.console.write(output)
@@ -463,13 +463,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
+        compiled_file = util.get_compiled_file(
+            self.editor.lang,
+            os.path.basename(self.editor.fname),
+        )
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
             assert self.proc is None
             self.proc = pexpect.spawn(
-                "env RUST_BACKTRACE=1 rust-gdb  ./" + compiled_file
+                util.debug_command(self.editor.lang) + " ./" + compiled_file
             )
             self.proc.expect("\(gdb\)")
             self.console.write(self.proc.before.decode())
@@ -519,13 +522,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         with open(fname) as fr:
             inputs = [line for line in fr if line]
 
-        compiled_file = os.path.basename(self.editor.fname).replace(".rs", "")
+        compiled_file = util.get_compiled_file(
+            self.editor.lang,
+            os.path.basename(self.editor.fname),
+        )
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
             if self.proc is None:
                 self.proc = pexpect.spawn(
-                    "env RUST_BACKTRACE=1 rust-gdb  ./" + compiled_file
+                    util.debug_command(self.editor.lang) + " ./" + compiled_file
                 )
                 self.console.terminate_evcxr()
             else:
@@ -791,7 +797,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", "rust", "-y", text, self.editor.fname, "--no-open")
+        cmd = ("oj", "s", "-l", self.editor.lang, "-y", text, self.editor.fname, "--no-open")
         print(cmd)
         self.console.write("start submit")
         self.submitter.cmd = cmd

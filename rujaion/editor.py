@@ -45,7 +45,7 @@ or brand of soft drink.
 """
 
 
-class RustEditter(QtWidgets.QPlainTextEdit):
+class Editter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
     default_file_name = "test1.rs"
 
@@ -73,6 +73,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.customContextMenuRequested.connect(self.__contextMenu)
         self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
         self.compile_error_selections = []
+        self.lang = "rust"
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -247,6 +248,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.edited = True
 
     def jump(self):
+        if self.lang != "rust":
+            # Not supported
+            return
         src_line_num = str(self.textCursor().blockNumber() + 1)
         src_char_num = str(self.textCursor().columnNumber())
 
@@ -461,11 +465,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
         temp_file.write(self.toPlainText())
         temp_file.close()
-        try:
-            subprocess.check_output(
-                ("rustfmt", util.TEMPFILE), stderr=subprocess.STDOUT
-            )
-        except Exception:
+        if not util.exec_format(self.lang):
             return
         temp_file = codecs.open(util.TEMPFILE, "r", "utf-8")
         all_text = "".join([line for line in temp_file.readlines()])
