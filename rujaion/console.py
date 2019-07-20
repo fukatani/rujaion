@@ -93,7 +93,7 @@ class Console(QtWidgets.QTextEdit):
             if line.startswith("[+]"):
                 submit_result_prefix = "[+] success: result: "
                 if line.startswith(submit_result_prefix):
-                    last_submission = line[len(submit_result_prefix):]
+                    last_submission = line[len(submit_result_prefix) :]
                 self.write(line, mode="success")
             elif line.startswith("[-]"):
                 self.write(line, mode="error")

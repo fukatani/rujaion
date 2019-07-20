@@ -2,7 +2,11 @@ import subprocess
 import sys
 import time
 
-from onlinejudge._implementation.utils import default_cookie_path, with_cookiejar, new_session_with_our_user_agent
+from onlinejudge._implementation.utils import (
+    default_cookie_path,
+    with_cookiejar,
+    new_session_with_our_user_agent,
+)
 from onlinejudge.service import atcoder
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -11,6 +15,7 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 class External(QThread):
     updateRequest = pyqtSignal(object)
     finishRequest = pyqtSignal()
+
     def __init__(self, submission, url):
         super().__init__()
         self.submission = submission
@@ -18,21 +23,23 @@ class External(QThread):
 
     def run(self):
         finished = False
-        with with_cookiejar(new_session_with_our_user_agent(),
-                                  path=default_cookie_path) as sess:
+        with with_cookiejar(
+            new_session_with_our_user_agent(), path=default_cookie_path
+        ) as sess:
             for i in range(20):
                 time.sleep(2)
                 self.submission = atcoder.AtCoderSubmission.from_url(self.url)
                 result = self.submission.get_status(session=sess)
-                self.updateRequest.emit((result,
-                                         self.submission._problem_id))
+                self.updateRequest.emit((result, self.submission._problem_id))
                 if result == "AC" or "WA" in result or "RE" in result:
                     finished = True
                 if "WA" in result or "RE" in result:
                     subprocess.check_call(
                         ["sensible-browser", self.submission.get_url()],
-                        stdin=sys.stdin, stdout=sys.stdout,
-                        stderr=sys.stderr)
+                        stdin=sys.stdin,
+                        stdout=sys.stdout,
+                        stderr=sys.stderr,
+                    )
                     finished = True
                 if finished:
                     time.sleep(3)
@@ -46,7 +53,7 @@ class CustomPopup(QtWidgets.QWidget):
         self.setWindowOpacity(0.7)
         # self.setWindowFlags(QtCore.Qt.Popup | QtCore.Qt.FramelessWindowHint)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-        self.setWindowTitle('CustomPopup')
+        self.setWindowTitle("CustomPopup")
 
         # set style
         radius = 40.0
@@ -82,15 +89,14 @@ class CustomPopup(QtWidgets.QWidget):
 
         print("submit result: " + problem_id + " " + result)
         self.label.setText(
-            "<font color='white'>" +
-            problem_id + ": " + result +
-            "</font>"
+            "<font color='white'>" + problem_id + ": " + result + "</font>"
         )
 
         if result == "AC":
             self.setStyleSheet("background-color: green")
-        elif result == "WJ" or \
-            ("/" in result and "WA" not in result and "RE" not in result):
+        elif result == "WJ" or (
+            "/" in result and "WA" not in result and "RE" not in result
+        ):
             self.setStyleSheet("background-color: grey")
         else:
             self.setStyleSheet("background-color: orange")
@@ -107,7 +113,8 @@ class CustomPopup(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
-    w = CustomPopup(None,
-                    url="https://atcoder.jp/contests/diverta2019/submissions/5363629")
+    w = CustomPopup(
+        None, url="https://atcoder.jp/contests/diverta2019/submissions/5363629"
+    )
     w.show()
     sys.exit(app.exec_())

@@ -290,7 +290,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         # tc.movePosition(QtGui.QTextCursor.EndOfWord)
         tc.insertText(text)
-        if self.completer.candidates_dict[text] != - 1:
+        if self.completer.candidates_dict[text] != -1:
             for _ in range(self.completer.candidates_dict[text]):
                 tc.movePosition(QtGui.QTextCursor.Left)
         self.setTextCursor(tc)

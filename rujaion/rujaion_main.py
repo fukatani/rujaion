@@ -414,7 +414,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def parse_compile_error(self, error_message : str):
+    def parse_compile_error(self, error_message: str):
         error_disp_lines = []
         warning_disp_lines = []
         lines = error_message.split("\n")
@@ -608,7 +608,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 )
                 break
 
-    def UpdateBreak(self, command : bytes):
+    def UpdateBreak(self, command: bytes):
         if self.proc is None:
             return
         if command.startswith(b"b "):
@@ -706,7 +706,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         for i, _ in self.display_widget.name_iter():
             self.display_one_valuable(i)
 
-    def display_one_valuable(self, row_num : int):
+    def display_one_valuable(self, row_num: int):
         # Avoid infinity loop
         self.display_widget.cellChanged.disconnect(self.processDisplayEdited)
 
@@ -771,7 +771,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         """ If "." character found in any *.out file, return True.
         """
         try:
-            subprocess.check_output("grep -F . {}/*.out".format(self.test_data_dir), shell=True)
+            subprocess.check_output(
+                "grep -F . {}/*.out".format(self.test_data_dir), shell=True
+            )
         except subprocess.CalledProcessError:
             return False
         return True
@@ -790,8 +792,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.console.write_oj_result("[.] Found float expectation")
                 self.console.write_oj_result("[.] Allow {} error".format(error))
             # TODO: configurable timeout
-            out = subprocess.check_output(command,
-                stderr=subprocess.STDOUT, timeout=4.0,
+            out = subprocess.check_output(
+                command, stderr=subprocess.STDOUT, timeout=4.0
             ).decode()
         except subprocess.TimeoutExpired as e:
             self.console.write_oj_result(e.output)
