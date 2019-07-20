@@ -86,7 +86,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.completer = completer.RacerCompleter(self)
             self.highlighter = syntax.RustHighlighter(self.document())
         else:
-            self.completer = QtWidgets.QCompleter(self)
+            self.completer = completer.CppCompleter(self)
             self.highlighter = syntax.CppHighlighter(self.document())
         self.completer.setWidget(self)
 

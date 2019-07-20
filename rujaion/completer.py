@@ -8,10 +8,8 @@ from PyQt5 import QtWidgets, QtCore
 
 from rujaion import util
 
-class RacerCompleter(QtWidgets.QCompleter):
-    # temp file for racer input
-    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates.xml")
 
+class CompleterBase(QtWidgets.QCompleter):
     def __init__(self, parent=None):
         super().__init__((), parent)
         self.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
@@ -27,6 +25,11 @@ class RacerCompleter(QtWidgets.QCompleter):
 
     def getSelected(self) -> str:
         return self.lastSelected
+
+
+class RacerCompleter(CompleterBase):
+    # temp file for racer input
+    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates_rust.xml")
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
@@ -65,6 +68,22 @@ class RacerCompleter(QtWidgets.QCompleter):
             self.candidates_dict = {}
         self.setModel(QtCore.QStringListModel(self.candidates_dict.keys()))
         super().setCompletionPrefix(search_word)
+
+
+class CppCompleter(CompleterBase):
+    # temp file for racer input
+    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates_cpp.xml")
+
+    # TODO: Support clang completer
+    def setCompletionPrefix(self, text: str):
+        self.candidates_dict = {}
+        for live_template in self.live_templates:
+            if text in live_template.name:
+                self.candidates_dict[live_template.template] = live_template.rpos
+        if len(self.candidates_dict) >= 6 or text in self.candidates_dict.keys():
+            self.candidates_dict = {}
+        self.setModel(QtCore.QStringListModel(self.candidates_dict.keys()))
+        super().setCompletionPrefix(text)
 
 
 class LiveTemplate:
