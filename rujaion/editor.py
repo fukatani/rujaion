@@ -66,19 +66,26 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.edited = False
         self.textChanged.connect(self.set_edited)
         self.fname = ""
-        self.completer = completer.RacerCompleter(self)
-        self.completer.setWidget(self)
 
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
         self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
         self.compile_error_selections = []
+
         self.lang = "rust"
+        self.set_completer()
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
         self._addCustomMenuItems(self._normalMenu)
         self._normalMenu.exec_(QtGui.QCursor.pos())
+
+    def set_completer(self):
+        if self.lang == "rust":
+            self.completer = completer.RacerCompleter(self)
+        else:
+            self.completer = QtWidgets.QCompleter(self)
+        self.completer.setWidget(self)
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
@@ -226,6 +233,11 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.setPlainText(f.read())
         self.edited = False
         self.fname = fname
+        if fname.endswith("cpp"):
+            self.lang = "cpp"
+        else:
+            self.lang = "rust"
+        self.set_completer()
 
     def reset_file_name(self) -> bool:
         if self.fname:
@@ -460,7 +472,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         cursor.removeSelectedText()
         cursor.deletePreviousChar()
 
-    def save_post_process(self):
+    def save_pre_process(self):
         # Get formatted Text
         temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
         temp_file.write(self.toPlainText())

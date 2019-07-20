@@ -308,6 +308,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         )[0]
         if not savename:
             return
+        self.editor.save_pre_process()
         with codecs.open(savename, "w", "utf-8") as f:
             f.write(self.editor.toPlainText())
         self.editor.fname = savename
@@ -315,7 +316,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("LastOpenedFile", savename)
 
     def savePostProcess(self):
-        self.editor.save_post_process()
         self.updateWindowTitle()
         self.compile()
 
@@ -327,6 +327,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                     if not os.path.exists(backup_name):
                         shutil.copy(self.editor.fname, backup_name)
                         break
+            self.editor.save_pre_process()
             with codecs.open(self.editor.fname, "w", "utf-8") as f:
                 f.write(self.editor.toPlainText())
             self.savePostProcess()
