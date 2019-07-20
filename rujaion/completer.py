@@ -8,7 +8,8 @@ from PyQt5 import QtWidgets, QtCore
 
 
 class RacerCompleter(QtWidgets.QCompleter):
-    temp_text = os.path.join(os.path.dirname(__file__), "temp.rs")
+    # temp file for racer input
+    temp_file_name = os.path.join(os.path.dirname(__file__), "temp.rs")
     live_template_file = os.path.join(os.path.dirname(__file__), "live_templates.xml")
 
     def __init__(self, parent=None):
@@ -19,18 +20,19 @@ class RacerCompleter(QtWidgets.QCompleter):
         self.live_templates = load_template(self.live_template_file)
         self.candidates_dict = {}
         self.ng_words = "core"
+        self.lastSelected = ""
 
     def setHighlighted(self, text: str):
         self.lastSelected = text
 
-    def getSelected(self):
+    def getSelected(self) -> str:
         return self.lastSelected
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
-        fname = codecs.open(self.temp_text, "w", "utf-8")
-        fname.write(self.parent.toPlainText())
-        fname.close()
+        temp_file = codecs.open(self.temp_file_name, "w", "utf-8")
+        temp_file.write(self.parent.toPlainText())
+        temp_file.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
         src_char_num = str(self.parent.textCursor().columnNumber())
 
@@ -42,7 +44,7 @@ class RacerCompleter(QtWidgets.QCompleter):
                 + " "
                 + src_char_num
                 + " "
-                + self.temp_text,
+                + self.temp_file_name,
                 shell=True,
             ).decode()
         except Exception:

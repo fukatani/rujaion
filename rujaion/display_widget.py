@@ -27,7 +27,7 @@ class ResultTableModel(QtWidgets.QTableWidget):
         self._addCustomMenuItems(menu)
         menu.exec_(QtGui.QCursor.pos())
 
-    def _addCustomMenuItems(self, menu):
+    def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
         menu.addAction(u"Clear", self.clear)
 

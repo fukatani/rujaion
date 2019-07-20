@@ -12,6 +12,7 @@ from rujaion.custom_popup import CustomPopup
 
 class Console(QtWidgets.QTextEdit):
     writeOjSignal = pyqtSignal(object)
+
     def __init__(self, parent=None):
         super(Console, self).__init__(parent)
         font = QtGui.QFont()
@@ -60,7 +61,7 @@ class Console(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.EndOfLine)
         self.ensureCursorVisible()
 
-    def write(self, msg: str, mode: str = ""):
+    def write(self, msg: Union[str, bytes], mode: str = ""):
         self.moveCursor(QtGui.QTextCursor.End)
         if isinstance(msg, bytes):
             msg = msg.decode()

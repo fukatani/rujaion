@@ -100,7 +100,7 @@ class CustomPopup(QtWidgets.QWidget):
         self.ext.exit(0)
         self.close()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
         self.close()
 
 

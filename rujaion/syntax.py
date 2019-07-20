@@ -4,7 +4,7 @@ from PyQt5.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat, QColor
 
 class RustHighlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
-        super(RustHighlighter, self).__init__(parent)
+        super().__init__(parent)
 
         self.highlight_rules = []
         function_format = QTextCharFormat()

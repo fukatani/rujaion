@@ -77,7 +77,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self._addCustomMenuItems(self._normalMenu)
         self._normalMenu.exec_(QtGui.QCursor.pos())
 
-    def _addCustomMenuItems(self, menu):
+    def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
         menu.addAction(u"Go to declaration (F2)", self.jump)
         if (
@@ -93,7 +93,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def find(self):
         finder.Find(self).show()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
         super().mousePressEvent(event)
         self.highlight_cursor_line()
 
@@ -113,7 +113,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         extra_selections.append(selection)
         self.setExtraSelections(extra_selections + self.compile_error_selections)
 
-    def highlight_compile_error(self, highlight_places, is_warning):
+    def highlight_compile_error(self, highlight_places, is_warning: bool):
         if is_warning:
             line_color = QtGui.QColor(Qt.yellow).darker(180)
         else:
@@ -122,7 +122,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             self.add_highlight_error(line, line_color, pos)
         self.setExtraSelections(self.compile_error_selections)
 
-    def add_highlight_error(self, line, line_color, pos):
+    def add_highlight_error(self, line: int, line_color: QtGui.QColor, pos: int):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setFontUnderline(True)
         selection.format.setUnderlineColor(line_color)

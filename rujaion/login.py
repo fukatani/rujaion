@@ -70,9 +70,9 @@ class LoginDialog(QtWidgets.QDialog):
 
 class URLEdit(QtWidgets.QLineEdit):
     def __init__(self, settings, parent):
+        super().__init__()
         self.parent = parent
         self.settings = settings
-        super().__init__()
         v = settings.value("Login URL", type=str)
         self.setText(v)
 
@@ -82,9 +82,9 @@ class URLEdit(QtWidgets.QLineEdit):
 
 class AccountEdit(QtWidgets.QLineEdit):
     def __init__(self, settings, parent):
+        super().__init__()
         self.parent = parent
         self.settings = settings
-        super().__init__()
         v = settings.value("Account", type=str)
         self.setText(v)
 

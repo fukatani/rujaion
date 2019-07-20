@@ -414,7 +414,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
-    def parse_compile_error(self, error_message):
+    def parse_compile_error(self, error_message : str):
         error_disp_lines = []
         warning_disp_lines = []
         lines = error_message.split("\n")
@@ -608,7 +608,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 )
                 break
 
-    def UpdateBreak(self, command):
+    def UpdateBreak(self, command : bytes):
         if self.proc is None:
             return
         if command.startswith(b"b "):
@@ -706,7 +706,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         for i, _ in self.display_widget.name_iter():
             self.display_one_valuable(i)
 
-    def display_one_valuable(self, row_num):
+    def display_one_valuable(self, row_num : int):
         # Avoid infinity loop
         self.display_widget.cellChanged.disconnect(self.processDisplayEdited)
 
