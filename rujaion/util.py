@@ -53,14 +53,20 @@ def get_compiled_file(lang: str, fname: str) -> str:
 
 
 def exec_format(lang: str) -> bool:
-    if lang != "rust":
-        return False
-    try:
-        subprocess.check_output(
-            ("rustfmt", TEMPFILE), stderr=subprocess.STDOUT
-        )
-    except Exception:
-        return False
+    if lang == "rust":
+        try:
+            subprocess.check_output(
+                ("rustfmt", TEMPFILE), stderr=subprocess.STDOUT
+            )
+        except Exception:
+            return False
+    else:
+        try:
+            subprocess.check_output(
+                ("clang-format",  "-i", TEMPFILE), stderr=subprocess.STDOUT
+            )
+        except Exception:
+            return False
     return True
 
 
