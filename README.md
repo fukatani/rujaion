@@ -38,6 +38,9 @@ Software Requirements
 * rustfmt
 * racer
 
+Though C++ Feature is experimental, if you want to use C++, in addition, you need
+* clang-format
+* g++
 
 Usage
 ==============================
