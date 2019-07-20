@@ -53,6 +53,7 @@ KeyBinds
 ==============================
 - Open File (Ctrl + o)
 - Save File (Ctrl + s)
+- Delete current line (Ctrl + k)
 - Set or unset brake point (F5)
 - Start Debug or continue (F9)
 - Start Debug with downloaded testcase (F4)

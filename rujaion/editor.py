@@ -390,6 +390,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
+        if event.key() == Qt.Key_K and event.modifiers() == QtCore.Qt.ControlModifier:
+            self.remove_whole_line()
+            return
+
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key_Home:
@@ -443,3 +447,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
             self.completer.complete(cr)
         else:
             self.completer.popup().hide()
+
+    def remove_whole_line(self):
+        cursor = self.textCursor()
+        cursor.select(QtGui.QTextCursor.LineUnderCursor)
+        cursor.removeSelectedText()
+        cursor.deletePreviousChar()
