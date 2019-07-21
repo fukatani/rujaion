@@ -494,16 +494,12 @@ class Editter(QtWidgets.QPlainTextEdit):
 
         # Clear all Text and insert format result
         cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(
-            QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1
-        )
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1)
         cursor.removeSelectedText()
         self.insertPlainText(all_text)
 
         # recover cursor and scroll bar status
-        cursor = QtGui.QTextCursor(
-            self.document().findBlockByLineNumber(line_num)
-        )
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
         cursor.movePosition(
             QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
         )

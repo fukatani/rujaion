@@ -371,7 +371,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.clear()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
-        command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname,]
+        command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname]
         try:
             out = subprocess.check_output(command, stderr=subprocess.STDOUT)
             self.console.write("Compile is finished successfully!", mode="success")
@@ -420,7 +420,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             util.disp_error("Compiled file is not opened.")
         try:
             output = subprocess.check_output(
-                util.exec_command(self.editor.lang) + [compiled_file,],
+                util.exec_command(self.editor.lang) + [compiled_file],
                 stderr=subprocess.STDOUT,
             )
             self.console.write(output)
@@ -460,8 +460,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             else:
                 return
         compiled_file = util.get_compiled_file(
-            self.editor.lang,
-            os.path.basename(self.editor.fname),
+            self.editor.lang, os.path.basename(self.editor.fname)
         )
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
@@ -519,8 +518,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             inputs = [line for line in fr if line]
 
         compiled_file = util.get_compiled_file(
-            self.editor.lang,
-            os.path.basename(self.editor.fname),
+            self.editor.lang, os.path.basename(self.editor.fname)
         )
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
@@ -793,7 +791,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = ("oj", "s", "-l", util.get_submit_lang(self.editor.lang), "-y", text, self.editor.fname, "--no-open")
+        cmd = (
+            "oj",
+            "s",
+            "-l",
+            util.get_submit_lang(self.editor.lang),
+            "-y",
+            text,
+            self.editor.fname,
+            "--no-open",
+        )
         print(cmd)
         self.console.write("start submit")
         self.submitter.cmd = cmd

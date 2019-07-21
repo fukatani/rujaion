@@ -36,14 +36,26 @@ def debug_command(lang: str) -> str:
 def compile_command(lang: str, no_debug: bool) -> List[str]:
     if lang == "rust":
         if no_debug:
-            return ["rustc",]
+            return ["rustc"]
         else:
             return ["rustc", "-g"]
     else:
         if no_debug:
-            return ['g++', '-std=gnu++1y', '-O2', '-I/opt/boost/gcc/include', '-L/opt/boost/gcc/lib']
+            return [
+                "g++",
+                "-std=gnu++1y",
+                "-O2",
+                "-I/opt/boost/gcc/include",
+                "-L/opt/boost/gcc/lib",
+            ]
         else:
-            return ['g++', '-std=gnu++1y', '-g', '-I/opt/boost/gcc/include', '-L/opt/boost/gcc/lib']
+            return [
+                "g++",
+                "-std=gnu++1y",
+                "-g",
+                "-I/opt/boost/gcc/include",
+                "-L/opt/boost/gcc/lib",
+            ]
 
 
 def get_compiled_file(lang: str, fname: str) -> str:
@@ -56,15 +68,13 @@ def get_compiled_file(lang: str, fname: str) -> str:
 def exec_format(lang: str) -> bool:
     if lang == "rust":
         try:
-            subprocess.check_output(
-                ("rustfmt", TEMPFILE), stderr=subprocess.STDOUT
-            )
+            subprocess.check_output(("rustfmt", TEMPFILE), stderr=subprocess.STDOUT)
         except Exception:
             return False
     else:
         try:
             subprocess.check_output(
-                ("clang-format",  "-i", TEMPFILE), stderr=subprocess.STDOUT
+                ("clang-format", "-i", TEMPFILE), stderr=subprocess.STDOUT
             )
         except Exception:
             return False

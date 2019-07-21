@@ -29,7 +29,9 @@ class CompleterBase(QtWidgets.QCompleter):
 
 class RacerCompleter(CompleterBase):
     # temp file for racer input
-    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates_rust.xml")
+    live_template_file = os.path.join(
+        os.path.dirname(__file__), "live_templates_rust.xml"
+    )
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
@@ -72,7 +74,9 @@ class RacerCompleter(CompleterBase):
 
 class CppCompleter(CompleterBase):
     # temp file for racer input
-    live_template_file = os.path.join(os.path.dirname(__file__), "live_templates_cpp.xml")
+    live_template_file = os.path.join(
+        os.path.dirname(__file__), "live_templates_cpp.xml"
+    )
 
     # TODO: Support clang completer
     def setCompletionPrefix(self, text: str):
@@ -84,7 +88,8 @@ class CppCompleter(CompleterBase):
 
         try:
             out = subprocess.check_output(
-                "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s" % (util.TEMPFILE_CPP, src_line_num, src_char_num, util.TEMPFILE_CPP),
+                "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s"
+                % (util.TEMPFILE_CPP, src_line_num, src_char_num, util.TEMPFILE_CPP),
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:
