@@ -759,7 +759,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         try:
-            command = ["oj", "test", "-c", "./" + compiled_file]
+            command = ["oj", "test", "-c", "./" + os.path.basename(compiled_file)]
             if self.exists_float_output():
                 error = 0.00000001
                 command += ["-e", str(error)]
