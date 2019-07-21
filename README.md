@@ -42,6 +42,7 @@ Software Requirements
 * racer
 
 If you want to use C++, in addition, you need
+* clang (8.0.0) or later
 * clang-format
 * g++
 

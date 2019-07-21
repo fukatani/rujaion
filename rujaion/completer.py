@@ -49,10 +49,11 @@ class RacerCompleter(CompleterBase):
                 + " "
                 + src_char_num
                 + " "
-                + self.temp_file_name,
+                + util.TEMPFILE,
                 shell=True,
             ).decode()
-        except Exception:
+        except subprocess.CalledProcessError as e:
+            print(e.output)
             return
 
         self.candidates_dict = {}
@@ -88,13 +89,14 @@ class CppCompleter(CompleterBase):
 
         try:
             out = subprocess.check_output(
-                "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s"
+                # read all header is too slow
+                # "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s"
+                "clang -cc1 -fsyntax-only -code-completion-at=%s:%s:%s %s"
                 % (util.TEMPFILE_CPP, src_line_num, src_char_num, util.TEMPFILE_CPP),
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:
-            print(out)
-            return
+            out = e.output.decode()
 
         self.candidates_dict = {}
         for line in out.split("\n"):
