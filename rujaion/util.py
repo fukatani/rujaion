@@ -1,10 +1,12 @@
 import os
 import subprocess
+from typing import *
 
 from PyQt5 import QtWidgets
 
 
 TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
+TEMPFILE_CPP = os.path.join(os.path.dirname(__file__), "temp.cpp")
 
 
 def disp_error(message: str):
@@ -24,12 +26,76 @@ def racer_enable() -> bool:
         return False
 
 
-def rustsym_enable() -> bool:
-    try:
-        output = subprocess.check_output(("rustsym", "--version"))
-        if output.decode().startswith("rustsym"):
-            return True
+def debug_command(lang: str) -> str:
+    if lang == "rust":
+        return "env RUST_BACKTRACE=1 rust-gdb"
+    else:
+        return "gdb"
+
+
+def compile_command(lang: str, no_debug: bool) -> List[str]:
+    if lang == "rust":
+        if no_debug:
+            return ["rustc"]
         else:
+            return ["rustc", "-g"]
+    else:
+        if no_debug:
+            return [
+                "g++",
+                "-std=gnu++1y",
+                "-O2",
+                "-I/opt/boost/gcc/include",
+                "-L/opt/boost/gcc/lib",
+            ]
+        else:
+            return [
+                "g++",
+                "-std=gnu++1y",
+                "-g",
+                "-I/opt/boost/gcc/include",
+                "-L/opt/boost/gcc/lib",
+            ]
+
+
+def get_compiled_file(lang: str, fname: str) -> str:
+    if lang == "rust":
+        return fname.replace(".rs", "")
+    else:
+        return "a.out"
+
+
+def exec_format(lang: str) -> bool:
+    if lang == "rust":
+        try:
+            subprocess.check_output(("rustfmt", TEMPFILE), stderr=subprocess.STDOUT)
+        except Exception:
             return False
-    except subprocess.CalledProcessError:
-        return False
+    else:
+        try:
+            subprocess.check_output(
+                ("clang-format", "-i", TEMPFILE), stderr=subprocess.STDOUT
+            )
+        except Exception:
+            return False
+    return True
+
+
+def exec_command(lang: str) -> List[str]:
+    if lang == "rust":
+        return ["env", "RUST_BACKTRACE=1"]
+    else:
+        return []
+
+
+def get_submit_lang(lang: str) -> str:
+    if lang == "cpp":
+        return "C++14 (GCC 5.4.1)"
+    return lang
+
+
+def indent_width(lang: str) -> int:
+    if lang == "rust":
+        return 4
+    else:
+        return 2

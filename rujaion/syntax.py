@@ -25,7 +25,7 @@ class RustHighlighter(QSyntaxHighlighter):
                             "\\busize\\b", "\\bchar\\b", "\\bbool\\b",
                             "\\blet\\b", "\\bmut\\b",
                             "\\bfn\\b", "\\bstruct\\b", "\\bpub\\b",
-                            "\\buse\\b", "\\bimpl\\b", "\\bmatch\\b",
+                            "\\buse\\b", "\\bimpl\\b",
                             "\\bconst\\b", "\\bstatic\\b", "\\bstr\\b",
                             "\\bString\\b", "\\breturn\\b", "\\bwhere\\b",
                             "\\benum\\b", "\\bmatch\\b", "\\btype\\b",
@@ -69,6 +69,80 @@ class RustHighlighter(QSyntaxHighlighter):
         macro_format.setFontItalic(True)
         macro_format.setForeground(Qt.darkCyan)
         self.highlight_rules.append((QRegExp("\\b[A-Za-z0-9_]+!"), macro_format))
+
+        attribute_format = QTextCharFormat()
+        attribute_format.setForeground(QColor(Qt.green).darker(140))
+        self.highlight_rules.append((QRegExp("#[^\n]*"), attribute_format))
+
+        line_comment_format = QTextCharFormat()
+        line_comment_format.setForeground(Qt.darkGray)
+        self.highlight_rules.append((QRegExp("//[^\n]*"), line_comment_format))
+
+    def highlightBlock(self, text: str):
+        for pattern, format in self.highlight_rules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)
+
+
+class CppHighlighter(QSyntaxHighlighter):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.highlight_rules = []
+        function_format = QTextCharFormat()
+        function_format.setFontItalic(True)
+        function_format.setForeground(Qt.blue)
+        self.highlight_rules.append(
+            (QRegExp("\\b[A-Za-z][A-Za-z0-9_:<>\+ ]+(?=\\()"), function_format)
+        )
+
+        keyword_format = QTextCharFormat()
+        keyword_format.setForeground(QColor(Qt.magenta).darker(150))
+        keyword_format.setFontWeight(QFont.Bold)
+
+        # fmt: off
+        keyword_patterns = ("\\bint\\b", "\\blong\\b", "\\bsize_t\\b",
+                            "\\bchar\\b", "\\bbool\\b",
+                            "\\bauto\\b", "\\bstruct\\b", "\\bswitch\\b",
+                            "\\bconst\\b", "\\bstatic\\b", "\\bstr\\b",
+                            "\\bString\\b", "\\breturn\\b", "\\busing\\b",
+                            "\\benum\\b", "\\btypedef\\b", "\\bnamespace\\b",
+                            "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
+                            "\\bcontinue\\b", "\\belse\\b", "\\bif\\b",
+                            )
+        # fmt: on
+
+        self.highlight_rules += [
+            (QRegExp(pattern), keyword_format) for pattern in keyword_patterns
+        ]
+
+        const_format = QTextCharFormat()
+        const_format.setForeground(Qt.darkYellow)
+
+        # fmt: off
+        const_patterns = ("\\btrue\\b", "\\bfalse\\b", "\\bnullptr\\b",
+                          "\\bNULL\\b", "\\bSome\\b", "\\b[0-9\.\_]+\\b",
+                          )
+        # fmt: on
+
+        self.highlight_rules += [
+            (QRegExp(pattern), const_format) for pattern in const_patterns
+        ]
+
+        self_format = QTextCharFormat()
+        self_format.setForeground(Qt.darkRed)
+        self.highlight_rules.append((QRegExp("\\bthis\\b"), self_format))
+
+        quotation_format = QTextCharFormat()
+        quotation_format.setForeground(Qt.darkGreen)
+        self.highlight_rules.append((QRegExp('".*"'), quotation_format))
+        self.highlight_rules.append((QRegExp("'.*'"), quotation_format))
 
         attribute_format = QTextCharFormat()
         attribute_format.setForeground(QColor(Qt.green).darker(140))

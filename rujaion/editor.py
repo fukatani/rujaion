@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt
 
 from rujaion import completer
 from rujaion import finder
+from rujaion import syntax
 from rujaion import util
 
 """
@@ -45,7 +46,7 @@ or brand of soft drink.
 """
 
 
-class RustEditter(QtWidgets.QPlainTextEdit):
+class Editter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
     default_file_name = "test1.rs"
 
@@ -66,18 +67,28 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.edited = False
         self.textChanged.connect(self.set_edited)
         self.fname = ""
-        self.completer = completer.RacerCompleter(self)
-        self.completer.setWidget(self)
 
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
         self.setLineWrapMode(QtWidgets.QPlainTextEdit.NoWrap)
         self.compile_error_selections = []
 
+        self.lang = "rust"
+        self.set_completer()
+
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
         self._addCustomMenuItems(self._normalMenu)
         self._normalMenu.exec_(QtGui.QCursor.pos())
+
+    def set_completer(self):
+        if self.lang == "rust":
+            self.completer = completer.RacerCompleter(self)
+            self.highlighter = syntax.RustHighlighter(self.document())
+        else:
+            self.completer = completer.CppCompleter(self)
+            self.highlighter = syntax.CppHighlighter(self.document())
+        self.completer.setWidget(self)
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
@@ -225,6 +236,11 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.setPlainText(f.read())
         self.edited = False
         self.fname = fname
+        if fname.endswith("cpp"):
+            self.lang = "cpp"
+        else:
+            self.lang = "rust"
+        self.set_completer()
 
     def reset_file_name(self) -> bool:
         if self.fname:
@@ -247,6 +263,9 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         self.edited = True
 
     def jump(self):
+        if self.lang != "rust":
+            # Not supported
+            return
         src_line_num = str(self.textCursor().blockNumber() + 1)
         src_char_num = str(self.textCursor().columnNumber())
 
@@ -301,10 +320,10 @@ class RustEditter(QtWidgets.QPlainTextEdit):
     def enter_with_auto_indent(self):
         tc = self.textCursor()
         line_text = self.toPlainText().split("\n")[tc.blockNumber()]
-        indent_level = line_text.count("    ")
+        indent_level = line_text.count(" " * util.indent_width(self.lang))
         if line_text.endswith("{"):
             indent_level += 1
-        self.insertPlainText("\n" + "    " * indent_level)
+        self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
@@ -388,7 +407,7 @@ class RustEditter(QtWidgets.QPlainTextEdit):
                 selected_line_num = tc.selection().toPlainText().count("\n") + 1
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
-                tc.insertText("    ")
+                tc.insertText(" " * util.indent_width(self.lang))
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
@@ -456,16 +475,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
         cursor.removeSelectedText()
         cursor.deletePreviousChar()
 
-    def save_post_process(self):
+    def save_pre_process(self):
         # Get formatted Text
         temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
         temp_file.write(self.toPlainText())
         temp_file.close()
-        try:
-            subprocess.check_output(
-                ("rustfmt", util.TEMPFILE), stderr=subprocess.STDOUT
-            )
-        except Exception:
+        if not util.exec_format(self.lang):
             return
         temp_file = codecs.open(util.TEMPFILE, "r", "utf-8")
         all_text = "".join([line for line in temp_file.readlines()])
@@ -479,16 +494,12 @@ class RustEditter(QtWidgets.QPlainTextEdit):
 
         # Clear all Text and insert format result
         cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(
-            QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1
-        )
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1)
         cursor.removeSelectedText()
         self.insertPlainText(all_text)
 
         # recover cursor and scroll bar status
-        cursor = QtGui.QTextCursor(
-            self.document().findBlockByLineNumber(line_num)
-        )
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
         cursor.movePosition(
             QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
         )
