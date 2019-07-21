@@ -320,10 +320,10 @@ class Editter(QtWidgets.QPlainTextEdit):
     def enter_with_auto_indent(self):
         tc = self.textCursor()
         line_text = self.toPlainText().split("\n")[tc.blockNumber()]
-        indent_level = line_text.count("    ")
+        indent_level = line_text.count(" " * util.indent_width(self.lang))
         if line_text.endswith("{"):
             indent_level += 1
-        self.insertPlainText("\n" + "    " * indent_level)
+        self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
@@ -407,7 +407,7 @@ class Editter(QtWidgets.QPlainTextEdit):
                 selected_line_num = tc.selection().toPlainText().count("\n") + 1
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
-                tc.insertText("    ")
+                tc.insertText(" " * util.indent_width(self.lang))
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
