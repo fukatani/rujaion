@@ -6,6 +6,7 @@ from PyQt5 import QtWidgets
 
 
 TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
+TEMPFILE_CPP = os.path.join(os.path.dirname(__file__), "temp.cpp")
 
 
 def disp_error(message: str):

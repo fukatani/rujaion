@@ -76,7 +76,7 @@ class CppCompleter(CompleterBase):
 
     # TODO: Support clang completer
     def setCompletionPrefix(self, text: str):
-        temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
+        temp_file = codecs.open(util.TEMPFILE_CPP, "w", "utf-8")
         temp_file.write(self.parent.toPlainText())
         temp_file.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
@@ -84,12 +84,12 @@ class CppCompleter(CompleterBase):
 
         try:
             out = subprocess.check_output(
-                "clang -cc1 -fsyntax-only -code-completion-at=%s:%s:%s %s" % (util.TEMPFILE, src_line_num, src_char_num, util.TEMPFILE),
+                "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s" % (util.TEMPFILE_CPP, src_line_num, src_char_num, util.TEMPFILE_CPP),
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:
-            out = e.output.decode()
             print(out)
+            return
 
         self.candidates_dict = {}
         for line in out.split("\n"):
