@@ -74,21 +74,12 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.compile_error_selections = []
 
         self.lang = "rust"
-        self.set_completer()
+        self.reset_lang()
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
         self._addCustomMenuItems(self._normalMenu)
         self._normalMenu.exec_(QtGui.QCursor.pos())
-
-    def set_completer(self):
-        if self.lang == "rust":
-            self.completer = completer.RacerCompleter(self)
-            self.highlighter = syntax.RustHighlighter(self.document())
-        else:
-            self.completer = completer.CppCompleter(self)
-            self.highlighter = syntax.CppHighlighter(self.document())
-        self.completer.setWidget(self)
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
@@ -240,7 +231,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.lang = "cpp"
         else:
             self.lang = "rust"
-        self.set_completer()
+        self.reset_lang()
 
     def reset_file_name(self) -> bool:
         if self.fname:
@@ -249,11 +240,26 @@ class Editter(QtWidgets.QPlainTextEdit):
             return True
         return False
 
+    def reset_lang(self):
+        if self.fname.endswith("cpp"):
+            self.lang = "cpp"
+        else:
+            self.lang = "rust"
+
+        if self.lang == "rust":
+            self.completer = completer.RacerCompleter(self)
+            self.highlighter = syntax.RustHighlighter(self.document())
+        else:
+            self.completer = completer.CppCompleter(self)
+            self.highlighter = syntax.CppHighlighter(self.document())
+        self.completer.setWidget(self)
+
     def new_file(self, template_file_name: str = ""):
         self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
         self.reset_file_name()
+        self.reset_lang()
         if template_file_name:
             with open(template_file_name) as f:
                 self.setPlainText(f.read())

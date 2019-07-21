@@ -320,7 +320,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def saveFile(self):
         if self.editor.fname:
-            if self.editor.edited:
+            if self.editor.edited and os.path.exists(self.editor.fname):
                 for i in range(50):
                     backup_name = self.editor.fname + "." + str(i) + ".bak"
                     if not os.path.exists(backup_name):
