@@ -1,4 +1,4 @@
-Online judge aware Rust IDE
+Online judge aware Rust / C++ IDE
 ==============================
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
@@ -9,13 +9,11 @@ Online judge aware Rust IDE
 
 Introduction
 ==============================
-Lightweight rust GUI Debugger based on PyQt and rust-gdb.
+Lightweight Rust GUI Debugger based on PyQt. (C++ feature is experimental)
 
 Current version is alpha, some function is not implemented. 
 
 Support one file project only.
-
-(C++ feature is experimental)
 
 Feature
 ==============================
@@ -42,7 +40,7 @@ Software Requirements
 * racer
 
 If you want to use C++, in addition, you need
-* clang (8.0.0) or later
+* clang (8.0.0 or later)
 * clang-format
 * g++
 
