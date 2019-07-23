@@ -31,11 +31,11 @@ Feature
 Software Requirements
 ==============================
 * Python (3.5 or later)
-* PyQt5
+* PyQt5 (`sudo apt install pyqt5`)
 * PyQtWebEngine
-* pexpect
+* pexpect 
 * online-judge-tools (6.6.0 or later)
-* evcxr_repl
+* evcxr_repl (`cargo install evcxr_repl`)
 * rustfmt
 * racer
 

@@ -1,2 +1,4 @@
 include rujaion/template.rs
+include rujaion/live_templates_cpp.xml
+include rujaion/live_templates_rust.xml
 
