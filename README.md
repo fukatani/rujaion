@@ -5,11 +5,11 @@ Online judge aware Rust / C++ IDE
 
 [![Travis](https://img.shields.io/travis/fukatani/rujaion.svg)](https://travis-ci.org/fukatani/rujaion)
 
-![screen_shot](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/debug.png)
+![screen_cast](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/rujaion.gif)
 
 Introduction
 ==============================
-Lightweight Rust GUI Debugger based on PyQt. (C++ feature is experimental)
+Lightweight Rust IDE based on PyQt. (C++ feature is experimental)
 
 Current version is alpha, some function is not implemented. 
 
