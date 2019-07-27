@@ -303,7 +303,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             )
         default_file_name = os.path.join(default_dir, self.editor.default_file_name)
         savename = QtWidgets.QFileDialog.getSaveFileName(
-            self, "Save file", default_file_name, "Source Files (*.rs) (*.cpp)"
+            self, "Save file", default_file_name, "Source Files (*.rs *.cpp)"
         )[0]
         if not savename:
             return
