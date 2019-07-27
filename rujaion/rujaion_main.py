@@ -570,6 +570,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.run_evcxr()
 
     def addTest(self):
+        if not os.path.exists(self.test_data_dir):
+            os.mkdir(self.test_data_dir)
         test_data_files = set(os.listdir(self.test_data_dir))
         for i in range(1, 100):
             if not "sample-{}.in".format(i) in test_data_files:
