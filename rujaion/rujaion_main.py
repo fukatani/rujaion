@@ -125,10 +125,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.login)
         filemenu.addAction(a)
 
-        a = QtWidgets.QAction("Download (F6)", self)
-        a.triggered.connect(self.download)
-        filemenu.addAction(a)
-
         a = QtWidgets.QAction("Test My Code (Ctrl+F4)", self)
         a.triggered.connect(self.testMyCode)
         filemenu.addAction(a)
@@ -215,7 +211,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_F4:
             self.debugWithLastCase()
         elif event.key() == QtCore.Qt.Key_F6:
-            self.download()
+            self.browser_widget.focusOnUrlEdit()
         elif event.key() == QtCore.Qt.Key_F11:
             self.show_browser = not self.show_browser
             if self.show_browser:
@@ -708,18 +704,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.jump()
 
     @with_console
-    def download(self, url: Optional[str] = None, browser_reflesh: bool = True):
-        if url is None:
-            url = self.settings.value(
-                "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
-            )
-            url, ok = QtWidgets.QInputDialog.getText(
-                self, "Download Testcases", "Contest task URL:", text=url
-            )
-            if not ok:
-                return
+    def download(self, url: str = None):
         self.settings.setValue("contest url", url)
-
         try:
             self.clearTestData()
             out = subprocess.check_output(
@@ -730,8 +716,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         self.console.write_oj_result(out)
         self.console.write("Downloaded Test data", mode="success")
-        if browser_reflesh:
-            self.browser_widget.changePage(url)
 
     def login(self):
         login.LoginDialog(self, settings=self.settings).show()

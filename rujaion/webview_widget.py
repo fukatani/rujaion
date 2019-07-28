@@ -78,7 +78,11 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit.insert(self.browser.url().toString())
         # auto task download
         if self.parent() is not None:
-            self.parent().parent().download(self.url_edit.text(), browser_reflesh=False)
+            self.parent().parent().download(self.url_edit.text())
+
+    def focusOnUrlEdit(self):
+        self.url_edit.setFocus()
+        self.url_edit.selectAll()
 
 
 if __name__ == "__main__":
