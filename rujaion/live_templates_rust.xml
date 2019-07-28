@@ -15,7 +15,7 @@
   <template name="print" value="println!(&quot;{}&quot;, $VAR$$END$);" description="p" toReformat="false" toShortenFQNames="true">
     <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
   </template>
-  <template name="print-1" value="println!(&quot;-1&quot$END$;);return;" description="p" toReformat="false" toShortenFQNames="true" />
+  <template name="print-1" value="println!(&quot;-1&quot;$END$;);return;" description="p" toReformat="false" toShortenFQNames="true" />
   <template name="yn" value='if true$END$ { println!("Yes"); } else { println!("No"); } ' description="print Yes or No" toReformat="false" toShortenFQNames="true" />
   <template name="YN" value='if true$END$ { println!("YES"); } else { println!("NO"); } ' description="print YES or NO" toReformat="false" toShortenFQNames="true" />
   <template name="match" value='match x$END$ { _ => , }' description="print YES or NO" toReformat="false" toShortenFQNames="true" />

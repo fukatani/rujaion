@@ -1,4 +1,5 @@
 import codecs
+from _collections import OrderedDict
 import os
 import subprocess
 from typing import *
@@ -98,7 +99,7 @@ class CppCompleter(CompleterBase):
         except subprocess.CalledProcessError as e:
             out = e.output.decode()
 
-        self.candidates_dict = {}
+        self.candidates_dict = OrderedDict()
         for line in out.split("\n"):
             if line.startswith("COMPLETION:"):
                 cand = line.split(" ")[1]
