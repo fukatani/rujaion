@@ -145,7 +145,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.submit)
         filemenu.addAction(a)
 
-        self.proc = None
+        self.debug_process = None
         self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
         try:
             self.openFile(self.settings.value("LastOpenedFile", type=str))
@@ -169,7 +169,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         title = ""
         if self.editor.edited:
             title = "(*) "
-        if self.proc is not None:
+        if self.debug_process is not None:
             title += "(Debugging...) "
         elif running:
             title += "(Running...) "
@@ -213,10 +213,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         elif event.key() == QtCore.Qt.Key_F6:
             self.browser_widget.focusOnUrlEdit()
         elif (
-            event.modifiers() == QtCore.Qt.ControlModifier and
-            event.key() == QtCore.Qt.Key_F11
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_F11
         ):
-            if self.proc is not None:
+            if self.debug_process is not None:
                 return
             if self.editor.isHidden():
                 self.editor.show()
@@ -363,7 +363,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.browser_widget.changePage(url)
 
     def processDisplayEdited(self, row_num, column_num):
-        if self.proc is not None:
+        if self.debug_process is not None:
             self.display_one_valuable(row_num)
 
     def addConsole(self):
@@ -415,7 +415,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         return error_places, warning_places
 
     def run(self):
-        if self.proc is not None:
+        if self.debug_process is not None:
             if self.askTerminateOrNot():
                 self.terminate()
             else:
@@ -440,7 +440,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def with_debug_display(func):
         def wrapper(self, *args, **kwargs):
             func(self, *args, **kwargs)
-            if self.proc is not None:
+            if self.debug_process is not None:
                 self.browser_dock.show()
                 self.browser_dock.setWidget(self.display_widget)
 
@@ -449,7 +449,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def with_console(func):
         def wrapper(self, *args, **kwargs):
             func(self, *args, **kwargs)
-            if self.proc is not None:
+            if self.debug_process is not None:
                 if not self.show_console:
                     self.show_console = True
                     self.console_dock.show()
@@ -462,7 +462,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.clear()
         if not self.compile():
             return
-        if self.proc is not None:
+        if self.debug_process is not None:
             if self.askTerminateOrNot():
                 self.terminate()
             else:
@@ -473,20 +473,20 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            assert self.proc is None
-            self.proc = pexpect.spawn(
+            assert self.debug_process is None
+            self.debug_process = pexpect.spawn(
                 util.debug_command(self.editor.lang) + " ./" + compiled_file
             )
-            self.proc.expect("\(gdb\)")
-            self.console.write(self.proc.before.decode())
+            self.debug_process.expect("\(gdb\)")
+            self.console.write(self.debug_process.before.decode())
 
             for com in self.editor.generateBreak():
-                self.proc.send(com)
-                self.proc.expect("\(gdb\)")
-                self.console.write(self.proc.before.decode(), mode="gdb")
+                self.debug_process.send(com)
+                self.debug_process.expect("\(gdb\)")
+                self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
-            self.proc.send(b"run\n")
+            self.debug_process.send(b"run\n")
             self.updateWindowTitle()
             self.post_process()
 
@@ -502,7 +502,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.clear()
         if not self.compile():
             return
-        if self.proc is not None:
+        if self.debug_process is not None:
             if self.askTerminateOrNot():
                 self.terminate()
             else:
@@ -531,25 +531,25 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not opened.")
         try:
-            if self.proc is None:
-                self.proc = pexpect.spawn(
+            if self.debug_process is None:
+                self.debug_process = pexpect.spawn(
                     util.debug_command(self.editor.lang) + " ./" + compiled_file
                 )
                 self.console.terminate_evcxr()
             else:
                 self.continue_process()
                 return
-            self.proc.expect("\(gdb\)")
+            self.debug_process.expect("\(gdb\)")
             for com in self.editor.generateBreak():
-                self.proc.send(com)
-                self.proc.expect("\(gdb\)")
-                self.console.write(self.proc.before.decode(), mode="gdb")
+                self.debug_process.send(com)
+                self.debug_process.expect("\(gdb\)")
+                self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
-            self.proc.send(b"run\n")
+            self.debug_process.send(b"run\n")
             self.updateWindowTitle()
             for i, debug_input in enumerate(inputs):
-                msg = self.proc.before.decode()
+                msg = self.debug_process.before.decode()
                 for line in msg.split("\r\n"):
                     self.console.write(line, mode="gdb")
 
@@ -568,7 +568,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                         self.terminate()
                         return
 
-                self.proc.send(debug_input.encode())
+                self.debug_process.send(debug_input.encode())
             self.post_process()
             self.updateWindowTitle()
             self.console.run_evcxr()
@@ -593,53 +593,53 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 break
 
     def UpdateBreak(self, command: bytes):
-        if self.proc is None:
+        if self.debug_process is None:
             return
         if command.startswith(b"b "):
-            self.proc.send(command)
-            self.proc.expect("\(gdb\)")
+            self.debug_process.send(command)
+            self.debug_process.expect("\(gdb\)")
         else:
-            self.proc.send("i b\n".encode())
-            self.proc.expect("\(gdb\)")
-            print(self.proc.before.decode())
+            self.debug_process.send("i b\n".encode())
+            self.debug_process.expect("\(gdb\)")
+            print(self.debug_process.before.decode())
             last_num = -1
-            for line in self.proc.before.decode().split("\r\n"):
+            for line in self.debug_process.before.decode().split("\r\n"):
                 if line.split(" ")[0].isdecimal():
                     last_num = int(line.split(" ")[0])
                 if line.rstrip("\n").endswith(":" + command.decode()):
                     assert last_num != -1
-                    self.proc.send(("d " + str(last_num) + "\n").encode())
-                    self.proc.expect("\(gdb\)")
+                    self.debug_process.send(("d " + str(last_num) + "\n").encode())
+                    self.debug_process.expect("\(gdb\)")
                     break
 
     def next(self):
         print("next")
-        if self.proc is None:
+        if self.debug_process is None:
             return
-        self.proc.send(b"n\n")
+        self.debug_process.send(b"n\n")
         self.post_process()
 
     def stepIn(self):
         print("step in")
-        if self.proc is None:
+        if self.debug_process is None:
             return
-        self.proc.send(b"s\n")
+        self.debug_process.send(b"s\n")
         self.post_process()
 
     def stepOut(self):
         print("step out")
-        if self.proc is None:
+        if self.debug_process is None:
             return
-        self.proc.send(b"fin\n")
+        self.debug_process.send(b"fin\n")
         self.post_process()
 
     def terminate(self):
         print("quit")
-        if self.proc is None:
+        if self.debug_process is None:
             return
-        self.proc.send(b"quit\n")
-        self.proc.terminate()
-        self.proc = None
+        self.debug_process.send(b"quit\n")
+        self.debug_process.terminate()
+        self.debug_process = None
         self.console.write("Debug process was successfully terminated.", mode="success")
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
@@ -649,21 +649,21 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def continue_process(self):
         print("continue")
-        if self.proc is None:
+        if self.debug_process is None:
             return
-        self.proc.send(b"c\n")
+        self.debug_process.send(b"c\n")
         self.post_process()
 
     def post_process(self):
-        assert self.proc is not None
+        assert self.debug_process is not None
         try:
-            self.proc.expect("\(gdb\)", timeout=self.gdb_timeout)
+            self.debug_process.expect("\(gdb\)", timeout=self.gdb_timeout)
         except:
-            print(str(self.proc))
+            print(str(self.debug_process))
             self.console.write("Debug process is timeout", mode="error")
             self.terminate()
             return
-        msg = self.proc.before.decode()
+        msg = self.debug_process.before.decode()
         for line in msg.split("\r\n"):
             self.console.write(line, mode="gdb")
 
@@ -700,16 +700,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.display_widget.set_cell(row_num, 2, "")
             self.display_widget.cellChanged.connect(self.processDisplayEdited)
             return
-        self.proc.send(b"p " + name.encode() + b"\n")
-        self.proc.expect("\(gdb\)")
-        value = "".join(self.proc.before.decode().split("\r\n")[1:])
+        self.debug_process.send(b"p " + name.encode() + b"\n")
+        self.debug_process.expect("\(gdb\)")
+        value = "".join(self.debug_process.before.decode().split("\r\n")[1:])
         value = value.split(" = ")[-1]
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 1, value)
 
-        self.proc.send(b"pt " + name.encode() + b"\n")
-        self.proc.expect("\(gdb\)")
-        type = "".join(self.proc.before.decode().split("\n")[1:])
+        self.debug_process.send(b"pt " + name.encode() + b"\n")
+        self.debug_process.expect("\(gdb\)")
+        type = "".join(self.debug_process.before.decode().split("\n")[1:])
         type = type.split(" = ")[-1]
         type = type.split(" {")[0]
         self.display_widget.set_cell(row_num, 2, type)
