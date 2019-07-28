@@ -708,7 +708,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.jump()
 
     @with_console
-    def download(self, url: Optional[str] = None):
+    def download(self, url: Optional[str] = None, browser_reflesh: bool = True):
         if url is None:
             url = self.settings.value(
                 "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
@@ -730,7 +730,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         self.console.write_oj_result(out)
         self.console.write("Downloaded Test data", mode="success")
-        self.browser_widget.changePage(url)
+        if browser_reflesh:
+            self.browser_widget.changePage(url)
 
     def login(self):
         login.LoginDialog(self, settings=self.settings).show()
