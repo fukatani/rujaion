@@ -205,8 +205,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.next()
         elif event.key() == QtCore.Qt.Key_F7:
             self.stepIn()
-        elif event.key() == QtCore.Qt.Key_F5:
-            self.reflesh()
         elif event.key() == QtCore.Qt.Key_F2:
             self.jump()
         elif (
