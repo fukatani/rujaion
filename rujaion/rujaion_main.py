@@ -212,6 +212,20 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.debugWithLastCase()
         elif event.key() == QtCore.Qt.Key_F6:
             self.browser_widget.focusOnUrlEdit()
+        elif (
+            event.modifiers() == QtCore.Qt.ControlModifier and
+            event.key() == QtCore.Qt.Key_F11
+        ):
+            if self.proc is not None:
+                return
+            if self.editor.isHidden():
+                self.editor.show()
+                self.console.show()
+                self.browser_widget.browser.setFocus()
+            else:
+                self.editor.hide()
+                self.console.hide()
+                self.editor.setFocus()
         elif event.key() == QtCore.Qt.Key_F11:
             self.show_browser = not self.show_browser
             if self.show_browser:
