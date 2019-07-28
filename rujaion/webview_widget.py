@@ -80,6 +80,10 @@ class WebViewWindow(QtWidgets.QWidget):
         if self.parent() is not None:
             self.parent().parent().download(self.url_edit.text())
 
+    def focusOnUrlEdit(self):
+        self.url_edit.setFocus()
+        self.url_edit.selectAll()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

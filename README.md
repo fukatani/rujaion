@@ -62,7 +62,8 @@ KeyBinds
 - Set or unset brake point (F5)
 - Start Debug or continue (F9)
 - Start Debug with downloaded testcase (F4)
-- Download sample testcases (F6)
+- Download sample testcases (Input url in browser and Press Enter)
+- Focus on URL (F6)
 - Run (Ctrl + F9)
 - Next (F8)
 - Step in (F7)
@@ -71,8 +72,9 @@ KeyBinds
 - Terminate debug process (Esc)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
-- Toggle Show/Hide Browser Widget (F11)
-- Toggle Show/Hide Console Widget (F12)
+- Toggle Show / Hide Browser Widget (F11)
+- Toggle Full Screen Browsing / or not (Ctrl + F11)
+- Toggle Show / Hide Console Widget (F12)
 
 Contest Task Browsing
 ==============================

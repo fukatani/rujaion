@@ -102,7 +102,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.highlight_cursor_line()
 
     def highlight_cursor_line(self):
-        if self.parent().proc is not None:
+        if self.parent().debug_process is not None:
             return
         extra_selections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
