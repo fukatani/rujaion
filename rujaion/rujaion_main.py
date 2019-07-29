@@ -22,11 +22,8 @@ from rujaion import webview_widget
 
 # TODO: watch selected variable
 # TODO: highlight multi line comment
-# TODO: display dp
-# TODO: refactoring
 # TODO: display tree
 # TODO: highlight selecting variable
-# TODO: fix gdb hang (std)
 # TODO: progress bar
 # TODO: rustsym(find usage)r
 # TODO: highlight corresponding parenthesis

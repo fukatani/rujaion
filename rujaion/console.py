@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 import pexpect
 
 from rujaion.custom_popup import CustomPopup
+from rujaion.table_view import TableView
 
 
 class Console(QtWidgets.QTextEdit):
@@ -114,6 +115,13 @@ class Console(QtWidgets.QTextEdit):
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
         menu.addAction(u"Clear", self.clear)
+        menu.addAction(u"Visualize Table", self.visualize_table)
+
+    def visualize_table(self):
+        tc = self.textCursor()
+        self.tv = TableView()
+        self.tv.visualize_tables(tc.selectedText())
+        self.tv.show()
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
