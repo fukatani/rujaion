@@ -60,7 +60,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
 
 def get_compiled_file(lang: str, fname: str) -> str:
     if lang == "rust":
-        return fname.replace(".rs", "")
+        return "./" + os.path.basename(fname.replace(".rs", ""))
     else:
         return "a.out"
 
