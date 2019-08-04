@@ -3,7 +3,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 
 from onlinejudge.dispatch import service_from_url
 from onlinejudge._implementation.utils import (
@@ -16,12 +16,81 @@ from PyQt5.QtNetwork import QNetworkCookie
 # Many of source is copied from https://qiita.com/montblanc18/items/88d0b639de86b7cac613
 
 
+navi_script = """(function() {
+    'use strict';
+    if (!location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)) {
+        return;
+    }
+    const contest_name = location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)[1];
+    const key = 'atcoder-optimizer-' + contest_name;
+     if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
+        const problems = [];
+        const rows = document.querySelectorAll('tbody>tr');
+        for (let i = 0; i < rows.length; i++) {
+            const links = rows[i].querySelectorAll('a');
+            const href = links[0].getAttribute('href');
+            const text = links[0].textContent + ' - ' + links[1].textContent;
+            problems.push({
+                href: href,
+                text: text
+            });
+        }
+        localStorage[key] = JSON.stringify(problems);
+    }
+     if (key in localStorage) {
+        var dom_obj = document.getElementById("main-container");
+        dom_obj.style.paddingTop = "0px";
+
+        if (document.getElementById("sourceCode")) {
+           var dom_obj = document.getElementById("sourceCode");
+           var dom_obj_parent = dom_obj.parentNode.parentNode.parentNode;
+           dom_obj_parent.removeChild(dom_obj.parentNode.parentNode);
+
+           var dom_obj = document.getElementsByTagName("footer")[0];
+           var dom_obj_parent = dom_obj.parentNode.parentNode;
+           dom_obj_parent.removeChild(dom_obj.parentNode);
+        }
+
+        let problems = JSON.parse(localStorage[key]);
+        const problemsBar = document.createElement('ul');
+        problemsBar.className = 'nav nav-tabs';
+        for (let i = 0; i < problems.length; i++) {
+            const link = document.createElement('a');
+            link.setAttribute('style', 'margin-left: 10px; margin-right: 10px; white-space: nowrap');
+            link.setAttribute('href', problems[i].href);
+            link.textContent = problems[i].text;
+            const span = document.createElement('span');
+            span.textContent = ' ';
+            span.appendChild(link);
+            problemsBar.appendChild(span);
+        }
+        document.getElementById('contest-nav-tabs').innerHTML = '';
+        document.getElementById('contest-nav-tabs').appendChild(problemsBar);
+    }
+})();"""
+
+
 class CustomWebEngineView(QWebEngineView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.runScript()
+        self.setZoomFactor(0.97)
+
     def contextMenuEvent(self, a0: QtGui.QContextMenuEvent) -> None:
         menu = QtWidgets.QMenu()
         menu.addAction(u"Go Next Task", self.parent().goNextTask)
         menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
         menu.exec(a0.globalPos())
+
+    def runScript(self) -> None:
+        # self.page().runJavaScript(navi_scripts, QWebEngineScript.ApplicationWorld)
+        script = QWebEngineScript()
+        script.setName("ac-navigator")
+        script.setSourceCode(navi_script)
+        script.setInjectionPoint(QWebEngineScript.DocumentReady)
+        script.setRunsOnSubFrames(True)
+        script.setWorldId(QWebEngineScript.ApplicationWorld)
+        self.page().scripts().insert(script)
 
 
 class WebViewWindow(QtWidgets.QWidget):
