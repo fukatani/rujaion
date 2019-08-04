@@ -18,7 +18,7 @@ class CompleterBase(QtWidgets.QCompleter):
         self.parent = parent
         self.live_templates = load_template(self.live_template_file)
         self.candidates_dict = {}
-        self.ng_words = "core"
+        self.ng_words = ["core", "proc_macro", "profiler_builtins"]
         self.lastSelected = ""
 
     def setHighlighted(self, text: str):

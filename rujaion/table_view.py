@@ -2,27 +2,10 @@ import sys
 
 import pandas
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 from PyQt5.QtCore import Qt
 
-# table_style = """table{
-#   width: 100%;
-#   border-collapse: collapse;
-#   border-spacing: 0;
-# }
-#
-# table th,table td{
-#   padding: 10px 0;
-#   text-align: center;
-# }
-#
-# table tr:nth-child(odd){
-#   background-color: #eee
-# }
-# """
-
-# table_style = 'table {background-color: red}'
 
 table_style = (
     "table{width: 50%; border-collapse: collapse; border-spacing: 0;}"
@@ -30,7 +13,6 @@ table_style = (
     "table tr:nth-child(odd){background-color: #ddd} "
     "body{font-family: arial}"
 )
-# "body {font-family: 'arial',sans-serif;}"
 
 
 class TableView(QWebEngineView):
