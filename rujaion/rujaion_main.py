@@ -210,6 +210,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.testMyCode()
         elif event.key() == QtCore.Qt.Key_F4:
             self.debugWithLastCase()
+        elif (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_F6
+        ):
+            self.submit()
         elif event.key() == QtCore.Qt.Key_F6:
             self.browser_widget.focusOnUrlEdit()
         elif (
