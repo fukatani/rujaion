@@ -133,9 +133,14 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url[-1] == "z":
-            return
-        current_url = current_url[:-1] + chr(ord(current_url[-1]) + 1)
+        if current_url.split('/')[-1].isdecimal():  # yukicoder
+            words = current_url.split('/')
+            words[-1] = str(int(words[-1]) + 1)
+            current_url = "/".join(words)
+        else:
+            if current_url[-1] == "z":
+                return
+            current_url = current_url[:-1] + chr(ord(current_url[-1]) + 1)
         self.changePage(current_url)
 
     def goPreviousTask(self):
@@ -147,9 +152,14 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url[-1] == "a":
-            return
-        current_url = current_url[:-1] + chr(ord(current_url[-1]) - 1)
+        if current_url.split('/')[-1].isdecimal():  # yukicoder
+            words = current_url.split('/')
+            words[-1] = str(int(words[-1]) - 1)
+            current_url = "/".join(words)
+        else:
+            if current_url[-1] == "a":
+                return
+            current_url = current_url[:-1] + chr(ord(current_url[-1]) - 1)
         self.changePage(current_url)
 
     def updateCurrentUrl(self):
