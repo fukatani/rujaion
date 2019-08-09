@@ -25,9 +25,9 @@ navi_script = """(function() {
     const key = 'atcoder-optimizer-' + contest_name;
      if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
         const problems = [];
-        const rows = document.querySelectorAll('tbody>tr');
-        for (let i = 0; i < rows.length; i++) {
-            const links = rows[i].querySelectorAll('a');
+        let row;
+        for (row of document.querySelectorAll('tbody>tr')) {
+            const links = row.querySelectorAll('a');
             const href = links[0].getAttribute('href');
             const text = links[0].textContent + ' - ' + links[1].textContent;
             problems.push({
@@ -51,18 +51,15 @@ navi_script = """(function() {
            dom_obj_parent.removeChild(dom_obj.parentNode);
         }
 
-        let problems = JSON.parse(localStorage[key]);
-        const problemsBar = document.createElement('ul');
+        const problemsBar = document.createElement('pl');
         problemsBar.className = 'nav nav-tabs';
-        for (let i = 0; i < problems.length; i++) {
+        let problem;
+        for (problem of JSON.parse(localStorage[key])) {
             const link = document.createElement('a');
-            link.setAttribute('style', 'margin-left: 10px; margin-right: 10px; white-space: nowrap');
-            link.setAttribute('href', problems[i].href);
-            link.textContent = problems[i].text;
-            const span = document.createElement('span');
-            span.textContent = ' ';
-            span.appendChild(link);
-            problemsBar.appendChild(span);
+            link.setAttribute('style', 'margin-left: 10px; margin-right: 10px;');
+            link.setAttribute('href', problem.href);
+            link.textContent = problem.text;
+            problemsBar.appendChild(link);
         }
         document.getElementById('contest-nav-tabs').innerHTML = '';
         document.getElementById('contest-nav-tabs').appendChild(problemsBar);
