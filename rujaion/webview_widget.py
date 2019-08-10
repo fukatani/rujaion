@@ -16,7 +16,10 @@ from PyQt5.QtNetwork import QNetworkCookie
 # Many of source is copied from https://qiita.com/montblanc18/items/88d0b639de86b7cac613
 
 
-navi_script = """(function() {
+navi_script = """// ==UserScript==
+// @match        https://atcoder.jp/contests/*
+// ==/UserScript==
+(function() {
     'use strict';
     if (!location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)) {
         return;
@@ -24,18 +27,19 @@ navi_script = """(function() {
     const contest_name = location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)[1];
     const key = 'atcoder-optimizer-' + contest_name;
      if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
-        const problems = [];
+        const tasks = [];
         let row;
         for (row of document.querySelectorAll('tbody>tr')) {
-            const links = row.querySelectorAll('a');
-            const href = links[0].getAttribute('href');
-            const text = links[0].textContent + ' - ' + links[1].textContent;
-            problems.push({
+            const task = row.querySelectorAll('a');
+            const href = task[0].getAttribute('href');
+            const task_number = task[0].textContent;
+            const task_name = task[1].textContent;
+            tasks.push({
                 href: href,
-                text: text
+                text: task_number + ' - ' + task_name
             });
         }
-        localStorage[key] = JSON.stringify(problems);
+        localStorage[key] = JSON.stringify(tasks);
     }
      if (key in localStorage) {
         var dom_obj = document.getElementById("main-container");
@@ -51,19 +55,30 @@ navi_script = """(function() {
            dom_obj_parent.removeChild(dom_obj.parentNode);
         }
 
-        const problemsBar = document.createElement('pl');
-        problemsBar.className = 'nav nav-tabs';
-        let problem;
-        for (problem of JSON.parse(localStorage[key])) {
+        const tasksBar = document.createElement('plinks');
+        tasksBar.className = 'nav nav-tabs';
+        let task;
+        for (task of JSON.parse(localStorage[key])) {
             const link = document.createElement('a');
             link.setAttribute('style', 'margin-left: 10px; margin-right: 10px;');
-            link.setAttribute('href', problem.href);
-            link.textContent = problem.text;
-            problemsBar.appendChild(link);
+            link.setAttribute('href', task.href);
+            link.textContent = task.text;
+            tasksBar.appendChild(link);
         }
         document.getElementById('contest-nav-tabs').innerHTML = '';
-        document.getElementById('contest-nav-tabs').appendChild(problemsBar);
+        document.getElementById('contest-nav-tabs').appendChild(tasksBar);
     }
+})();"""
+
+
+yukicoder_script = """// ==UserScript==
+// @match        https://yukicoder.me/problems/*
+// ==/UserScript==
+(function() {
+    'use strict';
+    var dom_obj = document.getElementById("sidebar");
+    var dom_obj_parent = dom_obj.parentNode;
+    dom_obj_parent.removeChild(dom_obj);
 })();"""
 
 
@@ -82,7 +97,7 @@ class CustomWebEngineView(QWebEngineView):
     def runScript(self) -> None:
         # self.page().runJavaScript(navi_scripts, QWebEngineScript.ApplicationWorld)
         script = QWebEngineScript()
-        script.setName("ac-navigator")
+        script.setName("atcoder-optimizer")
         script.setSourceCode(navi_script)
         script.setInjectionPoint(QWebEngineScript.DocumentReady)
         script.setRunsOnSubFrames(True)
