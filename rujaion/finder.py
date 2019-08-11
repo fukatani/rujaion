@@ -26,6 +26,7 @@ class Find(QtWidgets.QDialog):
         super().__init__(parent)
         self.parent = parent
         self.lastMatch = None
+        self.lastStart = 0
         self.initUI()
 
     def initUI(self):
@@ -105,7 +106,6 @@ class Find(QtWidgets.QDialog):
             self.findField.setFocus()
 
     def find(self):
-
         # Grab the parent's text
         text = self.parent.toPlainText()
 
@@ -121,26 +121,39 @@ class Find(QtWidgets.QDialog):
         # case sensitive by default, so we need to switch this around here
         flags = 0 if self.caseSens.isChecked() else re.I
 
-        # Compile the pattern
-        pattern = re.compile(query, flags)
+        if self.normalRadio.isChecked():
+            # Use normal string search to find the query from the
+            # last starting position
+            self.lastStart = text.find(query, self.lastStart + 1)
 
-        # If the last match was successful, start at position after the last
-        # match's start, else at 0
-        start = self.lastMatch.start() + 1 if self.lastMatch else 0
+            # If the find() method didn't return -1 (not found)
+            if self.lastStart >= 0:
+                end = self.lastStart + len(query)
+                self.moveCursor(self.lastStart, end)
+            else:
+                # Make the next search start from the begining again
+                self.lastStart = 0
+                # self.moveCursor(QtGui.QTextCursor.atStart())
 
-        # The actual search
-        self.lastMatch = pattern.search(text, start)
-        if self.lastMatch:
-            start = self.lastMatch.start()
-            end = self.lastMatch.end()
+        else:
+            # Compile the pattern
+            pattern = re.compile(query, flags)
 
-            # If 'Whole words' is checked, the selection would include the two
-            # non-alphanumeric characters we included in the search, which need
-            # to be removed before marking them.
-            if self.wholeWords.isChecked():
-                start += 1
-                end -= 1
-            self.moveCursor(start, end)
+            start = self.lastMatch.start() + 1 if self.lastMatch else 0
+
+            # The actual search
+            self.lastMatch = pattern.search(text, start)
+            if self.lastMatch:
+                start = self.lastMatch.start()
+                end = self.lastMatch.end()
+
+                # If 'Whole words' is checked, the selection would include the two
+                # non-alphanumeric characters we included in the search, which need
+                # to be removed before marking them.
+                if self.wholeWords.isChecked():
+                    start += 1
+                    end -= 1
+                self.moveCursor(start, end)
 
     def replace(self):
         self.find()
