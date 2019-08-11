@@ -227,10 +227,6 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.setPlainText(f.read())
         self.edited = False
         self.fname = fname
-        if fname.endswith("cpp"):
-            self.lang = "cpp"
-        else:
-            self.lang = "rust"
         self.reset_lang()
 
     def reset_file_name(self) -> bool:

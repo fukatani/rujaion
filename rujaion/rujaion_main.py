@@ -316,6 +316,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         with codecs.open(savename, "w", "utf-8") as f:
             f.write(self.editor.toPlainText())
         self.editor.fname = savename
+        self.editor.reset_lang()
         self.savePostProcess()
         self.settings.setValue("LastOpenedFile", savename)
 
