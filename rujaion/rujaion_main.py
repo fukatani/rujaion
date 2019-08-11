@@ -375,10 +375,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
-        self.editor.new_file(os.path.join(os.path.dirname(__file__), "test1.rs"))
+        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
 
     def newCppFile(self):
-        self.editor.new_file(os.path.join(os.path.dirname(__file__), "test1.cpp"))
+        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.cpp"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()

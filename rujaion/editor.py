@@ -2,6 +2,7 @@ import codecs
 from collections import defaultdict
 import os
 import subprocess
+from typing import *
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -236,8 +237,10 @@ class Editter(QtWidgets.QPlainTextEdit):
             return True
         return False
 
-    def reset_lang(self):
-        if self.fname.endswith("cpp"):
+    def reset_lang(self, fname: Optional[str] = None):
+        if fname is None:
+            fname = self.fname
+        if fname.endswith("cpp"):
             self.lang = "cpp"
         else:
             self.lang = "rust"
@@ -255,10 +258,9 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.clear()
         self.edited = False
         self.reset_file_name()
-        self.reset_lang()
+        self.reset_lang(template_file_name)
         with open(template_file_name) as f:
             self.setPlainText(f.read())
-        self.fname = template_file_name
         self.repaint()
 
     def set_edited(self):
