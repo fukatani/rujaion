@@ -32,4 +32,3 @@ fn read_vec<T: std::str::FromStr>() -> Vec<T> {
         .map(|e| e.parse().ok().unwrap())
         .collect()
 }
-

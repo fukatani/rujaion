@@ -250,15 +250,15 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.highlighter = syntax.CppHighlighter(self.document())
         self.completer.setWidget(self)
 
-    def new_file(self, template_file_name: str = ""):
+    def new_file(self, template_file_name: str):
         self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
         self.reset_file_name()
         self.reset_lang()
-        if template_file_name:
-            with open(template_file_name) as f:
-                self.setPlainText(f.read())
+        with open(template_file_name) as f:
+            self.setPlainText(f.read())
+        self.fname = template_file_name
         self.repaint()
 
     def set_edited(self):

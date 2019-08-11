@@ -90,6 +90,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.newFile)
         filemenu.addAction(a)
 
+        a = QtWidgets.QAction("New Cpp", self)
+        a.triggered.connect(self.newCppFile)
+        filemenu.addAction(a)
+
         a = QtWidgets.QAction("Open", self)
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
@@ -371,7 +375,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
-        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
+        self.editor.new_file(os.path.join(os.path.dirname(__file__), "test1.rs"))
+
+    def newCppFile(self):
+        self.editor.new_file(os.path.join(os.path.dirname(__file__), "test1.cpp"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
