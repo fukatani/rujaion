@@ -220,6 +220,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         ):
             if self.debug_process is not None:
                 return
+            if not self.show_browser:
+                self.show_browser = True
+                self.browser_dock.show()
             if self.editor.isHidden():
                 self.editor.show()
                 self.console.show()
