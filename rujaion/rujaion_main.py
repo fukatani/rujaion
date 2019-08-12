@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QThread
+from PyQt5.QtCore import Qt
 import pexpect
 
 from rujaion import console

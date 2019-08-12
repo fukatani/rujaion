@@ -2,13 +2,16 @@ import subprocess
 
 from PyQt5 import QtWidgets
 
+from rujaion import util
+
 
 class LoginDialog(QtWidgets.QDialog):
     def __init__(self, *args, url: str, settings=None):
         super().__init__(*args)
         self.settings = settings
-        self.password_edit = PasswordEdit(self.settings, self)
-        self.url_edit = URLEdit(url, self)
+        self.password_edit = util.StateLessTextEdit("", self)
+        self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.url_edit = util.StateLessTextEdit(url, self)
         self.dialogs = (
             ("Login Settings", None),
             ("URL", self.url_edit),
@@ -91,14 +94,3 @@ class AccountEdit(QtWidgets.QLineEdit):
 
     def commit(self):
         self.settings.setValue("Account", self.text())
-
-
-class PasswordEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, parent):
-        self.parent = parent
-        self.settings = settings
-        super().__init__()
-        self.setEchoMode(QtWidgets.QLineEdit.Password)
-
-    def commit(self):
-        pass

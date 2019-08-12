@@ -99,3 +99,10 @@ def indent_width(lang: str) -> int:
         return 4
     else:
         return 2
+
+
+class StateLessTextEdit(QtWidgets.QLineEdit):
+    def __init__(self, text: str, parent):
+        super().__init__()
+        self.parent = parent
+        self.setText(text)

@@ -10,8 +10,8 @@ class SubmitDialog(QtWidgets.QDialog):
     def __init__(self, *args, url: str, lang: str, settings=None):
         super().__init__(*args)
         self.settings = settings
-        self.url_edit = StateLessTextEdit(url, self)
-        self.lang_edit = StateLessTextEdit(lang, self)
+        self.url_edit = util.StateLessTextEdit(url, self)
+        self.lang_edit = util.StateLessTextEdit(lang, self)
         self.dialogs = (
             ("Submit...", None),
             ("URL", self.url_edit),
@@ -75,13 +75,6 @@ class SubmitDialog(QtWidgets.QDialog):
         self.submitter.cmd = cmd
         self.submitter.start()
         self.close()
-
-
-class StateLessTextEdit(QtWidgets.QLineEdit):
-    def __init__(self, text: str, parent):
-        super().__init__()
-        self.parent = parent
-        self.setText(text)
 
 
 class Submitter(QThread):
