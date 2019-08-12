@@ -7,9 +7,8 @@ from rujaion import util
 
 
 class SubmitDialog(QtWidgets.QDialog):
-    def __init__(self, *args, url: str, lang: str, settings=None):
+    def __init__(self, *args, url: str, lang: str):
         super().__init__(*args)
-        self.settings = settings
         self.url_edit = util.StateLessTextEdit(url, self)
         self.lang_edit = util.StateLessTextEdit(lang, self)
         self.dialogs = (
@@ -21,7 +20,7 @@ class SubmitDialog(QtWidgets.QDialog):
         self.resize(500, 100)
         self.draw()
 
-    def draw(self, *args, settings=None):
+    def draw(self, *args):
         main_layout = QtWidgets.QVBoxLayout()
         for name, widget in self.dialogs:
             if not widget:
@@ -60,7 +59,6 @@ class SubmitDialog(QtWidgets.QDialog):
                 widget.commit()
             except AttributeError:
                 pass
-        self.settings.sync()
         cmd = (
             "oj",
             "s",

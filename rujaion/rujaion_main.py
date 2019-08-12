@@ -15,7 +15,7 @@ import pexpect
 from rujaion import console
 from rujaion import display_widget
 from rujaion import editor
-from rujaion.command import login, submit
+from rujaion.command import login, submit, test
 from rujaion import util
 from rujaion import webview_widget
 
@@ -127,6 +127,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
         a = QtWidgets.QAction("Test My Code (Ctrl+F4)", self)
         a.triggered.connect(self.testMyCode)
+        filemenu.addAction(a)
+
+        a = QtWidgets.QAction("Test With Options", self)
+        a.triggered.connect(self.testMyCodeWithOptions)
         filemenu.addAction(a)
 
         a = QtWidgets.QAction("Debug With Test Data (F4)", self)
@@ -784,6 +788,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.write_oj_result(out)
 
     @with_console
+    def testMyCodeWithOptions(self, *args):
+        self.console.clear()
+        if not self.compile(no_debug=True):
+            return
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
+        test.TestDialog(self, compiled_file=compiled_file).show()
+
+    @with_console
     def submit(self, *args):
         if not self.editor.fname:
             util.disp_error("Please save this file")
@@ -791,7 +803,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self,
             url=self.browser_widget.browser.url().toString(),
             lang=self.editor.lang,
-            settings=self.settings,
         ).show()
 
 
