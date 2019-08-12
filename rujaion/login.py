@@ -4,13 +4,13 @@ from PyQt5 import QtWidgets
 
 
 class LoginDialog(QtWidgets.QDialog):
-    def __init__(self, *args, settings=None):
+    def __init__(self, *args, url: str, settings=None):
         super().__init__(*args)
         self.settings = settings
         self.password_edit = PasswordEdit(self.settings, self)
         self.dialogs = (
             ("Login Settings", None),
-            ("URL", URLEdit(self.settings, self)),
+            ("URL", URLEdit(url, self)),
             ("Account Name", AccountEdit(self.settings, self)),
             ("Password", self.password_edit),
         )
@@ -70,15 +70,13 @@ class LoginDialog(QtWidgets.QDialog):
 
 
 class URLEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, parent):
+    def __init__(self, url: str, parent):
         super().__init__()
         self.parent = parent
-        self.settings = settings
-        v = settings.value("Login URL", type=str)
-        self.setText(v)
+        self.setText(url)
 
     def commit(self):
-        self.settings.setValue("Login URL", self.text())
+        pass
 
 
 class AccountEdit(QtWidgets.QLineEdit):

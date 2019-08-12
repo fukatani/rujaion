@@ -739,7 +739,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.write("Downloaded Test data", mode="success")
 
     def login(self):
-        login.LoginDialog(self, settings=self.settings).show()
+        login.LoginDialog(self, url=self.browser_widget.browser.url().toString(),
+                          settings=self.settings).show()
 
     def clearTestData(self):
         if os.path.isdir(self.test_data_dir):
