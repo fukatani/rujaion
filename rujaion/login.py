@@ -8,9 +8,10 @@ class LoginDialog(QtWidgets.QDialog):
         super().__init__(*args)
         self.settings = settings
         self.password_edit = PasswordEdit(self.settings, self)
+        self.url_edit = URLEdit(url, self)
         self.dialogs = (
             ("Login Settings", None),
-            ("URL", URLEdit(url, self)),
+            ("URL", self.url_edit),
             ("Account Name", AccountEdit(self.settings, self)),
             ("Password", self.password_edit),
         )
@@ -62,7 +63,7 @@ class LoginDialog(QtWidgets.QDialog):
             self.settings.value("Account", type=str),
             "-p",
             self.password_edit.text(),
-            self.settings.value("Login URL", type=str),
+            self.url_edit.text(),
         )
         out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         self.parent().console.write_oj_result(out)
