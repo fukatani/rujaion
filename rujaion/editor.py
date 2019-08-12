@@ -9,7 +9,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
 
 from rujaion import completer
-from rujaion import finder
+from rujaion.command import finder
 from rujaion import syntax
 from rujaion import util
 

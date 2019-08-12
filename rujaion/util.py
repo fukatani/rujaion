@@ -100,3 +100,7 @@ class StateLessTextEdit(QtWidgets.QLineEdit):
         super().__init__()
         self.parent = parent
         self.setText(text)
+
+
+def get_resources_dir() -> str:
+    return os.path.join(os.path.dirname(__file__), "resources")

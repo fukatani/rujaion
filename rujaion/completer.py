@@ -31,7 +31,7 @@ class CompleterBase(QtWidgets.QCompleter):
 class RacerCompleter(CompleterBase):
     # temp file for racer input
     live_template_file = os.path.join(
-        os.path.dirname(__file__), "live_templates_rust.xml"
+        util.get_resources_dir(), "live_templates_rust.xml"
     )
 
     # this is heavy?
@@ -77,7 +77,7 @@ class RacerCompleter(CompleterBase):
 class CppCompleter(CompleterBase):
     # temp file for racer input
     live_template_file = os.path.join(
-        os.path.dirname(__file__), "live_templates_cpp.xml"
+        util.get_resources_dir(), "live_templates_cpp.xml"
     )
 
     # TODO: Support clang completer

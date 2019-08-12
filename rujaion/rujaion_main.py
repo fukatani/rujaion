@@ -4,7 +4,6 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import *
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -16,8 +15,7 @@ import pexpect
 from rujaion import console
 from rujaion import display_widget
 from rujaion import editor
-from rujaion import login
-from rujaion import submit
+from rujaion.command import login, submit
 from rujaion import util
 from rujaion import webview_widget
 
@@ -374,10 +372,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
-        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.rs"))
+        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.rs"))
 
     def newCppFile(self):
-        self.editor.new_file(os.path.join(os.path.dirname(__file__), "template.cpp"))
+        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
