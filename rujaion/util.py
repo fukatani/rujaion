@@ -88,12 +88,6 @@ def exec_command(lang: str) -> List[str]:
         return []
 
 
-def get_submit_lang(lang: str) -> str:
-    if lang == "cpp":
-        return "C++14 (GCC 5.4.1)"
-    return lang
-
-
 def indent_width(lang: str) -> int:
     if lang == "rust":
         return 4

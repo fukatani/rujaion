@@ -49,7 +49,6 @@ or brand of soft drink.
 
 class Editter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
-    default_file_name = "test1.rs"
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -97,6 +96,12 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def find(self):
         finder.Find(self).show()
+
+    def default_file_name(self) -> str:
+        if self.lang == "c++":
+            return "test1.cpp"
+        else:
+            return "test1.rs"
 
     def mousePressEvent(self, event: QtGui.QMouseEvent):
         super().mousePressEvent(event)
@@ -230,18 +235,18 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.fname = fname
         self.reset_lang()
 
-    def reset_file_name(self) -> bool:
+    def reset_file_name(self):
         if self.fname:
             default_dir = os.path.dirname(self.fname)
-            self.fname = os.path.join(default_dir, self.default_file_name)
-            return True
-        return False
+        else:
+            default_dir = os.path.dirname(__file__) + "/rust_sample"
+        self.fname = os.path.join(default_dir, self.default_file_name())
 
     def reset_lang(self, fname: Optional[str] = None):
         if fname is None:
             fname = self.fname
-        if fname.endswith("cpp"):
-            self.lang = "cpp"
+        if fname.endswith("cpp") or fname.endswith("cc"):
+            self.lang = "c++"
         else:
             self.lang = "rust"
 
@@ -257,8 +262,8 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.break_points = defaultdict(lambda: False)
         self.clear()
         self.edited = False
-        self.reset_file_name()
         self.reset_lang(template_file_name)
+        self.reset_file_name()
         with open(template_file_name) as f:
             self.setPlainText(f.read())
         self.repaint()
