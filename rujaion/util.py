@@ -96,10 +96,24 @@ def indent_width(lang: str) -> int:
 
 
 class StateLessTextEdit(QtWidgets.QLineEdit):
-    def __init__(self, text: str, parent):
+    def __init__(self, value: str, parent):
         super().__init__()
         self.parent = parent
-        self.setText(text)
+        self.setText(value)
+
+
+# Need to call commit to serialize value
+class StateFullTextEdit(QtWidgets.QLineEdit):
+    def __init__(self, settings, name: str, parent):
+        super().__init__()
+        self.parent = parent
+        self.settings = settings
+        self.name = name
+        v = settings.value(name, type=str)
+        self.setText(v)
+
+    def commit(self):
+        self.settings.setValue(self.name, self.text())
 
 
 def get_resources_dir() -> str:

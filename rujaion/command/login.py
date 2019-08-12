@@ -15,7 +15,10 @@ class LoginDialog(QtWidgets.QDialog):
         self.dialogs = (
             ("Login Settings", None),
             ("URL", self.url_edit),
-            ("Account Name", AccountEdit(self.settings, self)),
+            (
+                "Account Name",
+                util.StateFullTextEdit(self.settings, "Account", self),
+            ),
             ("Password", self.password_edit),
         )
         self.resize(500, 100)
@@ -82,15 +85,3 @@ class URLEdit(QtWidgets.QLineEdit):
 
     def commit(self):
         pass
-
-
-class AccountEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, parent):
-        super().__init__()
-        self.parent = parent
-        self.settings = settings
-        v = settings.value("Account", type=str)
-        self.setText(v)
-
-    def commit(self):
-        self.settings.setValue("Account", self.text())
