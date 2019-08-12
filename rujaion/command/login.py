@@ -15,10 +15,7 @@ class LoginDialog(QtWidgets.QDialog):
         self.dialogs = (
             ("Login Settings", None),
             ("URL", self.url_edit),
-            (
-                "Account Name",
-                util.StateFullTextEdit(self.settings, "Account", self),
-            ),
+            ("Account Name", util.StateFullTextEdit(self.settings, "Account", self)),
             ("Password", self.password_edit),
         )
         self.resize(500, 100)

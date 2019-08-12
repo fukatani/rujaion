@@ -793,7 +793,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
-        test.TestDialog(self, compiled_file=compiled_file).show()
+        test.TestDialog(
+            self, compiled_file=compiled_file, settings=self.settings
+        ).show()
 
     @with_console
     def submit(self, *args):

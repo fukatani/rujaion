@@ -6,17 +6,19 @@ from rujaion import util
 
 
 class TestDialog(QtWidgets.QDialog):
-    def __init__(self, *args, compiled_file: str):
+    def __init__(self, *args, compiled_file: str, settings):
         super().__init__(*args)
         self.console = self.parent().console
         self.compiled_file = compiled_file
-        self.is_interactive = QtWidgets.QCheckBox(self)
-        self.tle_edit = util.StateLessTextEdit("2.0", self)
-        self.mle_edit = util.StateLessTextEdit("1024", self)
-        self.float_error_edit = util.StateLessTextEdit("", self)
+        # self.is_interactive = util.StateFullCheckBox(settings, "TEST_INTERACTIVE", self)
+        self.tle_edit = util.StateFullTextEdit(settings, "TEST_TLE", self, "2.0")
+        self.mle_edit = util.StateFullTextEdit(settings, "TEST_MLE", self, "1024")
+        self.float_error_edit = util.StateFullTextEdit(
+            settings, "TEST_FLOAT_ERROR", self
+        )
         self.dialogs = (
             ("Submit...", None),
-            ("Is Interactive", self.is_interactive),
+            # ("Is Interactive", self.is_interactive),
             ("TLE", self.tle_edit),
             ("MLE", self.mle_edit),
             ("FLOAT ERROR", self.float_error_edit),
@@ -56,6 +58,11 @@ class TestDialog(QtWidgets.QDialog):
         self.setLayout(main_layout)
 
     def test(self):
+        for name, widget in self.dialogs:
+            try:
+                widget.commit()
+            except AttributeError:
+                pass
         try:
             if self.is_interactive.isChecked():
                 command = ["oj", "t/r", "-c", self.compiled_file]

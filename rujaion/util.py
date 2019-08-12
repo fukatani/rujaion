@@ -104,16 +104,31 @@ class StateLessTextEdit(QtWidgets.QLineEdit):
 
 # Need to call commit to serialize value
 class StateFullTextEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, name: str, parent):
+    def __init__(self, settings, name: str, parent, default: Optional[str] = None):
         super().__init__()
         self.parent = parent
         self.settings = settings
         self.name = name
         v = settings.value(name, type=str)
         self.setText(v)
+        if not v and default is not None:
+            self.setText(default)
 
     def commit(self):
         self.settings.setValue(self.name, self.text())
+
+
+class StateFullCheckBox(QtWidgets.QCheckBox):
+    def __init__(self, settings, name: str, parent):
+        super().__init__()
+        self.parent = parent
+        self.settings = settings
+        self.name = name
+        v = settings.value(name, type=bool)
+        self.setChecked(v)
+
+    def commit(self):
+        self.settings.setValue(self.name, self.isChecked())
 
 
 def get_resources_dir() -> str:
