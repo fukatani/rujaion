@@ -1,20 +1,23 @@
 import subprocess
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QThread
+
+from rujaion import util
 
 
-class LoginDialog(QtWidgets.QDialog):
-    def __init__(self, *args, url: str, settings=None):
+class SubmitDialog(QtWidgets.QDialog):
+    def __init__(self, *args, url: str, lang: str, settings=None):
         super().__init__(*args)
         self.settings = settings
-        self.password_edit = PasswordEdit(self.settings, self)
-        self.url_edit = URLEdit(url, self)
+        self.url_edit = StateLessTextEdit(url, self)
+        self.lang_edit = StateLessTextEdit(lang, self)
         self.dialogs = (
-            ("Login Settings", None),
+            ("Submit...", None),
             ("URL", self.url_edit),
-            ("Account Name", AccountEdit(self.settings, self)),
-            ("Password", self.password_edit),
+            ("Language", self.lang_edit),
         )
+        self.submitter = Submitter(self.parent().console)
         self.resize(500, 100)
         self.draw()
 
@@ -45,12 +48,13 @@ class LoginDialog(QtWidgets.QDialog):
                 main_layout.addWidget(l_widget)
             else:
                 section_layout.addRow(name, widget)
-        login_button = QtWidgets.QPushButton("Login")
-        login_button.clicked.connect(self.login)
-        main_layout.addWidget(login_button)
+        submit_button = QtWidgets.QPushButton("Submit")
+        submit_button.clicked.connect(self.submit)
+        main_layout.addWidget(submit_button)
         self.setLayout(main_layout)
+        # self.adjustSize()
 
-    def login(self):
+    def submit(self):
         for name, widget in self.dialogs:
             try:
                 widget.commit()
@@ -59,46 +63,37 @@ class LoginDialog(QtWidgets.QDialog):
         self.settings.sync()
         cmd = (
             "oj",
-            "l",
-            "-u",
-            self.settings.value("Account", type=str),
-            "-p",
-            self.password_edit.text(),
+            "s",
+            "-l",
+            self.lang_edit.text(),
+            "-y",
             self.url_edit.text(),
+            self.parent().editor.fname,
+            "--no-open",
         )
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        self.parent().console.write_oj_result(out)
+        print(cmd)
+        self.submitter.cmd = cmd
+        self.submitter.start()
         self.close()
 
 
-class URLEdit(QtWidgets.QLineEdit):
-    def __init__(self, url: str, parent):
+class StateLessTextEdit(QtWidgets.QLineEdit):
+    def __init__(self, text: str, parent):
         super().__init__()
         self.parent = parent
-        self.setText(url)
-
-    def commit(self):
-        pass
+        self.setText(text)
 
 
-class AccountEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, parent):
+class Submitter(QThread):
+    def __init__(self, console):
         super().__init__()
-        self.parent = parent
-        self.settings = settings
-        v = settings.value("Account", type=str)
-        self.setText(v)
+        self.console = console
+        self.cmd = ""
 
-    def commit(self):
-        self.settings.setValue("Account", self.text())
-
-
-class PasswordEdit(QtWidgets.QLineEdit):
-    def __init__(self, settings, parent):
-        self.parent = parent
-        self.settings = settings
-        super().__init__()
-        self.setEchoMode(QtWidgets.QLineEdit.Password)
-
-    def commit(self):
-        pass
+    def run(self):
+        try:
+            out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
+        except Exception as err:
+            self.console.writeOjSignal.emit(err.output)
+            return
+        self.console.writeOjSignal.emit(out)

@@ -17,6 +17,7 @@ from rujaion import console
 from rujaion import display_widget
 from rujaion import editor
 from rujaion import login
+from rujaion import submit
 from rujaion import util
 from rujaion import webview_widget
 
@@ -163,8 +164,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addConsole()
         self.addDisplay()
         self.addBrowser()
-
-        self.submitter = Submitter(self.console)
 
     def updateWindowTitle(self, running: bool = False):
         title = ""
@@ -785,47 +784,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     @with_console
     def submit(self, *args):
-        text = self.settings.value(
-            "contest url", "https://abc103.contest.atcoder.jp/tasks/abc103_b"
-        )
-        text, ok = QtWidgets.QInputDialog.getText(
-            self, "Submit program", "Contest task URL:", text=text
-        )
-        if not ok:
-            return
-        self.settings.setValue("contest url", text)
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        cmd = (
-            "oj",
-            "s",
-            "-l",
-            util.get_submit_lang(self.editor.lang),
-            "-y",
-            text,
-            self.editor.fname,
-            "--no-open",
-        )
-        print(cmd)
-        self.console.write("start submit")
-        self.submitter.cmd = cmd
-        self.submitter.start()
-
-
-class Submitter(QThread):
-    def __init__(self, console):
-        super().__init__()
-        self.console = console
-        self.cmd = ""
-
-    def run(self):
-        try:
-            out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
-        except Exception as err:
-            self.console.writeOjSignal.emit(err.output)
-            return
-        self.console.writeOjSignal.emit(out)
-
+        submit.SubmitDialog(self, url=self.browser_widget.browser.url().toString(),
+                            lang=self.editor.lang,
+                            settings=self.settings).show()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
