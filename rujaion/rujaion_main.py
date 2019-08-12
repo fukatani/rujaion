@@ -738,8 +738,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.console.write("Downloaded Test data", mode="success")
 
     def login(self):
-        login.LoginDialog(self, url=self.browser_widget.browser.url().toString(),
-                          settings=self.settings).show()
+        login.LoginDialog(
+            self,
+            url=self.browser_widget.browser.url().toString(),
+            settings=self.settings,
+        ).show()
 
     def clearTestData(self):
         if os.path.isdir(self.test_data_dir):
@@ -786,9 +789,13 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def submit(self, *args):
         if not self.editor.fname:
             util.disp_error("Please save this file")
-        submit.SubmitDialog(self, url=self.browser_widget.browser.url().toString(),
-                            lang=self.editor.lang,
-                            settings=self.settings).show()
+        submit.SubmitDialog(
+            self,
+            url=self.browser_widget.browser.url().toString(),
+            lang=self.editor.lang,
+            settings=self.settings,
+        ).show()
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
