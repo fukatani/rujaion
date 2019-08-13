@@ -7,7 +7,7 @@ from onlinejudge._implementation.utils import (
     with_cookiejar,
     new_session_with_our_user_agent,
 )
-from onlinejudge.service import atcoder
+from onlinejudge.dispatch import submission_from_url
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
@@ -17,9 +17,8 @@ class External(QThread):
     finishRequest = pyqtSignal()
     failed_words = ("WA", "RE", "TLE", "MLE", "RE", "CE")
 
-    def __init__(self, submission, url):
+    def __init__(self, url: str):
         super().__init__()
-        self.submission = submission
         self.url = url
 
     def run(self):
@@ -29,15 +28,15 @@ class External(QThread):
         ) as sess:
             for i in range(40):
                 time.sleep(2)
-                self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-                result = self.submission.get_status(session=sess)
-                self.updateRequest.emit((result, self.submission._problem_id))
+                submission = submission_from_url(self.url)
+                result = submission.get_status(session=sess)
+                self.updateRequest.emit((result, submission._problem_id))
                 failed = any([word in result for word in self.failed_words])
                 if result == "AC" or failed:
                     finished = True
                 if failed:
                     subprocess.check_call(
-                        ["sensible-browser", self.submission.get_url()],
+                        ["sensible-browser", submission.get_url()],
                         stdin=sys.stdin,
                         stdout=sys.stdout,
                         stderr=sys.stderr,
@@ -52,7 +51,7 @@ class External(QThread):
 
 
 class CustomPopup(QtWidgets.QWidget):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, url: str, **kwargs):
         super().__init__(parent)
         self.setWindowOpacity(0.7)
         # self.setWindowFlags(QtCore.Qt.Popup | QtCore.Qt.FramelessWindowHint)
@@ -72,13 +71,11 @@ class CustomPopup(QtWidgets.QWidget):
 
         # set label
         self.label = QtWidgets.QLabel(" " * 50, self)
-        self.url = kwargs["url"]
         self.move(QtGui.QCursor.pos())
-        self.submission = atcoder.AtCoderSubmission.from_url(self.url)
-        self.run()
+        self.run(url)
 
-    def run(self):
-        self.ext = External(self.submission, self.url)
+    def run(self, url: str):
+        self.ext = External(url)
         self.ext.updateRequest.connect(self.update)
         self.ext.finishRequest.connect(self.finish)
         self.ext.start()
@@ -118,7 +115,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     w = CustomPopup(
-        None, url="https://atcoder.jp/contests/diverta2019/submissions/5363629"
+        url="https://atcoder.jp/contests/diverta2019/submissions/5363629"
     )
     w.show()
     sys.exit(app.exec_())

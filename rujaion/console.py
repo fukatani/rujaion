@@ -6,6 +6,7 @@ from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, pyqtSignal
 import pexpect
+from onlinejudge.dispatch import submission_from_url
 
 from rujaion.custom_popup import CustomPopup
 from rujaion.table_view import TableView
@@ -87,22 +88,24 @@ class Console(QtWidgets.QTextEdit):
         self._buffer.write(msg)
 
     def write_oj_result(self, msg: Union[str, bytes]):
-        last_submission = None
+        last_submission_url = None
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
             if line.startswith("[+]"):
                 submit_result_prefix = "[+] success: result: "
                 if line.startswith(submit_result_prefix):
-                    last_submission = line[len(submit_result_prefix) :]
+                    last_submission_url = line[len(submit_result_prefix) :]
                 self.write(line, mode="success")
             elif line.startswith("[-]"):
                 self.write(line, mode="error")
             else:
                 self.write(line)
-        if last_submission is not None and "atcoder" in last_submission:
-            self.popup = CustomPopup(None, url=last_submission)
-            self.popup.show()
+        if last_submission_url is not None:
+            submission = submission_from_url(last_submission_url)
+            if submission is not None:
+                self.popup = CustomPopup(None, last_submission_url)
+                self.popup.show()
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
