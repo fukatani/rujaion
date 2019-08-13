@@ -95,17 +95,13 @@ You can login by
 1) Login Browser Widget
 2) Tool bar -> Contest -> Login
 
-Cookie Policy
+<a name="policy">Cookie and Security Policy</a>
 ==============================
-
-<a name="policy">Cookie Policy</a>
 
 Rujaion only use cookies for programming contest pages which is supported by [online-judge-tools](https://github.com/kmyk/online-judge-tools).
 
-Though by browser widget, cookies in other page will not be handled in rujaion explicitly.
+Though you can access any page by browser widget, cookies in other page will not be handled in rujaion explicitly. (QtWebEngine may use it.)
 
-(QtWebEngine may use it.)
-
-Cookies are only used for online-judge-tools features that require login. (Excepts QtWebEngine inner usage.)
+Cookies are only used for online-judge-tools features that require login. (Excepts QtWebEngine inner use.)
 
 We are not liable for damages arising from any user with using rujaion.
