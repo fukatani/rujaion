@@ -114,8 +114,6 @@ class CustomPopup(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
-    w = CustomPopup(
-        url="https://atcoder.jp/contests/diverta2019/submissions/5363629"
-    )
+    w = CustomPopup(url="https://atcoder.jp/contests/diverta2019/submissions/5363629")
     w.show()
     sys.exit(app.exec_())
