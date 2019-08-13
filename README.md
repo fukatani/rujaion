@@ -47,6 +47,8 @@ If you want to use C++, in addition, you need
 Usage
 ==============================
 
+If you want to use rujaion please read and agree with our [cookie policy](#policy).
+
 ```bash
 $ git clone https://github.com/fukatani/rujaion.git
 $ cd rujaion
@@ -83,3 +85,27 @@ Contest Task Browsing
 You can browse contest task by Dock Browser Widget.
 You can hide (or show) browser, press F11 key.
 If page URL is contest task page, contest task is downloaded automatically by online-judge-tools.
+
+Login to Programming Contest
+==============================
+
+Some online-judge-tools features (ex. submit) needs login session information.
+
+You can login by
+1) Login Browser Widget
+2) Tool bar -> Contest -> Login
+
+Cookie Policy
+==============================
+
+<a name="policy">Cookie Policy</a>
+
+Rujaion only use cookies for programming contest pages which is supported by [online-judge-tools](https://github.com/kmyk/online-judge-tools).
+
+Though by browser widget, cookies in other page will not be handled in rujaion explicitly.
+
+(QtWebEngine may use it.)
+
+Cookies are only used for online-judge-tools features that require login. (Excepts QtWebEngine inner usage.)
+
+We are not liable for damages arising from any user with using rujaion.
