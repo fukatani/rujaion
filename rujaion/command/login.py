@@ -69,8 +69,11 @@ class LoginDialog(QtWidgets.QDialog):
             self.password_edit.text(),
             self.url_edit.text(),
         )
-        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        self.parent().console.write_oj_result(out)
+        try:
+            out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            self.parent().console.write_oj_result(out)
+        except subprocess.CalledProcessError as err:
+            self.parent().console.write_oj_result(err.output)
         self.close()
 
 

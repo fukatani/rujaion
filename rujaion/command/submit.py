@@ -84,7 +84,6 @@ class Submitter(QThread):
     def run(self):
         try:
             out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
-        except Exception as err:
+            self.console.writeOjSignal.emit(out)
+        except subprocess.CalledProcessError as err:
             self.console.writeOjSignal.emit(err.output)
-            return
-        self.console.writeOjSignal.emit(out)
