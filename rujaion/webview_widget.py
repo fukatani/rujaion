@@ -33,6 +33,8 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit = QtWidgets.QLineEdit()
         self.url_edit.returnPressed.connect(self.loadPage)
         self.browser.urlChanged.connect(self.updateCurrentUrl)
+        session = new_session_with_our_user_agent()
+        self.browser.page().profile().setHttpUserAgent(session.headers["User-Agent"])
         self.browser.page().profile().cookieStore().cookieAdded.connect(
             self.handleCookieAdded
         )
