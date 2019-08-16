@@ -24,6 +24,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.url_edit = QtWidgets.QLineEdit()
         self.url_edit.returnPressed.connect(self.loadPage)
         self.browser.urlChanged.connect(self.updateCurrentUrl)
+        self.browser.loadFinished.connect(self.download_task)
 
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.url_edit, 0, 0, 1, 15)
@@ -76,9 +77,6 @@ class WebViewWindow(QtWidgets.QWidget):
         """
         self.url_edit.clear()
         self.url_edit.insert(self.browser.url().toString())
-        # auto task download
-        if self.parent() is not None:
-            self.parent().parent().download(self.url_edit.text())
 
     def focusOnUrlEdit(self):
         self.url_edit.setFocus()
