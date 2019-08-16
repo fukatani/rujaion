@@ -214,7 +214,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.browser_widget.focusOnUrlEdit()
         elif (
             event.modifiers() == QtCore.Qt.ControlModifier
-            and event.key() == QtCore.Qt.Key_F11
+            and event.key() == QtCore.Qt.Key_F12
         ):
             if self.debug_process is not None:
                 return
@@ -228,7 +228,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.console.hide()
                 self.browser_dock.show()
                 self.editor.setFocus()
-        elif event.key() == QtCore.Qt.Key_F11:
+        elif event.key() == QtCore.Qt.Key_F12:
             if self.editor.isHidden():
                 self.editor.show()
                 self.console.show()
@@ -237,7 +237,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.browser_dock.show()
             else:
                 self.browser_dock.hide()
-        elif event.key() == QtCore.Qt.Key_F12:
+        elif event.key() == QtCore.Qt.Key_F11:
             if self.console_dock.isHidden():
                 self.console_dock.show()
             else:
