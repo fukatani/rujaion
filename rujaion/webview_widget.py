@@ -29,14 +29,14 @@ navi_script = """// ==UserScript==
      if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
         const tasks = [];
         let row;
-        for (row of document.querySelectorAll('tbody>tr')) {
+        for (row of document.querySelectorAll('<tbody>tr')) {
             const task = row.querySelectorAll('a');
             const href = task[0].getAttribute('href');
             const task_number = task[0].textContent;
             const task_name = task[1].textContent;
             tasks.push({
                 href: href,
-                text: task_number + ' - ' + task_name
+                task_name: task_number + ' - ' + task_name
             });
         }
         localStorage[key] = JSON.stringify(tasks);
@@ -55,14 +55,14 @@ navi_script = """// ==UserScript==
            dom_obj_parent.removeChild(dom_obj.parentNode);
         }
 
-        const tasksBar = document.createElement('plinks');
+        const tasksBar = document.createElement('l');
         tasksBar.className = 'nav nav-tabs';
         let task;
         for (task of JSON.parse(localStorage[key])) {
             const link = document.createElement('a');
-            link.setAttribute('style', 'margin-left: 10px; margin-right: 10px;');
+            link.setAttribute('style', 'margin-right: 20px;');
             link.setAttribute('href', task.href);
-            link.textContent = task.text;
+            link.textContent = task.task_name;
             tasksBar.appendChild(link);
         }
         document.getElementById('contest-nav-tabs').innerHTML = '';
