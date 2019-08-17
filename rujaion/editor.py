@@ -310,6 +310,10 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def insertCompletion(self):
         text = self.completer.getSelected()
+        if text not in self.completer.candidates_dict:  # Not selected from pop up
+            self.completer.popup().hide()
+            return
+
         tc = self.textCursor()
 
         # First we should remove char since some live templates'
