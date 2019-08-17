@@ -74,9 +74,9 @@ KeyBinds
 - Terminate debug process (Esc)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
-- Toggle Show / Hide Browser Widget (F11)
-- Toggle Full Screen Browsing / or not (Ctrl + F11)
-- Toggle Show / Hide Console Widget (F12)
+- Toggle Show / Hide Browser Widget (F12)
+- Toggle Full Screen Browsing / or not (Ctrl + F12)
+- Toggle Show / Hide Console Widget (F11)
 
 Contest Task Browsing
 ==============================

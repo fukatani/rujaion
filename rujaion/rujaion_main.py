@@ -159,8 +159,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
         self.gdb_timeout = 4.0
-        self.show_console = True
-        self.show_browser = True
         self.browser_dock = QtWidgets.QDockWidget("", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.browser_dock)
         self.addConsole()
@@ -216,30 +214,31 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.browser_widget.focusOnUrlEdit()
         elif (
             event.modifiers() == QtCore.Qt.ControlModifier
-            and event.key() == QtCore.Qt.Key_F11
+            and event.key() == QtCore.Qt.Key_F12
         ):
             if self.debug_process is not None:
                 return
-            if not self.show_browser:
-                self.show_browser = True
+
+            if self.editor.isHidden():
+                self.editor.show()
+                self.console.show()
+                self.browser_dock.hide()
+            else:
+                self.editor.hide()
+                self.console.hide()
                 self.browser_dock.show()
+                self.editor.setFocus()
+        elif event.key() == QtCore.Qt.Key_F12:
             if self.editor.isHidden():
                 self.editor.show()
                 self.console.show()
                 self.browser_widget.browser.setFocus()
-            else:
-                self.editor.hide()
-                self.console.hide()
-                self.editor.setFocus()
-        elif event.key() == QtCore.Qt.Key_F11:
-            self.show_browser = not self.show_browser
-            if self.show_browser:
+            if self.browser_dock.isHidden():
                 self.browser_dock.show()
             else:
                 self.browser_dock.hide()
-        elif event.key() == QtCore.Qt.Key_F12:
-            self.show_console = not self.show_console
-            if self.show_console:
+        elif event.key() == QtCore.Qt.Key_F11:
+            if self.console_dock.isHidden():
                 self.console_dock.show()
             else:
                 self.console_dock.hide()
@@ -314,7 +313,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             default_dir = os.path.dirname(
                 self.settings.value("LastOpenedFile", type=str)
             )
-        default_file_name = os.path.join(default_dir, self.editor.default_file_name)
+        default_file_name = os.path.join(default_dir, self.editor.default_file_name())
         savename = QtWidgets.QFileDialog.getSaveFileName(
             self, "Save file", default_file_name, "Source Files (*.rs *.cpp)"
         )[0]
@@ -459,9 +458,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         def wrapper(self, *args, **kwargs):
             func(self, *args, **kwargs)
             if self.debug_process is not None:
-                if not self.show_console:
-                    self.show_console = True
-                    self.console_dock.show()
+                self.console_dock.show()
 
         return wrapper
 
@@ -653,8 +650,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
         self.browser_dock.setWidget(self.browser_widget)
-        if not self.show_browser:
-            self.browser_dock.hide()
+        self.browser_dock.hide()
 
     def continue_process(self):
         print("continue")
