@@ -29,7 +29,7 @@ navi_script = """// ==UserScript==
      if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
         const tasks = [];
         let row;
-        for (row of document.querySelectorAll('<tbody>tr')) {
+        for (row of document.querySelectorAll('tbody > tr')) {
             const task = row.querySelectorAll('a');
             const href = task[0].getAttribute('href');
             const task_number = task[0].textContent;
