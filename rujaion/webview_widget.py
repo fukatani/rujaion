@@ -3,7 +3,7 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 
 from onlinejudge.dispatch import service_from_url
 from onlinejudge._implementation.utils import (
@@ -16,12 +16,93 @@ from PyQt5.QtNetwork import QNetworkCookie
 # Many of source is copied from https://qiita.com/montblanc18/items/88d0b639de86b7cac613
 
 
+navi_script = """// ==UserScript==
+// @match        https://atcoder.jp/contests/*
+// ==/UserScript==
+(function() {
+    'use strict';
+    if (!location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)) {
+        return;
+    }
+    const contest_name = location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)/)[1];
+    const key = 'atcoder-optimizer-' + contest_name;
+     if (location.href.match(/^https:\/\/atcoder\.jp\/contests\/([^\/]+)\/tasks\/?$/)) {
+        const tasks = [];
+        let row;
+        for (row of document.querySelectorAll('<tbody>tr')) {
+            const task = row.querySelectorAll('a');
+            const href = task[0].getAttribute('href');
+            const task_number = task[0].textContent;
+            const task_name = task[1].textContent;
+            tasks.push({
+                href: href,
+                task_name: task_number + ' - ' + task_name
+            });
+        }
+        localStorage[key] = JSON.stringify(tasks);
+    }
+     if (key in localStorage) {
+        var dom_obj = document.getElementById("main-container");
+        dom_obj.style.paddingTop = "0px";
+
+        if (document.getElementById("sourceCode")) {
+           var dom_obj = document.getElementById("sourceCode");
+           var dom_obj_parent = dom_obj.parentNode.parentNode.parentNode;
+           dom_obj_parent.removeChild(dom_obj.parentNode.parentNode);
+
+           var dom_obj = document.getElementsByTagName("footer")[0];
+           var dom_obj_parent = dom_obj.parentNode.parentNode;
+           dom_obj_parent.removeChild(dom_obj.parentNode);
+        }
+
+        const tasksBar = document.createElement('l');
+        tasksBar.className = 'nav nav-tabs';
+        let task;
+        for (task of JSON.parse(localStorage[key])) {
+            const link = document.createElement('a');
+            link.setAttribute('style', 'margin-right: 20px;');
+            link.setAttribute('href', task.href);
+            link.textContent = task.task_name;
+            tasksBar.appendChild(link);
+        }
+        document.getElementById('contest-nav-tabs').innerHTML = '';
+        document.getElementById('contest-nav-tabs').appendChild(tasksBar);
+    }
+})();"""
+
+
+yukicoder_script = """// ==UserScript==
+// @match        https://yukicoder.me/problems/*
+// ==/UserScript==
+(function() {
+    'use strict';
+    var dom_obj = document.getElementById("sidebar");
+    var dom_obj_parent = dom_obj.parentNode;
+    dom_obj_parent.removeChild(dom_obj);
+})();"""
+
+
 class CustomWebEngineView(QWebEngineView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.runScript()
+        self.setZoomFactor(0.97)
+
     def contextMenuEvent(self, a0: QtGui.QContextMenuEvent) -> None:
         menu = QtWidgets.QMenu()
         menu.addAction(u"Go Next Task", self.parent().goNextTask)
         menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
         menu.exec(a0.globalPos())
+
+    def runScript(self) -> None:
+        # self.page().runJavaScript(navi_scripts, QWebEngineScript.ApplicationWorld)
+        script = QWebEngineScript()
+        script.setName("atcoder-optimizer")
+        script.setSourceCode(navi_script)
+        script.setInjectionPoint(QWebEngineScript.DocumentReady)
+        script.setRunsOnSubFrames(True)
+        script.setWorldId(QWebEngineScript.ApplicationWorld)
+        self.page().scripts().insert(script)
 
 
 class WebViewWindow(QtWidgets.QWidget):
@@ -67,9 +148,14 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url[-1] == "z":
-            return
-        current_url = current_url[:-1] + chr(ord(current_url[-1]) + 1)
+        if current_url.split('/')[-1].isdecimal():  # yukicoder
+            words = current_url.split('/')
+            words[-1] = str(int(words[-1]) + 1)
+            current_url = "/".join(words)
+        else:
+            if current_url[-1] == "z":
+                return
+            current_url = current_url[:-1] + chr(ord(current_url[-1]) + 1)
         self.changePage(current_url)
 
     def goPreviousTask(self):
@@ -81,9 +167,14 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url[-1] == "a":
-            return
-        current_url = current_url[:-1] + chr(ord(current_url[-1]) - 1)
+        if current_url.split('/')[-1].isdecimal():  # yukicoder
+            words = current_url.split('/')
+            words[-1] = str(int(words[-1]) - 1)
+            current_url = "/".join(words)
+        else:
+            if current_url[-1] == "a":
+                return
+            current_url = current_url[:-1] + chr(ord(current_url[-1]) - 1)
         self.changePage(current_url)
 
     def updateCurrentUrl(self):
