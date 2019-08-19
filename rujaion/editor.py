@@ -229,8 +229,8 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def open_file(self, fname: str):
         assert fname
-        f = open(fname)
-        self.setPlainText(f.read())
+        with open(fname) as f:
+            self.setPlainText(f.read())
         self.edited = False
         self.fname = fname
         self.reset_lang()
