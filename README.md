@@ -11,9 +11,9 @@ Introduction
 ==============================
 Lightweight Rust IDE based on PyQt. (C++ feature is experimental)
 
-Current version is alpha, some function is not implemented. 
+Since rujaion is simplified and specialized to competitive programming, user can concentrate on programming and can perform at their full potential.
 
-Support one file project only.
+View contest task, testing with sample cases, debugging with test cases, and submission are easy to do.
 
 Feature
 ==============================
