@@ -1,5 +1,7 @@
 from http.cookiejar import Cookie
+import subprocess
 import sys
+
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
@@ -92,6 +94,8 @@ class CustomWebEngineView(QWebEngineView):
         menu = QtWidgets.QMenu()
         menu.addAction(u"Go Next Task", self.parent().goNextTask)
         menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
+        menu.addAction(u"View Graph", self.viewGraph)
+        menu.addAction(u"Back", self.back)
         menu.exec(a0.globalPos())
 
     def runScript(self) -> None:
@@ -103,6 +107,43 @@ class CustomWebEngineView(QWebEngineView):
         script.setRunsOnSubFrames(True)
         script.setWorldId(QWebEngineScript.ApplicationWorld)
         self.page().scripts().insert(script)
+
+    def viewGraph(self) -> None:
+        text = self.selectedText()
+        graph_member = []
+        weighted = "false"
+
+        lines = text.split("\n")
+        vertexes = []
+        for line in lines:
+            words = line.split(" ")
+            if len(words) < 2:
+                continue
+            if len(words) == 3:
+                weighted = "true"
+            graph_member.append("-".join(words))
+            vertexes.append(int(words[0]))
+            vertexes.append(int(words[1]))
+        graph_member = ["{0}-{1}".format(max(vertexes), len(lines))] + graph_member
+        graph_query = ",".join(graph_member)
+
+        if min(vertexes) == 0:
+            indexed = "false"
+        else:
+            indexed = "true"
+
+        # url = QUrl("https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(weighted, indexed, graph_query))
+        # self.load(url)
+        # self.page().runJavaScript("window.scrollTo(-500, -500);")
+
+        url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(
+                weighted, indexed, graph_query)
+        # import webbrowser
+        # webbrowser.open_new_tab(url)
+        try:
+            subprocess.check_call(['sensible-browser', url], timeout=3)
+        except subprocess.TimeoutExpired:
+            pass
 
 
 class WebViewWindow(QtWidgets.QWidget):
