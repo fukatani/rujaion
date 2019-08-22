@@ -94,7 +94,8 @@ class CustomWebEngineView(QWebEngineView):
         menu = QtWidgets.QMenu()
         menu.addAction(u"Go Next Task", self.parent().goNextTask)
         menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
-        menu.addAction(u"View Graph", self.viewGraph)
+        if self.selectedText():
+            menu.addAction(u"View Graph", self.viewGraph)
         menu.addAction(u"Back", self.back)
         menu.exec(a0.globalPos())
 
@@ -141,7 +142,7 @@ class CustomWebEngineView(QWebEngineView):
         # import webbrowser
         # webbrowser.open_new_tab(url)
         try:
-            subprocess.check_call(['sensible-browser', url], timeout=3)
+            subprocess.check_call(['sensible-browser', url], timeout=10)
         except subprocess.TimeoutExpired:
             pass
 
