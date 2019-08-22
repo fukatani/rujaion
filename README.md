@@ -9,9 +9,9 @@ Online judge aware Rust / C++ IDE
 
 Introduction
 ==============================
-Lightweight Rust IDE based on PyQt. (C++ feature is experimental)
+Lightweight Rust IDE based on PyQt. (C++ support is experimental)
 
-Since rujaion is simplified and specialized to competitive programming, user can concentrate on programming and can achieve best performance.
+This IDE is simplified and specialized to competitive programming, user can concentrate on programming and can achieve best performance.
 
 Testing with sample cases, debugging with test cases, and submission can be by one click.
 
@@ -27,6 +27,7 @@ Feature
 * Rust REPL (based on evcxr_repl)
 * Live Templates (IntelliJ style)
 * Contest Task Browsing
+* Display graph structure
 
 Software Requirements
 ==============================
@@ -36,8 +37,8 @@ Software Requirements
 * pexpect 
 * online-judge-tools (6.6.0 or later)
 * evcxr_repl (`cargo install evcxr_repl`)
-* rustfmt
-* racer
+* rustfmt(`rustup component add rustfmt`)
+* racer(https://github.com/racer-rust/racer)
 
 If you want to use C++, in addition, you need
 * clang (8.0.0 or later)
