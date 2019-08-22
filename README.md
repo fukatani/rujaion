@@ -11,9 +11,9 @@ Introduction
 ==============================
 Lightweight Rust IDE based on PyQt. (C++ feature is experimental)
 
-Since rujaion is simplified and specialized to competitive programming, user can concentrate on programming and can perform at their full potential.
+Since rujaion is simplified and specialized to competitive programming, user can concentrate on programming and can achieve best performance.
 
-View contest task, testing with sample cases, debugging with test cases, and submission are easy to do.
+Testing with sample cases, debugging with test cases, and submission can be by one click.
 
 Feature
 ==============================
@@ -105,3 +105,12 @@ Though you can access any page by browser widget, cookies in other page will not
 Cookies are only used for online-judge-tools features that require login. (Excepts QtWebEngine inner use.)
 
 We are not liable for damages arising from any user with using rujaion.
+
+Display Graph (Powered by Graph x Graph)
+==============================
+
+In contest, you often draw graph structure.
+
+Select graph elements and do "View Graph" in browser right click menu, you can draw graph structure easily.
+
+![screen_cast_graph](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/graph_view.gif)

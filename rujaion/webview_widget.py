@@ -94,7 +94,8 @@ class CustomWebEngineView(QWebEngineView):
         menu = QtWidgets.QMenu()
         menu.addAction(u"Go Next Task", self.parent().goNextTask)
         menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
-        menu.addAction(u"View Graph", self.viewGraph)
+        if self.selectedText():
+            menu.addAction(u"View Graph", self.viewGraph)
         menu.addAction(u"Back", self.back)
         menu.exec(a0.globalPos())
 
@@ -124,24 +125,27 @@ class CustomWebEngineView(QWebEngineView):
             graph_member.append("-".join(words))
             vertexes.append(int(words[0]))
             vertexes.append(int(words[1]))
-        graph_member = ["{0}-{1}".format(max(vertexes), len(lines))] + graph_member
-        graph_query = ",".join(graph_member)
 
         if min(vertexes) == 0:
             indexed = "false"
         else:
             indexed = "true"
 
-        # url = QUrl("https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(weighted, indexed, graph_query))
-        # self.load(url)
-        # self.page().runJavaScript("window.scrollTo(-500, -500);")
+        max_vertex = max(vertexes)
+        if indexed == "false":
+            max_vertex -= 1
+        graph_member = ["{0}-{1}".format(max_vertex,
+                                         len(lines))] + graph_member
+        graph_query = ",".join(graph_member)
 
         url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(
                 weighted, indexed, graph_query)
         # import webbrowser
         # webbrowser.open_new_tab(url)
+        # self.load(url)
+        # self.page().runJavaScript("window.scrollTo(-500, -500);")
         try:
-            subprocess.check_call(['sensible-browser', url], timeout=3)
+            subprocess.Popen(['sensible-browser', url])
         except subprocess.TimeoutExpired:
             pass
 
