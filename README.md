@@ -48,6 +48,7 @@ If you want to use C++, in addition, you need
 Usage
 ==============================
 
+### Install to Linux
 If you want to use rujaion please read and agree with our [cookie policy](#policy).
 
 ```bash
@@ -56,6 +57,9 @@ $ cd rujaion
 $ python3 setup.py install
 $ rujaion_main.py
 ```
+
+### Use on Docker
+See https://github.com/fukatani/rust-gui-debugger/blob/master/docker/Readme.md
 
 KeyBinds
 ==============================

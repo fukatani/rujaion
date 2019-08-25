@@ -1,17 +1,7 @@
 FROM python:3.7
 
-#RUN apt update && \
-#    apt install -y libssl-dev libxcursor-dev libxcomposite-dev libxdamage-dev libxrandr-dev \
-#    libdbus-1-dev libfontconfig1-dev libcap-dev libxtst-dev libpulse-dev libudev-dev libpci-dev \
-#    libnss3-dev libasound2-dev libxss-dev libegl1-mesa-dev gperf bison \
-#    qt5-default libxcb-xinerama0-dev build-essential
-    # build-essential && \
+# Install qt
 RUN apt update && apt install -y qt5-default libxcb-xinerama0-dev libnss3 libasound2
-
-# Install Deps
-# RUN wget http://download.qt.io/official_releases/qt/5.12/5.12.4/qt-opensource-linux-x64-5.12.4.run && \
-#     chmod +x qt-opensource-linux-x64-5.12.4.run && \
-#    ./qt-opensource-linux-x64-5.12.4.run
 
 # Install rujaion
 RUN git clone https://github.com/fukatani/rujaion.git && \
@@ -23,7 +13,6 @@ RUN git clone https://github.com/fukatani/rujaion.git && \
     # rujaion_main.py
 
 # Prepare Rust
-
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
@@ -48,9 +37,6 @@ RUN set -eux; \
     rustup --version; \
     cargo --version; \
     rustc --version;
-
-#RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-#    export PATH=$PATH:$HOME/.cargo/bin
 
 RUN cargo install evcxr_repl && \
     rustup component add rustfmt && \
