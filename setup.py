@@ -32,4 +32,5 @@ setup(
         "pandas",
     ],
     packages=find_packages(exclude=("docker", "doc")),
+    package_data={ 'rujaion' : ['resources/*'], },
 )
