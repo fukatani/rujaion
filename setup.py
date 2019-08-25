@@ -2,9 +2,6 @@
 import imp
 from setuptools import find_packages, setup
 
-
-#!/usr/bin/env python3
-import imp
 import os
 
 import setuptools

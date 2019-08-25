@@ -1,9 +1,10 @@
-Online judge aware Rust / C++ IDE
+Rust / C++ IDE specialized in online judge 
 ==============================
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
 [![Travis](https://img.shields.io/travis/fukatani/rujaion.svg)](https://travis-ci.org/fukatani/rujaion)
+[![PyPI](https://img.shields.io/pypi/v/Rujaion.svg)](https://pypi.python.org/pypi/Rujaion)
 ![screen_cast](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/rujaion.gif)
 
 Introduction
@@ -30,7 +31,7 @@ Feature
 
 Software Requirements
 ==============================
-* Linux OS (I only tested with Ubuntu 16.04/18.04)
+* Linux OS (I only tested with Ubuntu 16.04 / 18.04)
 * Python (3.5 or later)
 
 If you want to develop with rust-lang, you need
