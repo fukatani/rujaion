@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 import imp
+from setuptools import find_packages, setup
+
+
+#!/usr/bin/env python3
+import imp
 import os
 
 import setuptools
 from pkg_resources import parse_version
 from setuptools import setup
-
-if parse_version(setuptools.__version__) < parse_version("30.3.0"):
-    raise RuntimeError('setuptools>=30.3.0 is required for "setup.cfg"')
 
 
 def load_module(module_path):
@@ -18,4 +20,16 @@ def load_module(module_path):
     return imp.load_module(name, file, path[0], description)
 
 
-setup(name="Rujaion", version="0.1", author="Ryosuke Fukatani")
+setup(
+    name="Rujaion",
+    version="0.1",
+    author="Ryosuke Fukatani",
+    install_requires=[
+        "PyQt5",
+        "PyQtWebEngine",
+        "pexpect",
+        "online-judge-tools",
+        "pandas",
+    ],
+    packages=find_packages(exclude=("docker", "doc")),
+)
