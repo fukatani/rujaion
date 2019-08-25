@@ -134,18 +134,18 @@ class CustomWebEngineView(QWebEngineView):
         max_vertex = max(vertexes)
         if indexed == "false":
             max_vertex -= 1
-        graph_member = ["{0}-{1}".format(max_vertex,
-                                         len(lines))] + graph_member
+        graph_member = ["{0}-{1}".format(max_vertex, len(lines))] + graph_member
         graph_query = ",".join(graph_member)
 
         url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(
-                weighted, indexed, graph_query)
+            weighted, indexed, graph_query
+        )
         # import webbrowser
         # webbrowser.open_new_tab(url)
         # self.load(url)
         # self.page().runJavaScript("window.scrollTo(-500, -500);")
         try:
-            subprocess.Popen(['sensible-browser', url])
+            subprocess.Popen(["sensible-browser", url])
         except subprocess.TimeoutExpired:
             pass
 
@@ -193,8 +193,8 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url.split('/')[-1].isdecimal():  # yukicoder
-            words = current_url.split('/')
+        if current_url.split("/")[-1].isdecimal():  # yukicoder
+            words = current_url.split("/")
             words[-1] = str(int(words[-1]) + 1)
             current_url = "/".join(words)
         else:
@@ -212,8 +212,8 @@ class WebViewWindow(QtWidgets.QWidget):
         This function is note tested except AtCoder.
         """
         current_url = self.browser.url().toString()
-        if current_url.split('/')[-1].isdecimal():  # yukicoder
-            words = current_url.split('/')
+        if current_url.split("/")[-1].isdecimal():  # yukicoder
+            words = current_url.split("/")
             words[-1] = str(int(words[-1]) - 1)
             current_url = "/".join(words)
         else:
