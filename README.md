@@ -93,7 +93,7 @@ Contest Task Browsing
 ==============================
 ![browse](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/browse.png)
 
-You can browse contest task by Dock Browser Widget.
+You can browse contest task by Browser Widget.
 You can hide (or show) browser, press F11 key.
 If page URL is contest task page, contest task is downloaded automatically by online-judge-tools.
 
@@ -103,7 +103,7 @@ Login to Programming Contest
 Some online-judge-tools features (ex. submit) needs login session information.
 
 You can login by
-1) Login Browser Widget
+1) Login with Browser Widget
 2) Tool bar -> Contest -> Login
 
 <a name="policy">Cookie and Security Policy</a>
