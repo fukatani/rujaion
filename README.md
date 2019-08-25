@@ -30,28 +30,36 @@ Feature
 
 Software Requirements
 ==============================
+* Linux OS (I only tested with Ubuntu 16.04/18.04)
 * Python (3.5 or later)
-* PyQt5 (`sudo apt install pyqt5`)
-* PyQtWebEngine
-* pexpect 
-* online-judge-tools (6.6.0 or later)
+
+If you want to develop with rust-lang, you need
 * evcxr_repl (`cargo install evcxr_repl`)
 * rustfmt(`rustup component add rustfmt`)
-* racer(https://github.com/racer-rust/racer)
+* racer(Please see https://github.com/racer-rust/racer)
 
-If you want to use C++, in addition, you need
+If you want to develop with C++, in addition, you need
 * clang (8.0.0 or later)
 * clang-format
 * g++
 
 Usage
 ==============================
+If you want to use Rujaion please read and agree with our [cookie policy](#policy).
 
 ### Install to Linux
-If you want to use rujaion please read and agree with our [cookie policy](#policy).
+
+Install Qt5. If you use Ubuntu 16.04,
 
 ```bash
-$ pip3 install rujaion
+$ apt update && apt install -y qt5-default libxcb-xinerama0-dev libnss3 libasound2
+```
+will work. Or please see official document (https://www.qt.io/download). 
+
+Install Rujaion
+
+```bash
+$ pip3 install Rujaion
 $ rujaion
 ```
 

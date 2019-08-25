@@ -5,7 +5,7 @@ RUN apt update && apt install -y qt5-default libxcb-xinerama0-dev libnss3 libaso
 
 # Install rujaion
 RUN pip install -U pip && \
-    pip install rujaion && \
+    pip install Rujaion && \
     echo "export QTWEBENGINE_DISABLE_SANDBOX=1" >> ~/.bashrc && \
     pip3 install --user -I pyqt5 pyqtwebengine
 
