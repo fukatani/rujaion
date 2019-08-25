@@ -4,13 +4,10 @@ FROM python:3.7
 RUN apt update && apt install -y qt5-default libxcb-xinerama0-dev libnss3 libasound2
 
 # Install rujaion
-RUN git clone https://github.com/fukatani/rujaion.git && \
-    cd rujaion && \
-    pip install -U pip && \
-    python3 setup.py install && \
+RUN pip install -U pip && \
+    pip install rujaion && \
     echo "export QTWEBENGINE_DISABLE_SANDBOX=1" >> ~/.bashrc && \
     pip3 install --user -I pyqt5 pyqtwebengine
-    # rujaion_main.py
 
 # Prepare Rust
 ENV RUSTUP_HOME=/usr/local/rustup \

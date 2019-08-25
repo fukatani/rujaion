@@ -6,3 +6,5 @@ rujaion/test/*
 rujaion/temp.rs
 rujaion/.mypy_cache/*
 Rujaion.egg-info/*
+build/*
+dist/*

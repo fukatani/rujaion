@@ -4,7 +4,6 @@ Online judge aware Rust / C++ IDE
 </p>
 
 [![Travis](https://img.shields.io/travis/fukatani/rujaion.svg)](https://travis-ci.org/fukatani/rujaion)
-
 ![screen_cast](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/rujaion.gif)
 
 Introduction
@@ -52,10 +51,8 @@ Usage
 If you want to use rujaion please read and agree with our [cookie policy](#policy).
 
 ```bash
-$ git clone https://github.com/fukatani/rujaion.git
-$ cd rujaion
-$ python3 setup.py install
-$ rujaion_main.py
+$ pip3 install rujaion
+$ rujaion
 ```
 
 ### Use on Docker

@@ -22,7 +22,7 @@ def load_module(module_path):
 
 setup(
     name="Rujaion",
-    version="0.5.1",
+    version="0.5.3",
     author="Ryosuke Fukatani",
     install_requires=[
         "PyQt5",
@@ -33,4 +33,9 @@ setup(
     ],
     packages=find_packages(exclude=("docker", "doc")),
     package_data={ 'rujaion' : ['resources/*'], },
+    entry_points={
+        'console_scripts': [
+            'rujaion = rujaion.rujaion_main:main',
+        ],
+    },
 )
