@@ -331,8 +331,8 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.completer.popup().hide()
 
     def enter_with_auto_indent(self):
-        tc = self.textCursor()
-        line_text = self.toPlainText().split("\n")[tc.blockNumber()]
+        line_number = self.textCursor().blockNumber()
+        line_text = self.document().findBlockByLineNumber(line_number).text()
         indent_level = line_text.count(" " * util.indent_width(self.lang))
         if line_text.endswith("{"):
             indent_level += 1
