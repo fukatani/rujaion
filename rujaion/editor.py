@@ -75,6 +75,7 @@ class Editter(QtWidgets.QPlainTextEdit):
 
         self.lang = "rust"
         self.reset_lang()
+        self.cursorPositionChanged.connect(self.highlight_cursor_line)
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -102,10 +103,6 @@ class Editter(QtWidgets.QPlainTextEdit):
             return "test1.cpp"
         else:
             return "test1.rs"
-
-    def mousePressEvent(self, event: QtGui.QMouseEvent):
-        super().mousePressEvent(event)
-        self.highlight_cursor_line()
 
     def highlight_cursor_line(self):
         if self.parent().debug_process is not None:
@@ -440,24 +437,6 @@ class Editter(QtWidgets.QPlainTextEdit):
                 )
                 self.setTextCursor(cursor)
 
-        # need to repaint after cursor moved
-        if (
-            event.key() == Qt.Key_Right
-            or event.key() == Qt.Key_Left
-            or event.key() == Qt.Key_Up
-            or event.key() == Qt.Key_Down
-            or event.key() == Qt.Key_PageUp
-            or event.key() == Qt.Key_PageDown
-            or event.key() == Qt.Key_Home
-            or event.key() == Qt.Key_End
-            or event.key() == Qt.Key_Backspace
-            or event.key() == Qt.Key_Delete
-            or (event.key() == Qt.Key_V and QtCore.Qt.ControlModifier)
-            or (event.key() == Qt.Key_X and QtCore.Qt.ControlModifier)
-            or (event.key() == Qt.Key_Z and QtCore.Qt.ControlModifier)
-        ):
-            self.repaint()
-            self.highlight_cursor_line()
         self.start_complete_process(event, tc)
 
     # TODO here is slow.
@@ -520,4 +499,3 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.verticalScrollBar().setValue(scroll_value)
         self.edited = False
         self.repaint()
-        self.highlight_cursor_line()
