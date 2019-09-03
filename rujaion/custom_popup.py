@@ -29,8 +29,9 @@ class External(QThread):
             for i in range(40):
                 time.sleep(2)
                 submission = submission_from_url(self.url)
-                result = submission.get_status(session=sess)
-                self.updateRequest.emit((result, submission._problem_id))
+                result = submission.download_data(session=sess)
+                self.updateRequest.emit((result.status, result.problem_id))
+                result = result.status
                 failed = any([word in result for word in self.failed_words])
                 if result == "AC" or failed:
                     finished = True
