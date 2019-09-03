@@ -25,7 +25,7 @@ setup(
         "PyQt5",
         "PyQtWebEngine",
         "pexpect",
-        "online-judge-tools",
+        "online-judge-tools >= 7.0.0",
         "pandas",
     ],
     packages=find_packages(exclude=("docker", "doc")),
