@@ -162,3 +162,76 @@ class CppHighlighter(QSyntaxHighlighter):
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
+
+
+class PyHighlighter(QSyntaxHighlighter):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.highlight_rules = []
+        function_format = QTextCharFormat()
+        function_format.setFontItalic(True)
+        function_format.setForeground(Qt.blue)
+        self.highlight_rules.append(
+            (QRegExp("\\b[A-Za-z]+(?=\\()"), function_format)
+        )
+
+        keyword_format = QTextCharFormat()
+        keyword_format.setForeground(QColor(Qt.magenta).darker(150))
+        keyword_format.setFontWeight(QFont.Bold)
+
+        # fmt: off
+        keyword_patterns = ("\\bdef\\b", "\\bclass\\b",
+                            "\\bglobal\\b", "\\breturn\\b", "\\bimport\\b",
+                            "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
+                            "\\bcontinue\\b", "\\belse\\b", "\\bif\\b",
+                            "\\belif\\b", "\\btry\\b", "\\bexcept\\b",
+                            "\\bfinally\\b", "\\bas\\b", "\\band\\b",
+                            "\\bor\\b", "\\bnot\\b", "\\bin\\b",
+                            )
+        # fmt: on
+
+        self.highlight_rules += [
+            (QRegExp(pattern), keyword_format) for pattern in keyword_patterns
+        ]
+
+        const_format = QTextCharFormat()
+        const_format.setForeground(Qt.darkYellow)
+
+        # fmt: off
+        const_patterns = ("\\bTrue\\b", "\\bTalse\\b", "\\bNone\\b",
+                          "\\b[0-9\.\_]+\\b",
+                          )
+        # fmt: on
+
+        self.highlight_rules += [
+            (QRegExp(pattern), const_format) for pattern in const_patterns
+        ]
+
+        self_format = QTextCharFormat()
+        self_format.setForeground(Qt.darkRed)
+        self.highlight_rules.append((QRegExp("\\bself\\b"), self_format))
+
+        quotation_format = QTextCharFormat()
+        quotation_format.setForeground(Qt.darkGreen)
+        self.highlight_rules.append((QRegExp('".*"'), quotation_format))
+        self.highlight_rules.append((QRegExp("'.*'"), quotation_format))
+
+        attribute_format = QTextCharFormat()
+        attribute_format.setForeground(QColor(Qt.green).darker(140))
+        self.highlight_rules.append((QRegExp("@*"), attribute_format))
+
+        line_comment_format = QTextCharFormat()
+        line_comment_format.setForeground(Qt.darkGray)
+        self.highlight_rules.append((QRegExp("#[^\n]*"), line_comment_format))
+
+    def highlightBlock(self, text: str):
+        for pattern, format in self.highlight_rules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+
+        self.setCurrentBlockState(0)
