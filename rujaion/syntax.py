@@ -217,10 +217,6 @@ class PyHighlighter(QSyntaxHighlighter):
         self.highlight_rules.append((QRegExp('".*"'), quotation_format))
         self.highlight_rules.append((QRegExp("'.*'"), quotation_format))
 
-        attribute_format = QTextCharFormat()
-        attribute_format.setForeground(QColor(Qt.green).darker(140))
-        self.highlight_rules.append((QRegExp("@*"), attribute_format))
-
         line_comment_format = QTextCharFormat()
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("#[^\n]*"), line_comment_format))
