@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+from typing import *
 
 from PyQt5 import QtCore
 from PyQt5 import QtGui
@@ -406,24 +407,40 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return False
         return True
 
+    def is_error_disp_line(self, lines: List[str], i: int):
+        if self.editor.lang == "rust":
+            if i == 0:
+                return False
+            return lines[i - 1].startswith("error:") and "-->" in lines[i]
+        else:
+            return ": error:" in lines[i]
+
+    def is_warning_disp_line(self, lines: List[str], i: int):
+        if self.editor.lang == "rust":
+            if i == 0:
+                return False
+            return lines[i - 1].startswith("warning:") and "-->" in lines[i]
+        else:
+            return ": warning:" in lines[i]
+
     def parse_compile_error(self, error_message: str):
         error_disp_lines = []
         warning_disp_lines = []
         lines = error_message.split("\n")
         for i, line in enumerate(lines):
-            if line.startswith("error") and "-->" in lines[i + 1]:
-                error_disp_lines.append(i + 1)
-            elif line.startswith("warning") and "-->" in lines[i + 1]:
-                warning_disp_lines.append(i + 1)
+            if self.is_error_disp_line(lines, i):
+                error_disp_lines.append(i)
+            elif self.is_warning_disp_line(lines, i):
+                warning_disp_lines.append(i)
 
         error_places = []
         for num in error_disp_lines:
-            invalid_line, invalid_pos = lines[num].split(":")[1:]
+            invalid_line, invalid_pos = lines[num].split(":")[1:3]
             error_places.append((int(invalid_line), int(invalid_pos)))
 
         warning_places = []
         for num in warning_disp_lines:
-            invalid_line, invalid_pos = lines[num].split(":")[1:]
+            invalid_line, invalid_pos = lines[num].split(":")[1:3]
             warning_places.append((int(invalid_line), int(invalid_pos)))
 
         return error_places, warning_places
