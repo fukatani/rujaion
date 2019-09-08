@@ -456,7 +456,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.updateWindowTitle(True)
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         if not os.path.isfile(compiled_file):
-            util.disp_error("Compiled file is not opened.")
+            util.disp_error("Compiled file is not found.")
         try:
             output = subprocess.check_output(
                 util.exec_command(self.editor.lang) + [compiled_file],
@@ -500,7 +500,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.editor.lang, os.path.basename(self.editor.fname)
         )
         if not os.path.isfile(compiled_file):
-            util.disp_error("Compiled file is not opened.")
+            util.disp_error("Compiled file is not found.")
         try:
             assert self.debug_process is None
             self.debug_process = pexpect.spawn(
@@ -558,7 +558,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.editor.lang, os.path.basename(self.editor.fname)
         )
         if not os.path.isfile(compiled_file):
-            util.disp_error("Compiled file is not opened.")
+            util.disp_error("Compiled file is not found.")
         try:
             if self.debug_process is None:
                 self.debug_process = pexpect.spawn(
