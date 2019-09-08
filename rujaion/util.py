@@ -62,7 +62,7 @@ def get_compiled_file(lang: str, fname: str) -> str:
     if lang == "rust":
         return "./" + os.path.basename(fname.replace(".rs", ""))
     else:
-        return "a.out"
+        return "./a.out"
 
 
 def exec_format(lang: str) -> bool:
