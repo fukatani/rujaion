@@ -282,7 +282,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
         fname = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open", dirname, "Source Files (*.rs *.cpp *.bak)"
+            self, "Open", dirname, "Source Files (*.rs *.cpp *.cc *.py *.bak)"
         )[0]
         self.openFile(fname)
 
