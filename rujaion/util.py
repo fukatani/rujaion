@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 from typing import *
 
@@ -151,3 +152,16 @@ def wait_input_ready(debug_process: pexpect.spawn, lang: str, timeout: Optional[
         debug_process.expect("\(Pdb\)", timeout=timeout)
     else:
         debug_process.expect("\(gdb\)", timeout=timeout)
+
+def get_executing_line(lang: str, line: str) -> Optional[int]:
+    if lang == "python":
+        if line.endswith("<module>()"):
+            match = re.search(r"(\()(.*?)\)", line)
+            return int(match.groups()[-1])
+    else:
+        try:
+            line_num = int(line.split("\t")[0])
+            return line_num
+        except ValueError:
+            return None
+    return None

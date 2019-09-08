@@ -502,7 +502,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         try:
             assert self.debug_process is None
             self.debug_process = pexpect.spawn(
-                util.debug_command(self.editor.lang) + " ./" + compiled_file
+                util.debug_command(self.editor.lang) + " " + compiled_file
             )
             util.wait_input_ready(self.debug_process, self.editor.lang)
             self.console.write(self.debug_process.before.decode())
@@ -558,7 +558,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         try:
             if self.debug_process is None:
                 self.debug_process = pexpect.spawn(
-                    util.debug_command(self.editor.lang) + " ./" + compiled_file
+                    util.debug_command(self.editor.lang) + " " + compiled_file
                 )
                 self.console.terminate_evcxr()
             else:
@@ -691,7 +691,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.write(line, mode="gdb")
 
         for line in reversed(msg.split("\r\n")):
-            if line.endswith("exited normally]"):
+            if line.endswith("exited normally]") or line.startswith("The program finished"):
                 self.terminate()
                 return
             elif line.endswith("No such file or directory."):
@@ -702,9 +702,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
                 return
             else:
-                try:
-                    line_num = int(line.split("\t")[0])
-                except ValueError:
+                line_num = util.get_executing_line(self.editor.lang, line)
+                if line_num is None:
                     continue
                 self.editor.highlight_executing_line(line_num)
                 self.editor.repaint()
