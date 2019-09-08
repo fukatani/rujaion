@@ -496,9 +496,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
             else:
                 return
-        compiled_file = util.get_compiled_file(
-            self.editor.lang, os.path.basename(self.editor.fname)
-        )
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not found.")
         try:
@@ -554,9 +552,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         with open(fname) as fr:
             inputs = [line for line in fr if line]
 
-        compiled_file = util.get_compiled_file(
-            self.editor.lang, os.path.basename(self.editor.fname)
-        )
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         if not os.path.isfile(compiled_file):
             util.disp_error("Compiled file is not found.")
         try:
