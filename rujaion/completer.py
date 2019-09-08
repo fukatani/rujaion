@@ -74,6 +74,25 @@ class RacerCompleter(CompleterBase):
         super().setCompletionPrefix(search_word)
 
 
+class PyCompleter(CompleterBase):
+    live_template_file = os.path.join(
+        util.get_resources_dir(), "live_templates_cpp.xml"
+    )
+    def setCompletionPrefix(self, text: str):
+        import jedi
+        src_line_num = self.parent.textCursor().blockNumber() + 1
+        src_char_num = self.parent.textCursor().columnNumber()
+        candidates = jedi.Script(self.parent.toPlainText(), src_line_num, src_char_num).completions()
+        candidates = [cand.name for cand in candidates]
+
+        self.candidates_dict = {}
+        for i, word in enumerate(candidates):
+            self.candidates_dict[word] = -1
+
+        self.setModel(QtCore.QStringListModel(self.candidates_dict.keys()))
+        super().setCompletionPrefix(text)
+
+
 class CppCompleter(CompleterBase):
     # temp file for racer input
     live_template_file = os.path.join(

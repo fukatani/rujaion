@@ -244,11 +244,16 @@ class Editter(QtWidgets.QPlainTextEdit):
             fname = self.fname
         if fname.endswith("cpp") or fname.endswith("cc"):
             self.lang = "c++"
+        elif fname.endswith("py"):
+            self.lang = "python"
         else:
             self.lang = "rust"
 
         if self.lang == "rust":
             self.completer = completer.RacerCompleter(self)
+            self.highlighter = syntax.RustHighlighter(self.document())
+        elif self.lang == "python":
+            self.completer = completer.PyCompleter(self)
             self.highlighter = syntax.PyHighlighter(self.document())
         else:
             self.completer = completer.CppCompleter(self)

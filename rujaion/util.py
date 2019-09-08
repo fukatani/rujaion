@@ -2,6 +2,7 @@ import os
 import subprocess
 from typing import *
 
+import pexpect
 from PyQt5 import QtWidgets
 
 
@@ -29,6 +30,8 @@ def racer_enable() -> bool:
 def debug_command(lang: str) -> str:
     if lang == "rust":
         return "env RUST_BACKTRACE=1 rust-gdb"
+    if lang == "python":
+        return "python -m pdb"
     else:
         return "gdb"
 
@@ -39,6 +42,8 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
             return ["rustc"]
         else:
             return ["rustc", "-g"]
+    elif lang == "python":
+        return ["python", "-m", "compileall"]
     else:
         if no_debug:
             return [
@@ -61,6 +66,8 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
 def get_compiled_file(lang: str, fname: str) -> str:
     if lang == "rust":
         return "./" + os.path.basename(fname.replace(".rs", ""))
+    elif lang == "python":
+        return fname
     else:
         return "./a.out"
 
@@ -71,6 +78,8 @@ def exec_format(lang: str) -> bool:
             subprocess.check_output(("rustfmt", TEMPFILE), stderr=subprocess.STDOUT)
         except Exception:
             return False
+    elif lang == "python":
+        return True  # yet not supported
     else:
         try:
             subprocess.check_output(
@@ -84,12 +93,14 @@ def exec_format(lang: str) -> bool:
 def exec_command(lang: str) -> List[str]:
     if lang == "rust":
         return ["env", "RUST_BACKTRACE=1"]
+    elif lang == "python":
+        return ["python"]
     else:
         return []
 
 
 def indent_width(lang: str) -> int:
-    if lang == "rust":
+    if lang == "rust" or lang == "python":
         return 4
     else:
         return 2
@@ -133,3 +144,10 @@ class StateFullCheckBox(QtWidgets.QCheckBox):
 
 def get_resources_dir() -> str:
     return os.path.join(os.path.dirname(__file__), "resources")
+
+
+def wait_input_ready(debug_process: pexpect.spawn, lang: str, timeout: Optional[float] = None):
+    if lang == "python":
+        debug_process.expect("\(Pdb\)", timeout=timeout)
+    else:
+        debug_process.expect("\(gdb\)", timeout=timeout)

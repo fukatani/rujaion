@@ -504,12 +504,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.debug_process = pexpect.spawn(
                 util.debug_command(self.editor.lang) + " ./" + compiled_file
             )
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             self.console.write(self.debug_process.before.decode())
 
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
-                self.debug_process.expect("\(gdb\)")
+                util.wait_input_ready(self.debug_process, self.editor.lang)
                 self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
@@ -564,10 +564,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             else:
                 self.continue_process()
                 return
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
-                self.debug_process.expect("\(gdb\)")
+                util.wait_input_ready(self.debug_process, self.editor.lang)
                 self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
@@ -622,10 +622,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         if command.startswith(b"b "):
             self.debug_process.send(command)
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
         else:
             self.debug_process.send("i b\n".encode())
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             print(self.debug_process.before.decode())
             last_num = -1
             for line in self.debug_process.before.decode().split("\r\n"):
@@ -634,7 +634,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 if line.rstrip("\n").endswith(":" + command.decode()):
                     assert last_num != -1
                     self.debug_process.send(("d " + str(last_num) + "\n").encode())
-                    self.debug_process.expect("\(gdb\)")
+                    util.wait_input_ready(self.debug_process, self.editor.lang)
                     break
 
     def next(self):
@@ -680,7 +680,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def post_process(self):
         assert self.debug_process is not None
         try:
-            self.debug_process.expect("\(gdb\)", timeout=self.gdb_timeout)
+            util.wait_input_ready(self.debug_process, self.editor.lang, self.gdb_timeout)
         except:
             print(str(self.debug_process))
             self.console.write("Debug process is timeout", mode="error")
@@ -724,14 +724,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.display_widget.cellChanged.connect(self.processDisplayEdited)
             return
         self.debug_process.send(b"p " + name.encode() + b"\n")
-        self.debug_process.expect("\(gdb\)")
+        util.wait_input_ready(self.debug_process, self.editor.lang)
         value = "".join(self.debug_process.before.decode().split("\r\n")[1:])
         value = value.split(" = ")[-1]
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 1, value)
 
         self.debug_process.send(b"pt " + name.encode() + b"\n")
-        self.debug_process.expect("\(gdb\)")
+        util.wait_input_ready(self.debug_process, self.editor.lang)
         type = "".join(self.debug_process.before.decode().split("\n")[1:])
         type = type.split(" = ")[-1]
         type = type.split(" {")[0]
