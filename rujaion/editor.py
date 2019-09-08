@@ -55,7 +55,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         font = QtGui.QFont()
         font.setFamily("DejaVu Sans Mono")
         font.setFixedPitch(True)
-        font.setPointSize(10)
+        font.setPointSize(20)
         self.setFont(font)
 
         self.lineNumberAreaWidth = self.fontMetrics().width("8") * 4
@@ -109,7 +109,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             return
         extra_selections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        line_color = QtGui.QColor(Qt.yellow).lighter(180)
+        line_color = QtGui.QColor(Qt.yellow).lighter(130)
 
         selection.format.setBackground(line_color)
         selection.format.setProperty(
@@ -249,7 +249,7 @@ class Editter(QtWidgets.QPlainTextEdit):
 
         if self.lang == "rust":
             self.completer = completer.RacerCompleter(self)
-            self.highlighter = syntax.RustHighlighter(self.document())
+            self.highlighter = syntax.PyHighlighter(self.document())
         else:
             self.completer = completer.CppCompleter(self)
             self.highlighter = syntax.CppHighlighter(self.document())
