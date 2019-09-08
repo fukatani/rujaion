@@ -673,7 +673,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
         self.browser_dock.setWidget(self.browser_widget)
-        self.browser_dock.hide()
 
     def continue_process(self):
         print("continue")
