@@ -55,7 +55,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         font = QtGui.QFont()
         font.setFamily("DejaVu Sans Mono")
         font.setFixedPitch(True)
-        font.setPointSize(20)
+        font.setPointSize(10)
         self.setFont(font)
 
         self.lineNumberAreaWidth = self.fontMetrics().width("8") * 4
@@ -109,7 +109,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             return
         extra_selections = []
         selection = QtWidgets.QTextEdit.ExtraSelection()
-        line_color = QtGui.QColor(Qt.yellow).lighter(130)
+        line_color = QtGui.QColor(Qt.yellow).lighter(180)
 
         selection.format.setBackground(line_color)
         selection.format.setProperty(
