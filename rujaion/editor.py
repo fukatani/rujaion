@@ -336,7 +336,10 @@ class Editter(QtWidgets.QPlainTextEdit):
         line_number = self.textCursor().blockNumber()
         line_text = self.document().findBlockByLineNumber(line_number).text()
         indent_level = line_text.count(" " * util.indent_width(self.lang))
-        if line_text.endswith("{"):
+        if self.lang == "python":
+            if line_text.endswith(":"):
+                indent_level += 1
+        elif line_text.endswith("{"):
             indent_level += 1
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
