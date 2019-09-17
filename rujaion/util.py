@@ -147,11 +147,14 @@ def get_resources_dir() -> str:
     return os.path.join(os.path.dirname(__file__), "resources")
 
 
-def wait_input_ready(debug_process: pexpect.spawn, lang: str, timeout: Optional[float] = None):
+def wait_input_ready(
+    debug_process: pexpect.spawn, lang: str, timeout: Optional[float] = None
+):
     if lang == "python":
         debug_process.expect("\(Pdb\)", timeout=timeout)
     else:
         debug_process.expect("\(gdb\)", timeout=timeout)
+
 
 def get_executing_line(lang: str, line: str) -> Optional[int]:
     if lang == "python":

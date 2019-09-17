@@ -680,7 +680,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def post_process(self):
         assert self.debug_process is not None
         try:
-            util.wait_input_ready(self.debug_process, self.editor.lang, self.gdb_timeout)
+            util.wait_input_ready(
+                self.debug_process, self.editor.lang, self.gdb_timeout
+            )
         except:
             print(str(self.debug_process))
             self.console.write("Debug process is timeout", mode="error")
@@ -691,7 +693,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.write(line, mode="gdb")
 
         for line in reversed(msg.split("\r\n")):
-            if line.endswith("exited normally]") or line.startswith("The program finished"):
+            if line.endswith("exited normally]") or line.startswith(
+                "The program finished"
+            ):
                 self.terminate()
                 return
             elif line.endswith("No such file or directory."):

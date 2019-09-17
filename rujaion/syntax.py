@@ -172,9 +172,7 @@ class PyHighlighter(QSyntaxHighlighter):
         function_format = QTextCharFormat()
         function_format.setFontItalic(True)
         function_format.setForeground(Qt.blue)
-        self.highlight_rules.append(
-            (QRegExp("\\b[A-Za-z]+(?=\\()"), function_format)
-        )
+        self.highlight_rules.append((QRegExp("\\b[A-Za-z]+(?=\\()"), function_format))
 
         keyword_format = QTextCharFormat()
         keyword_format.setForeground(QColor(Qt.magenta).darker(150))
