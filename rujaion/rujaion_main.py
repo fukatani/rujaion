@@ -787,8 +787,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
+        test_command = '"{0} {1}"'.format(util.exec_command(self.editor.lang), compiled_file)
         try:
-            command = ["oj", "test", "-c", compiled_file]
+            command = ["oj", "test", "-c", test_command]
+            print(command)
             if self.exists_float_output():
                 error = 0.00000001
                 command += ["-e", str(error)]
