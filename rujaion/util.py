@@ -80,7 +80,12 @@ def exec_format(lang: str) -> bool:
         except Exception:
             return False
     elif lang == "python":
-        return True  # yet not supported
+        try:
+            subprocess.check_output(
+                ("autopep8", "-i", TEMPFILE), stderr=subprocess.STDOUT
+            )
+        except Exception:
+            return False
     else:
         try:
             subprocess.check_output(
