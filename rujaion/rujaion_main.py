@@ -95,6 +95,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.newCppFile)
         filemenu.addAction(a)
 
+        a = QtWidgets.QAction("New Py", self)
+        a.triggered.connect(self.newPyFile)
+        filemenu.addAction(a)
+
         a = QtWidgets.QAction("Open", self)
         a.triggered.connect(self.showFileDialog)
         filemenu.addAction(a)
@@ -389,6 +393,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def newCppFile(self):
         self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
+
+    def newPyFile(self):
+        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.py"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
