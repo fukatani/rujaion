@@ -411,7 +411,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if self.editor.lang == "rust":
             if i == 0:
                 return False
-            return lines[i - 1].startswith("error:") and "-->" in lines[i]
+            return lines[i - 1].startswith("error") and "-->" in lines[i]
         else:
             return ": error:" in lines[i]
 
@@ -419,7 +419,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if self.editor.lang == "rust":
             if i == 0:
                 return False
-            return lines[i - 1].startswith("warning:") and "-->" in lines[i]
+            return lines[i - 1].startswith("warning") and "-->" in lines[i]
         else:
             return ": warning:" in lines[i]
 
