@@ -527,6 +527,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
             self.updateWindowTitle()
+            if self.editor.lang == "python3":
+                util.wait_input_ready(self.debug_process, self.editor.lang)
+                self.debug_process.send(b"continue\n")
             self.post_process()
 
         except subprocess.CalledProcessError as err:
