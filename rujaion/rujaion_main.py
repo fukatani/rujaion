@@ -45,7 +45,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.lang_box = QtWidgets.QComboBox(self)
         self.lang_box.addItem("rust")
         self.lang_box.addItem("c++")
-        self.lang_box.addItem("python")
+        self.lang_box.addItem("python3")
 
         self.addCentral()
 
@@ -585,7 +585,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
             self.updateWindowTitle()
-            if self.editor.lang == "python":
+            if self.editor.lang == "python3":
                 util.wait_input_ready(self.debug_process, self.editor.lang)
                 self.debug_process.send(b"continue\n")
             for i, debug_input in enumerate(inputs):
@@ -748,7 +748,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 1, value)
 
-        if self.editor.lang == "python":
+        if self.editor.lang == "python3":
             self.debug_process.send(b"whatis " + name.encode() + b"\n")
         else:
             self.debug_process.send(b"pt " + name.encode() + b"\n")
