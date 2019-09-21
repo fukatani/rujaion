@@ -44,7 +44,7 @@ If you want to develop with C++, you need
 * clang-format
 * g++
 
-If you want to develop with Python, you need
+If you want to develop with Python 3.x, you need
 * jedi (`pip install jedi`)
 * autopep8 (`pip install autopep8`)
 

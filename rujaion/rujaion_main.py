@@ -583,6 +583,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
             self.updateWindowTitle()
+            if self.editor.lang == "python":
+                util.wait_input_ready(self.debug_process, self.editor.lang)
+                self.debug_process.send(b"continue\n")
             for i, debug_input in enumerate(inputs):
                 msg = self.debug_process.before.decode()
                 for line in msg.split("\r\n"):
@@ -743,7 +746,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 1, value)
 
-        self.debug_process.send(b"pt " + name.encode() + b"\n")
+        if self.editor.lang == "python":
+            self.debug_process.send(b"whatis " + name.encode() + b"\n")
+        else:
+            self.debug_process.send(b"pt " + name.encode() + b"\n")
         util.wait_input_ready(self.debug_process, self.editor.lang)
         type = "".join(self.debug_process.before.decode().split("\n")[1:])
         type = type.split(" = ")[-1]
