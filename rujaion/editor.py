@@ -244,16 +244,22 @@ class Editter(QtWidgets.QPlainTextEdit):
             fname = self.fname
         if fname.endswith("cpp") or fname.endswith("cc"):
             self.lang = "c++"
+        elif fname.endswith("py"):
+            self.lang = "python3"
         else:
             self.lang = "rust"
 
         if self.lang == "rust":
             self.completer = completer.RacerCompleter(self)
             self.highlighter = syntax.RustHighlighter(self.document())
+        elif self.lang == "python3":
+            self.completer = completer.PyCompleter(self)
+            self.highlighter = syntax.PyHighlighter(self.document())
         else:
             self.completer = completer.CppCompleter(self)
             self.highlighter = syntax.CppHighlighter(self.document())
         self.completer.setWidget(self)
+        self.parent().lang_box.setCurrentText(self.lang)
 
     def new_file(self, template_file_name: str):
         self.break_points = defaultdict(lambda: False)
@@ -331,7 +337,10 @@ class Editter(QtWidgets.QPlainTextEdit):
         line_number = self.textCursor().blockNumber()
         line_text = self.document().findBlockByLineNumber(line_number).text()
         indent_level = line_text.count(" " * util.indent_width(self.lang))
-        if line_text.endswith("{"):
+        if self.lang == "python3":
+            if line_text.endswith(":"):
+                indent_level += 1
+        elif line_text.endswith("{"):
             indent_level += 1
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 

@@ -1,7 +1,9 @@
 import os
+import re
 import subprocess
 from typing import *
 
+import pexpect
 from PyQt5 import QtWidgets
 
 
@@ -29,6 +31,8 @@ def racer_enable() -> bool:
 def debug_command(lang: str) -> str:
     if lang == "rust":
         return "env RUST_BACKTRACE=1 rust-gdb"
+    if lang == "python3":
+        return "python3 -m pdb"
     else:
         return "gdb"
 
@@ -39,6 +43,8 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
             return ["rustc"]
         else:
             return ["rustc", "-g"]
+    elif lang == "python3":
+        return ["python3", "py_syntax_checker.py"]
     else:
         if no_debug:
             return [
@@ -61,6 +67,8 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
 def get_compiled_file(lang: str, fname: str) -> str:
     if lang == "rust":
         return "./" + os.path.basename(fname.replace(".rs", ""))
+    elif lang == "python3":
+        return fname
     else:
         return "./a.out"
 
@@ -69,6 +77,13 @@ def exec_format(lang: str) -> bool:
     if lang == "rust":
         try:
             subprocess.check_output(("rustfmt", TEMPFILE), stderr=subprocess.STDOUT)
+        except Exception:
+            return False
+    elif lang == "python3":
+        try:
+            subprocess.check_output(
+                ("autopep8", "-i", TEMPFILE), stderr=subprocess.STDOUT
+            )
         except Exception:
             return False
     else:
@@ -84,12 +99,14 @@ def exec_format(lang: str) -> bool:
 def exec_command(lang: str) -> List[str]:
     if lang == "rust":
         return ["env", "RUST_BACKTRACE=1"]
+    elif lang == "python3":
+        return ["python3"]
     else:
         return []
 
 
 def indent_width(lang: str) -> int:
-    if lang == "rust":
+    if lang == "rust" or lang == "python3":
         return 4
     else:
         return 2
@@ -133,3 +150,26 @@ class StateFullCheckBox(QtWidgets.QCheckBox):
 
 def get_resources_dir() -> str:
     return os.path.join(os.path.dirname(__file__), "resources")
+
+
+def wait_input_ready(
+    debug_process: pexpect.spawn, lang: str, timeout: Optional[float] = None
+):
+    if lang == "python3":
+        debug_process.expect("\(Pdb\)", timeout=timeout)
+    else:
+        debug_process.expect("\(gdb\)", timeout=timeout)
+
+
+def get_executing_line(lang: str, line: str) -> Optional[int]:
+    if lang == "python3":
+        if line.endswith("<module>()"):
+            match = re.search(r"(\()(.*?)\)", line)
+            return int(match.groups()[-1])
+    else:
+        try:
+            line_num = int(line.split("\t")[0])
+            return line_num
+        except ValueError:
+            return None
+    return None

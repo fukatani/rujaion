@@ -1,4 +1,4 @@
-Rujaion : Rust / C++ IDE specialized in online judge 
+Rujaion : Rust / C++ / Python IDE specialized in online judge 
 ==============================
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
@@ -9,7 +9,7 @@ Rujaion : Rust / C++ IDE specialized in online judge
 
 Introduction
 ==============================
-Lightweight Rust IDE based on PyQt. (C++ support is experimental)
+Lightweight Rust IDE based on PyQt. (C++ and Python support is experimental)
 
 This IDE is simplified and specialized to competitive programming, user can concentrate on programming and can achieve best performance.
 
@@ -17,7 +17,7 @@ Testing with sample cases, debugging with test cases, and submission can be by o
 
 Feature
 ==============================
-* Rust / C++ (If you opened *.cpp file, rujaion handles it as C++ source file. Otherwise, handles as Rust) 
+* Rust / C++ / Python 
 * GUI debug
 * Online judge testcases downloading and testing. (based on online-judge-tools)
 * Debug with online judge testcases
@@ -39,10 +39,14 @@ If you want to develop with rust-lang, you need
 * rustfmt(`rustup component add rustfmt`)
 * racer(Please see https://github.com/racer-rust/racer)
 
-If you want to develop with C++, in addition, you need
+If you want to develop with C++, you need
 * clang (8.0.0 or later)
 * clang-format
 * g++
+
+If you want to develop with Python 3.x, you need
+* jedi (`pip install jedi`)
+* autopep8 (`pip install autopep8`)
 
 Usage
 ==============================

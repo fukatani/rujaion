@@ -36,9 +36,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
+        self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
 
         self.setWindowTitle("Rujaion")
         self.setStyleSheet("background-color: white")
+
+        # lang_box placed before add editor
+        self.lang_box = QtWidgets.QComboBox(self)
+        self.lang_box.addItem("rust")
+        self.lang_box.addItem("c++")
+        self.lang_box.addItem("python3")
+
         self.addCentral()
 
         self.file_tool = self.addToolBar("File")
@@ -83,16 +91,15 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         findbutton = self.debug_tool.addAction("Find...")
         findbutton.triggered.connect(self.editor.find)
 
+        self.config_tool = self.addToolBar("Config")
+        self.config_tool.addWidget(self.lang_box)
+
         # Add MenuBar
         menuBar = self.menuBar()
         filemenu = menuBar.addMenu("&File")
 
         a = QtWidgets.QAction("New", self)
         a.triggered.connect(self.newFile)
-        filemenu.addAction(a)
-
-        a = QtWidgets.QAction("New Cpp", self)
-        a.triggered.connect(self.newCppFile)
         filemenu.addAction(a)
 
         a = QtWidgets.QAction("Open", self)
@@ -152,11 +159,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         filemenu.addAction(a)
 
         self.debug_process = None
-        self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
         try:
             self.openFile(self.settings.value("LastOpenedFile", type=str))
         except FileNotFoundError:
             pass
+        self.lang_box.setCurrentText(self.editor.lang)
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
@@ -282,7 +289,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def showFileDialog(self):
         dirname = os.path.dirname(self.settings.value("LastOpenedFile", type=str))
         fname = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open", dirname, "Source Files (*.rs *.cpp *.bak)"
+            self, "Open", dirname, "Source Files (*.rs *.cpp *.cc *.py *.bak)"
         )[0]
         self.openFile(fname)
 
@@ -385,13 +392,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
-        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.rs"))
-
-    def newCppFile(self):
-        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
+        if self.lang_box.currentText() == "rust":
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.rs"))
+        elif self.lang_box.currentText() == "c++":
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
+        else:
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.py"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
+        self.editor.compile_error_selections.clear()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname]
@@ -412,8 +422,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             if i == 0:
                 return False
             return lines[i - 1].startswith("error") and "-->" in lines[i]
-        else:
+        elif self.editor.lang == "c++":
             return ": error:" in lines[i]
+        else:
+            return "error" in lines[i]
 
     def is_warning_disp_line(self, lines: List[str], i: int):
         if self.editor.lang == "rust":
@@ -502,14 +514,14 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         try:
             assert self.debug_process is None
             self.debug_process = pexpect.spawn(
-                util.debug_command(self.editor.lang) + " ./" + compiled_file
+                util.debug_command(self.editor.lang) + " " + compiled_file
             )
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             self.console.write(self.debug_process.before.decode())
 
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
-                self.debug_process.expect("\(gdb\)")
+                util.wait_input_ready(self.debug_process, self.editor.lang)
                 self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
@@ -558,21 +570,24 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         try:
             if self.debug_process is None:
                 self.debug_process = pexpect.spawn(
-                    util.debug_command(self.editor.lang) + " ./" + compiled_file
+                    util.debug_command(self.editor.lang) + " " + compiled_file
                 )
                 self.console.terminate_evcxr()
             else:
                 self.continue_process()
                 return
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
-                self.debug_process.expect("\(gdb\)")
+                util.wait_input_ready(self.debug_process, self.editor.lang)
                 self.console.write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
             self.updateWindowTitle()
+            if self.editor.lang == "python3":
+                util.wait_input_ready(self.debug_process, self.editor.lang)
+                self.debug_process.send(b"continue\n")
             for i, debug_input in enumerate(inputs):
                 msg = self.debug_process.before.decode()
                 for line in msg.split("\r\n"):
@@ -622,10 +637,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         if command.startswith(b"b "):
             self.debug_process.send(command)
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
         else:
             self.debug_process.send("i b\n".encode())
-            self.debug_process.expect("\(gdb\)")
+            util.wait_input_ready(self.debug_process, self.editor.lang)
             print(self.debug_process.before.decode())
             last_num = -1
             for line in self.debug_process.before.decode().split("\r\n"):
@@ -634,7 +649,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 if line.rstrip("\n").endswith(":" + command.decode()):
                     assert last_num != -1
                     self.debug_process.send(("d " + str(last_num) + "\n").encode())
-                    self.debug_process.expect("\(gdb\)")
+                    util.wait_input_ready(self.debug_process, self.editor.lang)
                     break
 
     def next(self):
@@ -680,7 +695,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def post_process(self):
         assert self.debug_process is not None
         try:
-            self.debug_process.expect("\(gdb\)", timeout=self.gdb_timeout)
+            util.wait_input_ready(
+                self.debug_process, self.editor.lang, self.gdb_timeout
+            )
         except:
             print(str(self.debug_process))
             self.console.write("Debug process is timeout", mode="error")
@@ -691,7 +708,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.write(line, mode="gdb")
 
         for line in reversed(msg.split("\r\n")):
-            if line.endswith("exited normally]"):
+            if line.endswith("exited normally]") or line.startswith(
+                "The program finished"
+            ):
                 self.terminate()
                 return
             elif line.endswith("No such file or directory."):
@@ -702,9 +721,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.terminate()
                 return
             else:
-                try:
-                    line_num = int(line.split("\t")[0])
-                except ValueError:
+                line_num = util.get_executing_line(self.editor.lang, line)
+                if line_num is None:
                     continue
                 self.editor.highlight_executing_line(line_num)
                 self.editor.repaint()
@@ -724,14 +742,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.display_widget.cellChanged.connect(self.processDisplayEdited)
             return
         self.debug_process.send(b"p " + name.encode() + b"\n")
-        self.debug_process.expect("\(gdb\)")
+        util.wait_input_ready(self.debug_process, self.editor.lang)
         value = "".join(self.debug_process.before.decode().split("\r\n")[1:])
         value = value.split(" = ")[-1]
         # value = ''.join(value.split(' = ')[1:])
         self.display_widget.set_cell(row_num, 1, value)
 
-        self.debug_process.send(b"pt " + name.encode() + b"\n")
-        self.debug_process.expect("\(gdb\)")
+        if self.editor.lang == "python3":
+            self.debug_process.send(b"whatis " + name.encode() + b"\n")
+        else:
+            self.debug_process.send(b"pt " + name.encode() + b"\n")
+        util.wait_input_ready(self.debug_process, self.editor.lang)
         type = "".join(self.debug_process.before.decode().split("\n")[1:])
         type = type.split(" = ")[-1]
         type = type.split(" {")[0]
@@ -784,8 +805,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
+        test_command = "{}".format(
+            " ".join(util.exec_command(self.editor.lang) + [compiled_file])
+        )
         try:
-            command = ["oj", "test", "-c", compiled_file]
+            command = ["oj", "test", "-c", test_command]
+            print(command)
             if self.exists_float_output():
                 error = 0.00000001
                 command += ["-e", str(error)]
