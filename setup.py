@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 import imp
-from setuptools import find_packages, setup
+from setuptools import find_packages
 
-import os
-
-import setuptools
-from pkg_resources import parse_version
 from setuptools import setup
 
 
@@ -19,7 +15,7 @@ def load_module(module_path):
 
 setup(
     name="Rujaion",
-    version="0.6.1",
+    version="0.7.0",
     author="Ryosuke Fukatani",
     install_requires=[
         "PyQt5",
