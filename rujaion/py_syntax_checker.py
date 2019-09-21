@@ -2,9 +2,9 @@ import importlib.machinery
 import sys
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     file = sys.argv[-1]
-    loader = importlib.machinery.SourceFileLoader('<py_compile>', file)
+    loader = importlib.machinery.SourceFileLoader("<py_compile>", file)
     source_bytes = loader.get_data(file)
     try:
         code = loader.source_to_code(source_bytes, file)

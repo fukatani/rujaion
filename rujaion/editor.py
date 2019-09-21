@@ -259,6 +259,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.completer = completer.CppCompleter(self)
             self.highlighter = syntax.CppHighlighter(self.document())
         self.completer.setWidget(self)
+        self.parent().lang_box.setCurrentText(self.lang)
 
     def new_file(self, template_file_name: str):
         self.break_points = defaultdict(lambda: False)

@@ -36,9 +36,17 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
+        self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
 
         self.setWindowTitle("Rujaion")
         self.setStyleSheet("background-color: white")
+
+        # lang_box placed before add editor
+        self.lang_box = QtWidgets.QComboBox(self)
+        self.lang_box.addItem("rust")
+        self.lang_box.addItem("c++")
+        self.lang_box.addItem("python")
+
         self.addCentral()
 
         self.file_tool = self.addToolBar("File")
@@ -83,20 +91,15 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         findbutton = self.debug_tool.addAction("Find...")
         findbutton.triggered.connect(self.editor.find)
 
+        self.config_tool = self.addToolBar("Config")
+        self.config_tool.addWidget(self.lang_box)
+
         # Add MenuBar
         menuBar = self.menuBar()
         filemenu = menuBar.addMenu("&File")
 
         a = QtWidgets.QAction("New", self)
         a.triggered.connect(self.newFile)
-        filemenu.addAction(a)
-
-        a = QtWidgets.QAction("New Cpp", self)
-        a.triggered.connect(self.newCppFile)
-        filemenu.addAction(a)
-
-        a = QtWidgets.QAction("New Py", self)
-        a.triggered.connect(self.newPyFile)
         filemenu.addAction(a)
 
         a = QtWidgets.QAction("Open", self)
@@ -156,11 +159,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         filemenu.addAction(a)
 
         self.debug_process = None
-        self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
         try:
             self.openFile(self.settings.value("LastOpenedFile", type=str))
         except FileNotFoundError:
             pass
+        self.lang_box.setCurrentText(self.editor.lang)
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
@@ -389,13 +392,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, self.console_dock)
 
     def newFile(self):
-        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.rs"))
-
-    def newCppFile(self):
-        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
-
-    def newPyFile(self):
-        self.editor.new_file(os.path.join(util.get_resources_dir(), "template.py"))
+        if self.lang_box.currentText() == "rust":
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.rs"))
+        elif self.lang_box.currentText() == "c++":
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.cpp"))
+        else:
+            self.editor.new_file(os.path.join(util.get_resources_dir(), "template.py"))
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
@@ -803,7 +805,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         if not self.compile(no_debug=True):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
-        test_command = '{}'.format(" ".join(util.exec_command(self.editor.lang) + [compiled_file]))
+        test_command = "{}".format(
+            " ".join(util.exec_command(self.editor.lang) + [compiled_file])
+        )
         try:
             command = ["oj", "test", "-c", test_command]
             print(command)

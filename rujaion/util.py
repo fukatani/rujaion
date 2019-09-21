@@ -32,7 +32,7 @@ def debug_command(lang: str) -> str:
     if lang == "rust":
         return "env RUST_BACKTRACE=1 rust-gdb"
     if lang == "python":
-        return "python -m pdb"
+        return "python3 -m pdb"
     else:
         return "gdb"
 
@@ -44,7 +44,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
         else:
             return ["rustc", "-g"]
     elif lang == "python":
-        return ["python", "py_syntax_checker.py"]
+        return ["python3", "py_syntax_checker.py"]
     else:
         if no_debug:
             return [
@@ -100,7 +100,7 @@ def exec_command(lang: str) -> List[str]:
     if lang == "rust":
         return ["env", "RUST_BACKTRACE=1"]
     elif lang == "python":
-        return ["python"]
+        return ["python3"]
     else:
         return []
 
