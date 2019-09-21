@@ -7,7 +7,7 @@ RUN apt update && apt install -y qt5-default libxcb-xinerama0-dev libnss3 libaso
 RUN pip install -U pip && \
     pip install Rujaion && \
     echo "export QTWEBENGINE_DISABLE_SANDBOX=1" >> ~/.bashrc && \
-    pip3 install --user -I pyqt5 pyqtwebengine
+    pip3 install --user -I pyqt5 pyqtwebengine autopep8
 
 # Prepare Rust
 ENV RUSTUP_HOME=/usr/local/rustup \
