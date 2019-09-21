@@ -44,7 +44,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
         else:
             return ["rustc", "-g"]
     elif lang == "python":
-        return ["python", "-m", "compileall"]
+        return ["python", "py_syntax_checker.py"]
     else:
         if no_debug:
             return [

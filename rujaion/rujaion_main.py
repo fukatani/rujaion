@@ -419,8 +419,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             if i == 0:
                 return False
             return lines[i - 1].startswith("error") and "-->" in lines[i]
-        else:
+        elif self.editor.lang == "c++":
             return ": error:" in lines[i]
+        else:
+            return "error" in lines[i]
 
     def is_warning_disp_line(self, lines: List[str], i: int):
         if self.editor.lang == "rust":
