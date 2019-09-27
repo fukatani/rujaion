@@ -13,7 +13,9 @@ Lightweight Rust IDE based on PyQt. (C++ and Python support is experimental)
 
 This IDE is simplified and specialized to competitive programming, user can concentrate on programming and can achieve best performance.
 
-Testing with sample cases, debugging with test cases, and submission can be by one click.
+When you open the contest problem page, input and output example of the problem is downloaded automatically in the background.
+
+Then testing with sample cases, debugging with test cases, and submission can be by one click.
 
 Feature
 ==============================
