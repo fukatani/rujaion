@@ -131,3 +131,7 @@ In contest, you often draw graph structure.
 Select graph elements and do "View Graph" in browser right click menu, you can draw graph structure easily.
 
 ![screen_cast_graph](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/graph_view.gif)
+
+Blog Entry
+==============================
+https://codeforces.com/blog/entry/69975
