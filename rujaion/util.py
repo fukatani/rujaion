@@ -5,6 +5,7 @@ from typing import *
 
 import pexpect
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QThread
 
 
 TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
@@ -179,3 +180,19 @@ class WriteObj(object):
     def __init__(self, msg: Union[bytes, str], mode: str = ""):
         self.msg = msg
         self.mode = mode
+
+
+class Commander(QThread):
+    def __init__(self, console):
+        super().__init__()
+        self.console = console
+        self.cmd = ""
+
+    def run(self):
+        try:
+            out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
+            self.console.writeLnSignal.emit(out)
+        except subprocess.CalledProcessError as err:
+            self.console.writeLnSignal.emit(err.output)
+        scroll_bar = self.console.verticalScrollBar()
+        scroll_bar.setValue(scroll_bar.maximum())
