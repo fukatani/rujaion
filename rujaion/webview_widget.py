@@ -93,8 +93,10 @@ class CustomWebEngineView(QWebEngineView):
 
     def contextMenuEvent(self, a0: QtGui.QContextMenuEvent) -> None:
         menu = QtWidgets.QMenu()
-        menu.addAction(u"Go Next Task", self.parent().goNextTask)
-        menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
+        if self.parent().next_prev_updater.next is not None:
+            menu.addAction(u"Go Next Task", self.parent().goNextTask)
+        if self.parent().next_prev_updater.prev is not None:
+            menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
         if self.selectedText():
             menu.addAction(u"View Graph", self.viewGraph)
         menu.addAction(u"Back", self.back)
@@ -170,10 +172,10 @@ class WebViewWindow(QtWidgets.QWidget):
         self.next_prev_updater = NextPreviousProblemUpdater()
 
     def download_task(self):
+        self.next_prev_updater.url = self.browser.url().toString()
+        self.next_prev_updater.start()
         self.url_edit.setText(self.browser.url().toString())
         self.parent().parent().download(self.url_edit.text())
-        self.next_prev_updater.url = self.browser.url().toString()
-        self.next_prev_updater.start(QThread.LowPriority)
 
     def loadPage(self):
         self.next_prev_updater.next = None
