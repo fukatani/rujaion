@@ -7,12 +7,13 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
 
-from onlinejudge.dispatch import service_from_url
+from onlinejudge import dispatch
 from onlinejudge._implementation.utils import (
     default_cookie_path,
     with_cookiejar,
     new_session_with_our_user_agent,
 )
+from PyQt5.QtCore import QThread
 from PyQt5.QtNetwork import QNetworkCookie
 
 # Many of source is copied from https://qiita.com/montblanc18/items/88d0b639de86b7cac613
@@ -154,7 +155,6 @@ class WebViewWindow(QtWidgets.QWidget):
         self.browser.setWindowTitle("Task")
         self.url_edit = QtWidgets.QLineEdit()
         self.url_edit.returnPressed.connect(self.loadPage)
-        self.browser.urlChanged.connect(self.updateCurrentUrl)
         session = new_session_with_our_user_agent()
         self.browser.page().profile().setHttpUserAgent(session.headers["User-Agent"])
         self.browser.page().profile().cookieStore().cookieAdded.connect(
@@ -167,12 +167,17 @@ class WebViewWindow(QtWidgets.QWidget):
         grid.addWidget(self.browser, 1, 0, 5, 15)
         self.setLayout(grid)
         self.resize(800, 800)
+        self.next_prev_updater = NextPreviousProblemUpdater()
 
     def download_task(self):
         self.url_edit.setText(self.browser.url().toString())
         self.parent().parent().download(self.url_edit.text())
+        self.next_prev_updater.url = self.browser.url().toString()
+        self.next_prev_updater.start(QThread.LowPriority)
 
     def loadPage(self):
+        self.next_prev_updater.next = None
+        self.next_prev_updater.prev = None
         if self.url_edit.text():
             self.browser.load(QUrl(self.url_edit.text()))
 
@@ -185,44 +190,18 @@ class WebViewWindow(QtWidgets.QWidget):
         ex.
         https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_e ->
         https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_f
-
-        This function is note tested except AtCoder.
         """
-        current_url = self.browser.url().toString().split("?")
-        if current_url[0].split("/")[-1].isdecimal():  # yukicoder
-            words = current_url[0].split("/")
-            words[-1] = str(int(words[-1]) + 1)
-            current_url[0] = "/".join(words)
-        else:
-            if current_url[0][-1] == "z":
-                return
-            current_url[0] = current_url[0][:-1] + chr(ord(current_url[0][-1]) + 1)
-        self.changePage("?".join(current_url))
+        if self.next_prev_updater.next is not None:
+            self.changePage(self.next_prev_updater.next)
 
     def goPreviousTask(self):
         """ Go previous contest task.
         ex.
         https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_b ->
         https://atcoder.jp/contests/cpsco2019-s2/tasks/cpsco2019_s2_a
-
-        This function is note tested except AtCoder.
         """
-        current_url = self.browser.url().toString().split("?")
-        if current_url.split("/")[-1].isdecimal():  # yukicoder
-            words = current_url[0].split("/")
-            words[-1] = str(int(words[-1]) - 1)
-            current_url[0] = "/".join(words)
-        else:
-            if current_url[0][-1] == "a":
-                return
-            current_url[0] = current_url[0][:-1] + chr(ord(current_url[0][-1]) + 1)
-        self.changePage("?".join(current_url))
-
-    def updateCurrentUrl(self):
-        """ Rewriting url_edit when you move different web page.
-        """
-        self.url_edit.clear()
-        self.url_edit.insert(self.browser.url().toString())
+        if self.next_prev_updater.prev is not None:
+            self.changePage(self.next_prev_updater.prev)
 
     def focusOnUrlEdit(self):
         self.url_edit.setFocus()
@@ -230,12 +209,45 @@ class WebViewWindow(QtWidgets.QWidget):
 
     def handleCookieAdded(self, cookie: QNetworkCookie):
         url = self.browser.url().toString()
-        if service_from_url(url):
+        if dispatch.service_from_url(url):
             py_cookie = toPyCookie(cookie)
             with with_cookiejar(
                 new_session_with_our_user_agent(), path=default_cookie_path
             ) as sess:
                 sess.cookies.set_cookie(py_cookie)
+
+
+class NextPreviousProblemUpdater(QThread):
+    def __init__(self):
+        super().__init__()
+        self.url = ""
+        self.next = None
+        self.prev = None
+
+    def run(self):
+        cur_problem = dispatch.problem_from_url(self.url)
+        if cur_problem is None:
+            return
+        if cur_problem.get_service().get_name() == "yukicoder":
+            words = self.url.split("?")
+            words = words[0].split("/")
+            prev_words = words.copy()
+            prev_words[-1] = str(int(words[-1]) - 1)
+            next_words = words.copy()
+            next_words[-1] = str(int(words[-1]) + 1)
+            self.prev = "/".join(prev_words)
+            self.next = "/".join(next_words)
+            return
+        try:
+            contest = cur_problem.get_contest()
+            problems = contest.list_problems()
+            for i, problem in enumerate(problems):
+                if problem == cur_problem:
+                    self.prev = problems[i - 1].get_url()
+                    self.next = problems[i + 1].get_url()
+                    break
+        except NotImplementedError:
+            pass
 
 
 def toPyCookie(qt_cookie: QNetworkCookie) -> Cookie:
