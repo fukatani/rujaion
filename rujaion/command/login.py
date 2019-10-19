@@ -71,9 +71,9 @@ class LoginDialog(QtWidgets.QDialog):
         )
         try:
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-            self.parent().console.write_oj_result(out)
+            self.parent().console.__writeln(out)
         except subprocess.CalledProcessError as err:
-            self.parent().console.write_oj_result(err.output)
+            self.parent().console.__writeln(err.output)
         self.close()
 
 

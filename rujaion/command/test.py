@@ -78,10 +78,10 @@ class TestDialog(QtWidgets.QDialog):
             out = subprocess.check_output(
                 command, stderr=subprocess.STDOUT, timeout=4.0
             ).decode()
-            self.console.write_oj_result(out)
+            self.console.__writeln(out)
         except subprocess.TimeoutExpired as e:
-            self.console.write_oj_result(e.output)
-            self.console.write_oj_result("[-] Test is Timeout")
+            self.console.__writeln(e.output)
+            self.console.writeLnSignal.emit("[-] Test is Timeout")
         except subprocess.CalledProcessError as e:
-            self.console.write_oj_result(e.output)
+            self.console.__writeln(e.output)
         self.close()

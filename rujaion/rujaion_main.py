@@ -407,11 +407,11 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname]
         try:
             out = subprocess.check_output(command, stderr=subprocess.STDOUT)
-            self.console.write("Compile is finished successfully!", mode="success")
+            self.console.__write("Compile is finished successfully!", mode="success")
             error_places, warning_places = self.parse_compile_error(out.decode())
             self.editor.highlight_compile_error(warning_places, is_warning=True)
         except subprocess.CalledProcessError as err:
-            self.console.write(err.output, mode="error")
+            self.console.__write(err.output, mode="error")
             error_places, warning_places = self.parse_compile_error(err.output.decode())
             self.editor.highlight_compile_error(error_places, is_warning=False)
             return False
@@ -474,10 +474,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 util.exec_command(self.editor.lang) + [compiled_file],
                 stderr=subprocess.STDOUT,
             )
-            self.console.write(output)
+            self.console.__write(output)
         except subprocess.CalledProcessError as err:
-            self.console.write(err.output, mode="error")
-        self.console.write("Run process is finished successfully!", mode="success")
+            self.console.__write(err.output, mode="error")
+        self.console.__write("Run process is finished successfully!", mode="success")
         self.updateWindowTitle(False)
 
     def with_debug_display(func):
@@ -517,12 +517,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 util.debug_command(self.editor.lang) + " " + compiled_file
             )
             util.wait_input_ready(self.debug_process, self.editor.lang)
-            self.console.write(self.debug_process.before.decode())
+            self.console.__write(self.debug_process.before.decode())
 
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
                 util.wait_input_ready(self.debug_process, self.editor.lang)
-                self.console.write(self.debug_process.before.decode(), mode="gdb")
+                self.console.__write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
@@ -533,7 +533,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.post_process()
 
         except subprocess.CalledProcessError as err:
-            self.console.write(err, mode="error")
+            self.console.__write(err, mode="error")
 
     def debugWithLastCase(self):
         self.debugWithTestData(True)
@@ -583,7 +583,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             for com in self.editor.generateBreak():
                 self.debug_process.send(com)
                 util.wait_input_ready(self.debug_process, self.editor.lang)
-                self.console.write(self.debug_process.before.decode(), mode="gdb")
+                self.console.__write(self.debug_process.before.decode(), mode="gdb")
 
             print("run " + compiled_file)
             self.debug_process.send(b"run\n")
@@ -594,18 +594,18 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             for i, debug_input in enumerate(inputs):
                 msg = self.debug_process.before.decode()
                 for line in msg.split("\r\n"):
-                    self.console.write(line, mode="gdb")
+                    self.console.__write(line, mode="gdb")
 
                 for line in reversed(msg.split("\r\n")):
                     if line.endswith("exited normally]"):
                         if i != len(inputs) - 1:
-                            self.console.write(
+                            self.console.__write(
                                 "Partial input is rejected", mode="error"
                             )
                         self.terminate()
                         return
                     if "exited with code" in line:
-                        self.console.write(
+                        self.console.__write(
                             "Process is finished with error", mode="error"
                         )
                         self.terminate()
@@ -617,7 +617,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.run_evcxr()
 
         except subprocess.CalledProcessError as err:
-            self.console.write(err, mode="error")
+            self.console.__write(err, mode="error")
             self.console.run_evcxr()
 
     def addTest(self):
@@ -683,7 +683,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.debug_process.send(b"quit\n")
         self.debug_process.terminate()
         self.debug_process = None
-        self.console.write("Debug process was successfully terminated.", mode="success")
+        self.console.__write("Debug process was successfully terminated.", mode="success")
         self.editor.clear_highlight_line()
         self.updateWindowTitle()
         self.browser_dock.setWidget(self.browser_widget)
@@ -703,12 +703,12 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             )
         except:
             print(str(self.debug_process))
-            self.console.write("Debug process is timeout", mode="error")
+            self.console.__write("Debug process is timeout", mode="error")
             self.terminate()
             return
         msg = self.debug_process.before.decode()
         for line in msg.split("\r\n"):
-            self.console.write(line, mode="gdb")
+            self.console.__write(line, mode="gdb")
 
         for line in reversed(msg.split("\r\n")):
             if line.endswith("exited normally]") or line.startswith(
@@ -720,7 +720,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 self.stepOut()
                 return
             elif "exited with code" in line:
-                self.console.write("Process is finished with error", mode="error")
+                self.console.__write("Process is finished with error", mode="error")
                 self.terminate()
                 return
             else:
@@ -775,10 +775,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
                 ("oj", "download", url), stderr=subprocess.STDOUT
             ).decode()
         except Exception as err:
-            self.console.write_oj_result(err.output)
+            self.console.__writeln(err.output)
             return
-        self.console.write_oj_result(out)
-        self.console.write("Downloaded Test data", mode="success")
+        self.console.__writeln(out)
+        self.console.__write("Downloaded Test data", mode="success")
 
     def login(self):
         login.LoginDialog(
@@ -817,20 +817,20 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             if self.exists_float_output():
                 error = 0.00000001
                 command += ["-e", str(error)]
-                self.console.write_oj_result("[.] Found float expectation")
-                self.console.write_oj_result("[.] Allow {} error".format(error))
+                self.console.__writeln("[.] Found float expectation")
+                self.console.__writeln("[.] Allow {} error".format(error))
             # TODO: configurable timeout
             out = subprocess.check_output(
                 command, stderr=subprocess.STDOUT, timeout=4.0
             ).decode()
         except subprocess.TimeoutExpired as e:
-            self.console.write_oj_result(e.output)
-            self.console.write_oj_result("[-] Test is Timeout")
+            self.console.__writeln(e.output)
+            self.console.__writeln("[-] Test is Timeout")
             return
         except Exception as e:
-            self.console.write_oj_result(e.output)
+            self.console.__writeln(e.output)
             return
-        self.console.write_oj_result(out)
+        self.console.__writeln(out)
 
     @with_console
     def testMyCodeWithOptions(self, *args):
