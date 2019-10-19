@@ -1,7 +1,4 @@
-import subprocess
-
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QThread
 
 from rujaion import util
 
@@ -16,7 +13,7 @@ class SubmitDialog(QtWidgets.QDialog):
             ("URL", self.url_edit),
             ("Language", self.lang_edit),
         )
-        self.submitter = Submitter(self.parent().console)
+        self.submitter = util.Commander(self.parent().console)
         self.resize(500, 100)
         self.draw()
 
@@ -73,18 +70,3 @@ class SubmitDialog(QtWidgets.QDialog):
         self.submitter.cmd = cmd
         self.submitter.start()
         self.close()
-
-
-class Submitter(QThread):
-    def __init__(self, console):
-        super().__init__()
-        print(console)
-        self.console = console
-        self.cmd = ""
-
-    def run(self):
-        try:
-            out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
-            self.console.writeLnSignal.emit(out)
-        except subprocess.CalledProcessError as err:
-            self.console.writeLnSignal.emit(err.output)

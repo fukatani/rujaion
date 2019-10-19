@@ -172,6 +172,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.browser_dock = QtWidgets.QDockWidget("", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.browser_dock)
         self.addConsole()
+        self.commander = util.Commander(self.console)
         self.addDisplay()
         self.addBrowser()
 
@@ -776,16 +777,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     @with_console
     def download(self, url: str = None):
         self.settings.setValue("contest url", url)
-        try:
-            self.clearTestData()
-            out = subprocess.check_output(
-                ("oj", "download", url), stderr=subprocess.STDOUT
-            ).decode()
-        except Exception as err:
-            self.console.writeLnSignal.emit(err.output)
-            return
-        self.console.writeLnSignal.emit(out)
-        self.console.writeLnSignal.emit("[+] Downloaded Test data")
+        self.clearTestData()
+        self.commander.cmd = ("oj", "download", url)
+        self.commander.start()
+        # self.console.writeLnSignal.emit("[+] Downloaded Test data")
 
     def login(self):
         login.LoginDialog(
