@@ -194,3 +194,5 @@ class Commander(QThread):
             self.console.writeLnSignal.emit(out)
         except subprocess.CalledProcessError as err:
             self.console.writeLnSignal.emit(err.output)
+        scroll_bar = self.console.verticalScrollBar()
+        scroll_bar.setValue(scroll_bar.maximum())
