@@ -78,12 +78,13 @@ class SubmitDialog(QtWidgets.QDialog):
 class Submitter(QThread):
     def __init__(self, console):
         super().__init__()
+        print(console)
         self.console = console
         self.cmd = ""
 
     def run(self):
         try:
             out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
-            self.console.writeOjSignal.emit(out)
+            self.console.writeLnSignal.emit(out)
         except subprocess.CalledProcessError as err:
-            self.console.writeOjSignal.emit(err.output)
+            self.console.writeLnSignal.emit(err.output)

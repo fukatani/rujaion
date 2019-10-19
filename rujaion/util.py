@@ -173,3 +173,9 @@ def get_executing_line(lang: str, line: str) -> Optional[int]:
         except ValueError:
             return None
     return None
+
+
+class WriteObj(object):
+    def __init__(self, msg: Union[bytes, str], mode: str = ""):
+        self.msg = msg
+        self.mode = mode
