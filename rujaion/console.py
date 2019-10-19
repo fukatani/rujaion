@@ -10,10 +10,12 @@ from onlinejudge.dispatch import submission_from_url
 
 from rujaion.custom_popup import CustomPopup
 from rujaion.table_view import TableView
+from rujaion.util import WriteObj
 
 
 class Console(QtWidgets.QTextEdit):
-    writeOjSignal = pyqtSignal(object)
+    writeLnSignal = pyqtSignal(object)
+    writeSignal = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(Console, self).__init__(parent)
@@ -26,7 +28,8 @@ class Console(QtWidgets.QTextEdit):
         self._buffer = StringIO()
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.__contextMenu)
-        self.writeOjSignal.connect(self.write_oj_result)
+        self.writeLnSignal.connect(self.__write_by_line)
+        self.writeSignal.connect(self.__write)
         self.evcxr_proc = None
         self.run_evcxr()
 
@@ -43,10 +46,10 @@ class Console(QtWidgets.QTextEdit):
         try:
             self.evcxr_proc = pexpect.spawn("evcxr")
         except pexpect.exceptions.ExceptionPexpect as e:
-            self.write(e.value)
+            self.writeLnSignal.emit(e.value)
             return
         self.evcxr_proc.expect(">> ")
-        self.write(self.evcxr_proc.before.decode())
+        self.writeLnSignal.emit(self.evcxr_proc.before.decode())
         self.display_prefix()
 
     def terminate_evcxr(self):
@@ -63,7 +66,9 @@ class Console(QtWidgets.QTextEdit):
         tc.movePosition(QtGui.QTextCursor.EndOfLine)
         self.ensureCursorVisible()
 
-    def write(self, msg: Union[str, bytes], mode: str = ""):
+    def __write(self, write_obj: WriteObj):
+        msg = write_obj.msg
+        mode = write_obj.mode
         self.moveCursor(QtGui.QTextCursor.End)
         if isinstance(msg, bytes):
             msg = msg.decode()
@@ -87,7 +92,7 @@ class Console(QtWidgets.QTextEdit):
         self.insertPlainText(msg)
         self._buffer.write(msg)
 
-    def write_oj_result(self, msg: Union[str, bytes]):
+    def __write_by_line(self, msg: Union[str, bytes]):
         last_submission_url = None
         if isinstance(msg, bytes):
             msg = msg.decode()
@@ -96,11 +101,15 @@ class Console(QtWidgets.QTextEdit):
                 submit_result_prefix = "[+] success: result: "
                 if line.startswith(submit_result_prefix):
                     last_submission_url = line[len(submit_result_prefix) :]
-                self.write(line, mode="success")
-            elif line.startswith("[-]"):
-                self.write(line, mode="error")
+                self.__write(WriteObj(line, mode="success"))
+            elif (
+                line.startswith("[-]")
+                or line.startswith("[!]")
+                or line.startswith("[ERROR]")
+            ):
+                self.__write(WriteObj(line, mode="error"))
             else:
-                self.write(line)
+                self.__write(WriteObj(line))
         if last_submission_url is not None:
             submission = submission_from_url(last_submission_url)
             if submission is not None:
@@ -207,7 +216,7 @@ class Console(QtWidgets.QTextEdit):
                 line = "\n".join(self.evcxr_proc.before.decode().split("\r\n")[1:-1])
                 for word in self.color_words:
                     line = line.replace(word, "")
-                self.write("\n" + line)
+                self.writeLnSignal.emit("\n" + line)
 
                 self.display_prefix()
 
