@@ -140,10 +140,6 @@ class CustomWebEngineView(QWebEngineView):
         url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(
             weighted, indexed, graph_query
         )
-        # import webbrowser
-        # webbrowser.open_new_tab(url)
-        # self.load(url)
-        # self.page().runJavaScript("window.scrollTo(-500, -500);")
         try:
             subprocess.Popen(["sensible-browser", url])
         except subprocess.TimeoutExpired:
