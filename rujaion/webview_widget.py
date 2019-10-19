@@ -100,6 +100,57 @@ class CustomWebEngineView(QWebEngineView):
         if self.selectedText():
             menu.addAction(u"View Graph", self.viewGraph)
         menu.addAction(u"Back", self.back)
+        menu.addSeparator()
+        if self.parent().next_prev_updater.problems is not None:
+            problems = self.parent().next_prev_updater.problems
+            for i, problem_url in enumerate(problems):
+                problem_id = problem_url.split("/")[-1]
+                # I know this is not good code.
+                # But commented out code does not works
+                # menu.addAction(
+                #     u"Go to {}".format(problem_id),
+                #     lambda: self.parent().changePage(problem)
+                # )
+                if i == 0:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[0])
+                    )
+                elif i == 1:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[1])
+                    )
+                elif i == 2:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[2])
+                    )
+                elif i == 3:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[3])
+                    )
+                elif i == 4:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[4])
+                    )
+                elif i == 5:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[5])
+                    )
+                elif i == 6:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[6])
+                    )
+                elif i == 7:
+                    menu.addAction(
+                        u"Go to {}".format(problem_id),
+                        lambda: self.parent().changePage(problems[7])
+                    )
         menu.exec(a0.globalPos())
 
     def runScript(self) -> None:
@@ -178,8 +229,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.parent().parent().download(self.url_edit.text())
 
     def loadPage(self):
-        self.next_prev_updater.next = None
-        self.next_prev_updater.prev = None
+        self.next_prev_updater.reset()
         if self.url_edit.text():
             self.browser.load(QUrl(self.url_edit.text()))
 
@@ -225,6 +275,12 @@ class NextPreviousProblemUpdater(QThread):
         self.url = ""
         self.next = None
         self.prev = None
+        self.problems = None
+
+    def reset(self):
+        self.next = None
+        self.prev = None
+        # self.problems = None
 
     def run(self):
         cur_problem = dispatch.problem_from_url(self.url)
@@ -246,8 +302,9 @@ class NextPreviousProblemUpdater(QThread):
             for i, problem in enumerate(problems):
                 if problem == cur_problem:
                     self.prev = problems[i - 1].get_url()
-                    self.next = problems[i + 1].get_url()
+                    self.next = problems[(i + 1) % len(problems)].get_url()
                     break
+            self.problems = [problem_url.get_url() for problem_url in problems]
         except NotImplementedError:
             pass
 
