@@ -25,10 +25,6 @@ setup(
         "pandas",
     ],
     packages=find_packages(exclude=("docker", "doc")),
-    package_data={ 'rujaion' : ['resources/*'], },
-    entry_points={
-        'console_scripts': [
-            'rujaion = rujaion.rujaion_main:main',
-        ],
-    },
+    package_data={"rujaion": ["resources/*"]},
+    entry_points={"console_scripts": ["rujaion = rujaion.rujaion_main:main"]},
 )
