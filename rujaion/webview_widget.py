@@ -305,7 +305,7 @@ class NextPreviousProblemUpdater(QThread):
                     self.next = problems[(i + 1) % len(problems)].get_url()
                     break
             self.problems = [problem_url.get_url() for problem_url in problems]
-        except NotImplementedError:
+        except Exception:
             pass
 
 
