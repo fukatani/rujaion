@@ -15,13 +15,13 @@ def load_module(module_path):
 
 setup(
     name="Rujaion",
-    version="0.7.0",
+    version="0.8.0",
     author="Ryosuke Fukatani",
     install_requires=[
         "PyQt5",
         "PyQtWebEngine",
         "pexpect",
-        "online-judge-tools >= 7.0.0",
+        "online-judge-tools >= 7.2.1",
         "pandas",
     ],
     packages=find_packages(exclude=("docker", "doc")),
