@@ -114,42 +114,42 @@ class CustomWebEngineView(QWebEngineView):
                 if i == 0:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[0])
+                        lambda: self.parent().changePage(problems[0]),
                     )
                 elif i == 1:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[1])
+                        lambda: self.parent().changePage(problems[1]),
                     )
                 elif i == 2:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[2])
+                        lambda: self.parent().changePage(problems[2]),
                     )
                 elif i == 3:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[3])
+                        lambda: self.parent().changePage(problems[3]),
                     )
                 elif i == 4:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[4])
+                        lambda: self.parent().changePage(problems[4]),
                     )
                 elif i == 5:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[5])
+                        lambda: self.parent().changePage(problems[5]),
                     )
                 elif i == 6:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[6])
+                        lambda: self.parent().changePage(problems[6]),
                     )
                 elif i == 7:
                     menu.addAction(
                         u"Go to {}".format(problem_id),
-                        lambda: self.parent().changePage(problems[7])
+                        lambda: self.parent().changePage(problems[7]),
                     )
         menu.exec(a0.globalPos())
 
