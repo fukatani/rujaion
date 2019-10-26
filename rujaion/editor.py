@@ -84,7 +84,7 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
-        menu.addAction(u"Go to declaration (F2)", self.jump)
+        menu.addAction(u"Go to declaration (Ctrl + b)", self.jump)
         if (
             self.textCursor().selectedText()
             and "\u2029" not in self.textCursor().selectedText()
@@ -274,7 +274,7 @@ class Editter(QtWidgets.QPlainTextEdit):
     def set_edited(self):
         self.edited = True
 
-    def jump(self):
+    def go_to_declaration(self):
         if self.lang != "rust":
             # Not supported
             return
@@ -432,6 +432,12 @@ class Editter(QtWidgets.QPlainTextEdit):
 
         if event.key() == Qt.Key_K and event.modifiers() == QtCore.Qt.ControlModifier:
             self.remove_whole_line()
+            return
+        if (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_B
+        ):
+            self.go_to_declaration()
             return
 
         super().keyPressEvent(event)

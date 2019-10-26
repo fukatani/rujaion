@@ -212,8 +212,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.next()
         elif event.key() == QtCore.Qt.Key_F7:
             self.stepIn()
-        elif event.key() == QtCore.Qt.Key_F2:
-            self.jump()
         elif (
             event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_F4
@@ -770,9 +768,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         self.display_widget.set_cell(row_num, 2, type)
 
         self.display_widget.cellChanged.connect(self.processDisplayEdited)
-
-    def jump(self):
-        self.editor.jump()
 
     @with_console
     def download(self, url: str = None):

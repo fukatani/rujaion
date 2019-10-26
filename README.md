@@ -87,7 +87,7 @@ KeyBinds
 - Next (F8)
 - Step in (F7)
 - Step out (Shift + F8)
-- Jump to definition (F2)
+- Jump to definition (Ctrl + b)
 - Terminate debug process (Esc)
 - display value (editting display widget "Name" columns)
 - Comment out (Ctrl + /)
