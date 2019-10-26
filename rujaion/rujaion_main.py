@@ -401,7 +401,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
 
     def compile(self, no_debug: bool = False):
         self.console.clear()
-        self.editor.compile_error_selections.clear()
+        self.editor.reset_compile_info()
         if not self.editor.fname:
             util.disp_error("File is not opened.")
         command = util.compile_command(self.editor.lang, no_debug) + [self.editor.fname]
