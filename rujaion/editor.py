@@ -76,6 +76,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.lang = "rust"
         self.reset_lang()
         self.cursorPositionChanged.connect(self.highlight_cursor_line)
+        self.first_error = None
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -84,7 +85,7 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
-        menu.addAction(u"Go to declaration (F2)", self.jump)
+        menu.addAction(u"Go to declaration (Ctrl + b)", self.jump)
         if (
             self.textCursor().selectedText()
             and "\u2029" not in self.textCursor().selectedText()
@@ -129,6 +130,10 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.add_highlight_error(line, line_color, pos)
         self.setExtraSelections(self.compile_error_selections)
 
+    def reset_compile_info(self):
+        self.compile_error_selections.clear()
+        self.first_error = None
+
     def add_highlight_error(self, line: int, line_color: QtGui.QColor, pos: int):
         selection = QtWidgets.QTextEdit.ExtraSelection()
         selection.format.setFontUnderline(True)
@@ -146,6 +151,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         cursor.select(QtGui.QTextCursor.WordUnderCursor)
         selection.cursor = cursor
         self.compile_error_selections.append(selection)
+        self.first_error = (line, pos)
 
     def eventFilter(self, obj, event: QtGui.QKeyEvent) -> bool:
         if obj is self.lineNumberArea and event.type() == QtCore.QEvent.Paint:
@@ -274,7 +280,7 @@ class Editter(QtWidgets.QPlainTextEdit):
     def set_edited(self):
         self.edited = True
 
-    def jump(self):
+    def go_to_declaration(self):
         if self.lang != "rust":
             # Not supported
             return
@@ -302,14 +308,21 @@ class Editter(QtWidgets.QPlainTextEdit):
         out = out[6:]
         words = out.split(",")
         line_num, char_num = int(words[1]), int(words[2])
+        self.go_to(line_num, char_num)
+
+    def go_to(self, line_num, char_num):
         cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num - 1))
         cursor.movePosition(
             QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
         )
         self.setTextCursor(cursor)
         self.ensureCursorVisible()
-        self.repaint()
-        self.highlight_cursor_line()
+
+    def go_to_first_error(self):
+        if self.first_error is None:
+            return
+        line_num, char_num = self.first_error
+        self.go_to(line_num, char_num)
 
     def insertCompletion(self):
         text = self.completer.getSelected()
@@ -432,6 +445,15 @@ class Editter(QtWidgets.QPlainTextEdit):
 
         if event.key() == Qt.Key_K and event.modifiers() == QtCore.Qt.ControlModifier:
             self.remove_whole_line()
+            return
+        if (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == QtCore.Qt.Key_B
+        ):
+            self.go_to_declaration()
+            return
+        if event.key() == QtCore.Qt.Key_F2:
+            self.go_to_first_error()
             return
 
         super().keyPressEvent(event)
