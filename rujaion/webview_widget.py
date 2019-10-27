@@ -298,7 +298,10 @@ class NextPreviousProblemUpdater(QThread):
             return
         try:
             contest = cur_problem.get_contest()
-            problems = contest.list_problems()
+            with with_cookiejar(
+                    new_session_with_our_user_agent(), path=default_cookie_path
+            ) as sess:
+                problems = contest.list_problems(session=sess)
             for i, problem in enumerate(problems):
                 if problem == cur_problem:
                     self.prev = problems[i - 1].get_url()
