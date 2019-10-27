@@ -1,8 +1,33 @@
+from typing import *
+
 from PyQt5.QtCore import QRegExp, Qt
 from PyQt5.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat, QColor
 
 
-class RustHighlighter(QSyntaxHighlighter):
+class HighlighterBase(QSyntaxHighlighter):
+    colors = [Qt.cyan, Qt.yellow, Qt.green, Qt.magenta, Qt.darkCyan, Qt.darkYellow]
+
+    def update_levenshtein(self, words: List[str]):
+        self.levensteign_rules.clear()
+        if len(words) > len(self.colors):
+            return
+        for word, color in zip(words, self.colors):
+            format = QTextCharFormat()
+            format.setBackground(color)
+            self.levensteign_rules.append((QRegExp("\\b" + word + "\\b"), format))
+
+    def highlightBlock(self, text: str):
+        for pattern, format in self.highlight_rules + self.levensteign_rules:
+            expression = QRegExp(pattern)
+            index = expression.indexIn(text)
+            while index >= 0:
+                length = expression.matchedLength()
+                self.setFormat(index, length, format)
+                index = expression.indexIn(text, index + length)
+        self.setCurrentBlockState(0)
+
+
+class RustHighlighter(HighlighterBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -78,19 +103,10 @@ class RustHighlighter(QSyntaxHighlighter):
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("//[^\n]*"), line_comment_format))
 
-    def highlightBlock(self, text: str):
-        for pattern, format in self.highlight_rules:
-            expression = QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)
+        self.levensteign_rules = []
 
 
-class CppHighlighter(QSyntaxHighlighter):
+class CppHighlighter(HighlighterBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -152,19 +168,10 @@ class CppHighlighter(QSyntaxHighlighter):
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("//[^\n]*"), line_comment_format))
 
-    def highlightBlock(self, text: str):
-        for pattern, format in self.highlight_rules:
-            expression = QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)
+        self.levensteign_rules = []
 
 
-class PyHighlighter(QSyntaxHighlighter):
+class PyHighlighter(HighlighterBase):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -219,13 +226,4 @@ class PyHighlighter(QSyntaxHighlighter):
         line_comment_format.setForeground(Qt.darkGray)
         self.highlight_rules.append((QRegExp("#[^\n]*"), line_comment_format))
 
-    def highlightBlock(self, text: str):
-        for pattern, format in self.highlight_rules:
-            expression = QRegExp(pattern)
-            index = expression.indexIn(text)
-            while index >= 0:
-                length = expression.matchedLength()
-                self.setFormat(index, length, format)
-                index = expression.indexIn(text, index + length)
-
-        self.setCurrentBlockState(0)
+        self.levensteign_rules = []
