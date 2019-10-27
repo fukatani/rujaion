@@ -85,7 +85,7 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def _addCustomMenuItems(self, menu: QtWidgets.QMenu):
         menu.addSeparator()
-        menu.addAction(u"Go to declaration (Ctrl + b)", self.jump)
+        menu.addAction(u"Go to declaration (Ctrl + b)", self.go_to_declaration)
         if (
             self.textCursor().selectedText()
             and "\u2029" not in self.textCursor().selectedText()
