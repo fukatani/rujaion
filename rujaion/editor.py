@@ -1,9 +1,12 @@
 import codecs
 from collections import defaultdict
 import os
+import re
+import string
 import subprocess
 from typing import *
 
+from Levenshtein import StringMatcher
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
@@ -47,6 +50,19 @@ or brand of soft drink.
 """
 
 
+def sort_by_levenshtein(center: str, words: Iterable[str], limit: int = 2) -> List[str]:
+    cands = []
+    for word in words:
+        m = StringMatcher.StringMatcher(seq1=center, seq2=word)
+        dist = m.distance()
+        if dist <= limit:
+            cands.append(word)
+    return cands
+
+
+CHARS = set(string.ascii_letters + string.digits + "_")
+
+
 class Editter(QtWidgets.QPlainTextEdit):
     toggleBreakSignal = pyqtSignal(bytes)
 
@@ -77,6 +93,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.reset_lang()
         self.cursorPositionChanged.connect(self.highlight_cursor_line)
         self.first_error = None
+        # self.levenshteinized = False
 
     def __contextMenu(self):
         self._normalMenu = self.createStandardContextMenu()
@@ -357,6 +374,13 @@ class Editter(QtWidgets.QPlainTextEdit):
             indent_level += 1
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
+    def levenshteinize(self):
+        words = set(re.findall(r"\b[a-zA-Z_]+[a-zA-Z1-9_]\b", self.toPlainText(), re.S))
+        center = self.textCursor().selectedText()
+        words = sort_by_levenshtein(center, words, 1)
+        self.highlighter.update_levenshtein(words)
+        self.highlighter.rehighlight()
+
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
         if event.key() == 16777220 and self.completer.popup().isVisible():
@@ -455,6 +479,12 @@ class Editter(QtWidgets.QPlainTextEdit):
         if event.key() == QtCore.Qt.Key_F2:
             self.go_to_first_error()
             return
+        if event.key() == QtCore.Qt.Key_F10:
+            self.levenshteinized = not self.levenshteinized
+            if self.levenshteinized:
+                self.levenshteinize()
+            else:
+                self.highlighter.levensteign_rules.clear()
 
         super().keyPressEvent(event)
 
@@ -469,6 +499,10 @@ class Editter(QtWidgets.QPlainTextEdit):
                 self.setTextCursor(cursor)
 
         self.start_complete_process(event, tc)
+
+    def mouseDoubleClickEvent(self, e: QtGui.QMouseEvent):
+        super().mouseDoubleClickEvent(e)
+        self.levenshteinize()
 
     # TODO here is slow.
     def start_complete_process(self, event: QtGui.QKeyEvent, tc: QtGui.QTextCursor):
