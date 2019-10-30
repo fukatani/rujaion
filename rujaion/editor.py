@@ -1,6 +1,7 @@
 import codecs
 from collections import defaultdict
 import os
+import re
 import string
 import subprocess
 from typing import *
@@ -49,7 +50,7 @@ or brand of soft drink.
 """
 
 
-def sort_by_levenshtein(center: str, words: List[str], limit: int = 2) -> List[str]:
+def sort_by_levenshtein(center: str, words: Iterable[str], limit: int = 2) -> List[str]:
     cands = []
     for word in words:
         m = StringMatcher.StringMatcher(seq1=center, seq2=word)
@@ -374,10 +375,9 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
     def levenshteinize(self):
-        words = set(self.toPlainText().replace("\n", " ").replace("[", " ").replace("]", " ").replace("(", " ").replace(")", " ").split(" "))
-        words = [word for word in words if set(word).issubset(CHARS) and word]
+        words = set(re.findall(r"\b[a-zA-Z_]+[a-zA-Z1-9_]\b", self.toPlainText(), re.S))
         center = self.textCursor().selectedText()
-        words = sort_by_levenshtein(center, words, 2)
+        words = sort_by_levenshtein(center, words, 1)
         self.highlighter.update_levenshtein(words)
         self.highlighter.rehighlight()
 
