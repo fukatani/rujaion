@@ -299,7 +299,7 @@ class NextPreviousProblemUpdater(QThread):
         try:
             contest = cur_problem.get_contest()
             with with_cookiejar(
-                    new_session_with_our_user_agent(), path=default_cookie_path
+                new_session_with_our_user_agent(), path=default_cookie_path
             ) as sess:
                 problems = contest.list_problems(session=sess)
             for i, problem in enumerate(problems):
