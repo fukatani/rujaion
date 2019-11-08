@@ -151,6 +151,7 @@ class CustomWebEngineView(QWebEngineView):
                         u"Go to {}".format(problem_id),
                         lambda: self.parent().changePage(problems[7]),
                     )
+        menu.addAction(u"Open by browser", self.openByBrowser)
         menu.exec(a0.globalPos())
 
     def runScript(self) -> None:
@@ -203,6 +204,12 @@ class CustomWebEngineView(QWebEngineView):
         )
         try:
             subprocess.Popen(["sensible-browser", url])
+        except subprocess.TimeoutExpired:
+            pass
+
+    def openByBrowser(self):
+        try:
+            subprocess.Popen(["sensible-browser", self.url().toString()])
         except subprocess.TimeoutExpired:
             pass
 
