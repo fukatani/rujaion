@@ -376,12 +376,13 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def levenshteinize(self):
         center = self.textCursor().selectedText()
-        if not center:
-            return
-        # words = set(re.findall(r"\b[a-zA-Z_]+[a-zA-Z1-9_]\b", self.toPlainText(), re.S))
-        # words = sort_by_levenshtein(center, words, 1)
-        # self.highlighter.update_levenshtein(words)
-        self.highlighter.update_levenshtein([center,])
+        if center:
+            self.highlighter.update_levenshtein([center, ])
+            # words = set(re.findall(r"\b[a-zA-Z_]+[a-zA-Z1-9_]\b", self.toPlainText(), re.S))
+            # words = sort_by_levenshtein(center, words, 1)
+            # self.highlighter.update_levenshtein(words)
+        else:
+            self.highlighter.levensteign_rules.clear()
         self.highlighter.rehighlight()
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
