@@ -165,6 +165,7 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         except FileNotFoundError:
             pass
         self.lang_box.setCurrentText(self.editor.lang)
+        self.lang_box.currentTextChanged.connect(self.editor.lang_changed)
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
         self.move(self.settings.value("pos", QtCore.QPoint(50, 50)))
         self.last_used_testcase = ""
