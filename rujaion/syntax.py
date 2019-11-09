@@ -1,3 +1,4 @@
+import re
 from typing import *
 
 from PyQt5.QtCore import QRegExp, Qt
@@ -14,7 +15,7 @@ class HighlighterBase(QSyntaxHighlighter):
         for word, color in zip(words, self.colors):
             format = QTextCharFormat()
             format.setBackground(color)
-            self.levensteign_rules.append((QRegExp("\\b" + word + "\\b"), format))
+            self.levensteign_rules.append((QRegExp("\\b" + re.escape(word) + "\\b"), format))
 
     def highlightBlock(self, text: str):
         for pattern, format in self.highlight_rules + self.levensteign_rules:
