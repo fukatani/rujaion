@@ -255,6 +255,11 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.fname = fname
         self.reset_lang()
 
+    def lang_changed(self, lang):
+        self.lang = lang
+        self.reset_file_name()
+        self.reset_lang()
+
     def reset_file_name(self):
         if self.fname:
             default_dir = os.path.dirname(self.fname)
