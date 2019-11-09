@@ -6,7 +6,14 @@ from PyQt5.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat, QColor
 
 
 class HighlighterBase(QSyntaxHighlighter):
-    colors = [QColor(Qt.magenta).lighter(150), Qt.cyan, Qt.yellow, Qt.green, Qt.darkCyan, Qt.darkYellow]
+    colors = [
+        QColor(Qt.magenta).lighter(150),
+        Qt.cyan,
+        Qt.yellow,
+        Qt.green,
+        Qt.darkCyan,
+        Qt.darkYellow,
+    ]
 
     def update_levenshtein(self, words: List[str]):
         self.levensteign_rules.clear()
@@ -15,7 +22,9 @@ class HighlighterBase(QSyntaxHighlighter):
         for word, color in zip(words, self.colors):
             format = QTextCharFormat()
             format.setBackground(color)
-            self.levensteign_rules.append((QRegExp("\\b" + re.escape(word) + "\\b"), format))
+            self.levensteign_rules.append(
+                (QRegExp("\\b" + re.escape(word) + "\\b"), format)
+            )
 
     def highlightBlock(self, text: str):
         for pattern, format in self.highlight_rules + self.levensteign_rules:
