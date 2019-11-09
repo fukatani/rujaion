@@ -5,7 +5,7 @@ from PyQt5.QtGui import QFont, QSyntaxHighlighter, QTextCharFormat, QColor
 
 
 class HighlighterBase(QSyntaxHighlighter):
-    colors = [Qt.cyan, Qt.yellow, Qt.green, Qt.magenta, Qt.darkCyan, Qt.darkYellow]
+    colors = [QColor(Qt.magenta).lighter(150), Qt.cyan, Qt.yellow, Qt.green, Qt.darkCyan, Qt.darkYellow]
 
     def update_levenshtein(self, words: List[str]):
         self.levensteign_rules.clear()
