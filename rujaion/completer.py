@@ -66,7 +66,7 @@ class RacerCompleter(CompleterBase):
         search_word = out.split("\n")[0].split(",")[2]
 
         for live_template in self.live_templates:
-            if search_word in live_template.name:
+            if live_template.name.startswith(search_word):
                 self.candidates_dict[live_template.template] = live_template.rpos
         if len(self.candidates_dict) >= 6 or search_word in self.candidates_dict.keys():
             self.candidates_dict = {}
@@ -132,7 +132,7 @@ class CppCompleter(CompleterBase):
                     self.candidates_dict[cand] = -1
 
         for live_template in self.live_templates:
-            if text in live_template.name:
+            if live_template.name.startswith(text):
                 self.candidates_dict[live_template.template] = live_template.rpos
         if len(self.candidates_dict) >= 10 or text in self.candidates_dict.keys():
             self.candidates_dict = {}

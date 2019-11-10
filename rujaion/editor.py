@@ -403,7 +403,6 @@ class Editter(QtWidgets.QPlainTextEdit):
         tc = self.textCursor()
         if event.key() == Qt.Key_Return and self.completer.popup().isVisible():
             self.insertCompletion()
-            self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 
         if event.key() == Qt.Key_Return:
