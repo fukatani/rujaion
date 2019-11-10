@@ -119,6 +119,8 @@ class Editter(QtWidgets.QPlainTextEdit):
     def default_file_name(self) -> str:
         if self.lang == "c++":
             return "test1.cpp"
+        elif self.lang == "python3":
+            return "test1.py"
         else:
             return "test1.rs"
 
