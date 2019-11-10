@@ -404,13 +404,14 @@ class Editter(QtWidgets.QPlainTextEdit):
             return
 
         if event.key() == Qt.Key_BraceRight:
+        if event.key() == Qt.Key_BraceRight and self.lang != "python3":
             # Decrease indent level
             if (
                 tc.position() > 0
                 and self.document().characterAt(tc.position() - 1) != "{"
             ):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
-                for i in range(4):
+                for i in range(util.indent_width(self.lang)):
                     if self.document().characterAt(tc.position()) == " ":
                         tc.deleteChar()
 
