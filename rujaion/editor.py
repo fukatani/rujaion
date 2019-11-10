@@ -392,12 +392,12 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
-        if event.key() == 16777220 and self.completer.popup().isVisible():
+        if event.key() == Qt.Key_Return and self.completer.popup().isVisible():
             self.insertCompletion()
             self.completer.setCompletionMode(QtWidgets.QCompleter.PopupCompletion)
             return
 
-        if event.key() == 16777220:  # Enter
+        if event.key() == Qt.Key_Return:
             self.enter_with_auto_indent()
             return
 
