@@ -213,7 +213,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.browser.page().profile().cookieStore().cookieAdded.connect(
             self.handleCookieAdded
         )
-        self.browser.loadFinished.connect(self.download_task)
+        self.browser.urlChanged.connect(self.download_task)
 
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.url_edit, 0, 0, 1, 15)
