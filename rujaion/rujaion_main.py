@@ -723,7 +723,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             ):
                 self.terminate()
                 return
-            elif line.endswith("No such file or directory.") or line.endswith("そのようなファイルやディレクトリはありません."):
+            elif line.endswith("No such file or directory.") or line.endswith(
+                "そのようなファイルやディレクトリはありません."
+            ):
                 self.stepOut()
                 return
             elif "exited with code" in line:
