@@ -381,6 +381,13 @@ class Editter(QtWidgets.QPlainTextEdit):
             indent_level += 1
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
 
+    def should_remove_indent(self) -> bool:
+        tc = self.textCursor()
+        for i in range(util.indent_width(self.lang)):
+            if self.document().characterAt(tc.position() - i - 1) != " ":
+                return False
+        return True
+
     def levenshteinize(self):
         center = self.textCursor().selectedText()
         if center:
@@ -403,7 +410,12 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.enter_with_auto_indent()
             return
 
-        if event.key() == Qt.Key_BraceRight:
+        if event.key() == Qt.Key_Backspace and self.should_remove_indent():
+            for i in range(util.indent_width(self.lang)):
+                tc.movePosition(QtGui.QTextCursor.Left)
+                tc.deleteChar()
+            return
+
         if event.key() == Qt.Key_BraceRight and self.lang != "python3":
             # Decrease indent level
             if (
