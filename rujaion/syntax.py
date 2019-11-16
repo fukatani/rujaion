@@ -198,6 +198,7 @@ class PyHighlighter(HighlighterBase):
         # fmt: off
         keyword_patterns = ("\\bdef\\b", "\\bclass\\b",
                             "\\bglobal\\b", "\\breturn\\b", "\\bimport\\b",
+                            "\\bfrom\\b",
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bcontinue\\b", "\\belse\\b", "\\bif\\b",
                             "\\belif\\b", "\\btry\\b", "\\bexcept\\b",
