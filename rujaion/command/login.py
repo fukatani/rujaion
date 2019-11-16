@@ -63,6 +63,8 @@ class LoginDialog(QtWidgets.QDialog):
         cmd = (
             "oj",
             "l",
+            "--use-browser",
+            "never",
             "-u",
             self.settings.value("Account", type=str),
             "-p",
@@ -70,7 +72,9 @@ class LoginDialog(QtWidgets.QDialog):
             self.url_edit.text(),
         )
         try:
+            util.OJ_MUTEX.lock()
             out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            util.OJ_MUTEX.unlock()
             self.parent().console.writeLnSignal.emit(out)
         except subprocess.CalledProcessError as err:
             self.parent().console.writeLnSignal.emit(err.output)

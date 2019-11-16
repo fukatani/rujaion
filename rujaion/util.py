@@ -5,7 +5,7 @@ from typing import *
 
 import pexpect
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, QMutex
 
 
 TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
@@ -182,6 +182,9 @@ class WriteObj(object):
         self.mode = mode
 
 
+OJ_MUTEX = QMutex()
+
+
 class Commander(QThread):
     def __init__(self, console):
         super().__init__()
@@ -189,6 +192,7 @@ class Commander(QThread):
         self.cmd = ""
 
     def run(self):
+        OJ_MUTEX.lock()
         try:
             out = subprocess.check_output(self.cmd, stderr=subprocess.STDOUT).decode()
             self.console.writeLnSignal.emit(out)
@@ -196,3 +200,4 @@ class Commander(QThread):
             self.console.writeLnSignal.emit(err.output)
         scroll_bar = self.console.verticalScrollBar()
         scroll_bar.setValue(scroll_bar.maximum())
+        OJ_MUTEX.unlock()
