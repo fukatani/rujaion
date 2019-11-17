@@ -12,7 +12,7 @@ class FindTextEdit(QtWidgets.QTextEdit):
         super().__init__(parent)
 
     def keyPressEvent(self, e: QtGui.QKeyEvent) -> None:
-        if e.key() == 16777220:  # Enter
+        if e.key() == Qt.Key_Return:
             self.enter_action()
             return
         if e.key() == Qt.Key_Tab:
@@ -95,8 +95,10 @@ class Find(QtWidgets.QDialog):
     def toggle_focus(self):
         if self.findField.hasFocus():
             self.replaceField.setFocus()
+            self.replaceField.selectAll()
         else:
             self.findField.setFocus()
+            self.findField.selectAll()
 
     def find(self):
         # Grab the parent's text
