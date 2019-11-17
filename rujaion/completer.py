@@ -36,7 +36,8 @@ class RacerCompleter(CompleterBase):
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
-        temp_file = codecs.open(util.TEMPFILE, "w", "utf-8")
+        temp_file = util.get_temp_file("rust")
+        temp_file = codecs.open(temp_file, "w", "utf-8")
         temp_file.write(self.parent.toPlainText())
         temp_file.close()
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
@@ -50,7 +51,7 @@ class RacerCompleter(CompleterBase):
                 + " "
                 + src_char_num
                 + " "
-                + util.TEMPFILE,
+                + temp_file,
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:

@@ -8,8 +8,13 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, QMutex
 
 
-TEMPFILE = os.path.join(os.path.dirname(__file__), "temp.rs")
-TEMPFILE_CPP = os.path.join(os.path.dirname(__file__), "temp.cpp")
+def get_temp_file(lang: str):
+    if lang == "rust":
+        return os.path.join(os.path.dirname(__file__), "temp.rs")
+    if lang == "python3":
+        return os.path.join(os.path.dirname(__file__), "temp.py")
+    else:
+        return os.path.join(os.path.dirname(__file__), "temp.cpp")
 
 
 def disp_error(message: str):
@@ -75,22 +80,23 @@ def get_compiled_file(lang: str, fname: str) -> str:
 
 
 def exec_format(lang: str) -> bool:
+    tempfile = get_temp_file(lang)
     if lang == "rust":
         try:
-            subprocess.check_output(("rustfmt", TEMPFILE), stderr=subprocess.STDOUT)
+            subprocess.check_output(("rustfmt", tempfile), stderr=subprocess.STDOUT)
         except Exception:
             return False
     elif lang == "python3":
         try:
             subprocess.check_output(
-                ("autopep8", "-i", TEMPFILE), stderr=subprocess.STDOUT
+                ("autopep8", "-i", tempfile), stderr=subprocess.STDOUT
             )
         except Exception:
             return False
     else:
         try:
             subprocess.check_output(
-                ("clang-format", "-i", TEMPFILE), stderr=subprocess.STDOUT
+                ("clang-format", "-i", tempfile), stderr=subprocess.STDOUT
             )
         except Exception:
             return False
