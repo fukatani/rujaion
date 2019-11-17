@@ -502,12 +502,6 @@ class Editter(QtWidgets.QPlainTextEdit):
         if event.key() == QtCore.Qt.Key_F2:
             self.go_to_first_error()
             return
-        if event.key() == QtCore.Qt.Key_F10:
-            self.levenshteinized = not self.levenshteinized
-            if self.levenshteinized:
-                self.levenshteinize()
-            else:
-                self.highlighter.levensteign_rules.clear()
 
         super().keyPressEvent(event)
 
