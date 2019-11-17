@@ -16,6 +16,8 @@ from onlinejudge._implementation.utils import (
 from PyQt5.QtCore import QThread
 from PyQt5.QtNetwork import QNetworkCookie
 
+from rujaion import util
+
 # Many of source is copied from https://qiita.com/montblanc18/items/88d0b639de86b7cac613
 
 
@@ -263,10 +265,12 @@ class WebViewWindow(QtWidgets.QWidget):
         url = self.browser.url().toString()
         if dispatch.service_from_url(url):
             py_cookie = toPyCookie(cookie)
+            util.OJ_MUTEX.lock()
             with with_cookiejar(
                 new_session_with_our_user_agent(), path=default_cookie_path
             ) as sess:
                 sess.cookies.set_cookie(py_cookie)
+            util.OJ_MUTEX.unlock()
 
 
 class NextPreviousProblemUpdater(QThread):
