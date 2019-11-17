@@ -26,7 +26,6 @@ class Find(QtWidgets.QDialog):
         super().__init__(parent)
         self.parent = parent
         self.lastMatch = None
-        self.lastStart = 0
         self.initUI()
 
     def initUI(self):
@@ -66,9 +65,6 @@ class Find(QtWidgets.QDialog):
         # Case Sensitivity option
         self.caseSens = QtWidgets.QCheckBox("Case sensitive", self)
 
-        # Whole Words option
-        self.wholeWords = QtWidgets.QCheckBox("Whole words", self)
-
         # Layout the objects on the screen
         layout = QtWidgets.QGridLayout()
 
@@ -83,14 +79,11 @@ class Find(QtWidgets.QDialog):
 
         # Add some spacing
         spacer = QtWidgets.QWidget(self)
-
         spacer.setFixedSize(0, 10)
 
         layout.addWidget(spacer, 5, 0)
-
         layout.addWidget(optionsLabel, 6, 0)
         layout.addWidget(self.caseSens, 6, 1)
-        layout.addWidget(self.wholeWords, 6, 2)
 
         self.setGeometry(300, 300, 360, 250)
         self.setWindowTitle("Find and Replace")
@@ -112,48 +105,23 @@ class Find(QtWidgets.QDialog):
         # And the text to find
         query = self.findField.toPlainText()
 
-        # If the 'Whole Words' checkbox is checked, we need to append
-        # and prepend a non-alphanumeric character
-        if self.wholeWords.isChecked():
-            query = r"\W" + query + r"\W"
-
         # By default regexes are case sensitive but usually a search isn't
         # case sensitive by default, so we need to switch this around here
         flags = 0 if self.caseSens.isChecked() else re.I
 
+        # Compile the pattern
         if self.normalRadio.isChecked():
-            # Use normal string search to find the query from the
-            # last starting position
-            self.lastStart = text.find(query, self.lastStart + 1)
-
-            # If the find() method didn't return -1 (not found)
-            if self.lastStart >= 0:
-                end = self.lastStart + len(query)
-                self.moveCursor(self.lastStart, end)
-            else:
-                # Make the next search start from the begining again
-                self.lastStart = 0
-                # self.moveCursor(QtGui.QTextCursor.atStart())
-
+            pattern = re.compile(re.escape(query), flags)
         else:
-            # Compile the pattern
             pattern = re.compile(query, flags)
+        start = self.lastMatch.start() + 1 if self.lastMatch else 0
 
-            start = self.lastMatch.start() + 1 if self.lastMatch else 0
-
-            # The actual search
-            self.lastMatch = pattern.search(text, start)
-            if self.lastMatch:
-                start = self.lastMatch.start()
-                end = self.lastMatch.end()
-
-                # If 'Whole words' is checked, the selection would include the two
-                # non-alphanumeric characters we included in the search, which need
-                # to be removed before marking them.
-                if self.wholeWords.isChecked():
-                    start += 1
-                    end -= 1
-                self.moveCursor(start, end)
+        # The actual search
+        self.lastMatch = pattern.search(text, start)
+        if self.lastMatch:
+            start = self.lastMatch.start()
+            end = self.lastMatch.end()
+            self.moveCursor(start, end)
 
     def replace(self):
         self.find()
@@ -184,17 +152,14 @@ class Find(QtWidgets.QDialog):
 
         # First uncheck the checkboxes
         self.caseSens.setChecked(False)
-        self.wholeWords.setChecked(False)
 
         # Then disable them (gray them out)
         self.caseSens.setEnabled(False)
-        self.wholeWords.setEnabled(False)
 
     def normalMode(self):
 
         # Enable checkboxes (un-gray them)
         self.caseSens.setEnabled(True)
-        self.wholeWords.setEnabled(True)
 
     def moveCursor(self, start, end):
 

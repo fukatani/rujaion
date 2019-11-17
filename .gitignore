@@ -4,6 +4,9 @@
 *.bak
 rujaion/test/*
 rujaion/temp.rs
+rujaion/temp.cpp
+rujaion/temp.py
+rust_sample/test1.py
 rujaion/.mypy_cache/*
 Rujaion.egg-info/*
 build/*

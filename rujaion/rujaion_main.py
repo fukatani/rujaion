@@ -3,6 +3,7 @@ import codecs
 import glob
 import os
 import shutil
+import signal
 import subprocess
 import sys
 from typing import *
@@ -855,8 +856,19 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         ).show()
 
 
+app = QtWidgets.QApplication(sys.argv)
+
+
+def handler(signum, frame):
+    util.OJ_MUTEX.lock()
+    print("shutdown with signal={}".format(signum))
+    global app
+    app.exit(0)
+
+
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
     icon_path = os.path.join(
         os.path.abspath(os.path.dirname(__file__)), "../img/icon.png"
     )
@@ -868,3 +880,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    import http.cookiejar
