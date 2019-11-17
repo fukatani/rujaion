@@ -36,7 +36,7 @@ class Find(QtWidgets.QDialog):
 
         # Button to replace the last finding
         replaceButton = QtWidgets.QPushButton("Find and Replace", self)
-        replaceButton.clicked.connect(self.replace)
+        replaceButton.clicked.connect(self.findAndReplace)
 
         # Button to remove all findings
         allButton = QtWidgets.QPushButton("Replace all", self)
@@ -123,22 +123,19 @@ class Find(QtWidgets.QDialog):
             end = self.lastMatch.end()
             self.moveCursor(start, end)
 
-    def replace(self):
+    def findAndReplace(self):
         self.find()
+        self.replace()
 
-        # Grab the text cursor
+    def replace(self):
         cursor = self.parent.textCursor()
 
-        # Security
         if self.lastMatch and cursor.hasSelection():
-            # We insert the new text, which will override the selected
-            # text
             cursor.insertText(self.replaceField.toPlainText())
-
-            # And set the new cursor
             self.parent.setTextCursor(cursor)
 
     def replaceAll(self):
+        self.moveCursor(0, 0)
         # Initial find() call so that lastMatch is
         # potentially not None anymore
         self.find()
