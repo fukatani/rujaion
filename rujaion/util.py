@@ -50,7 +50,8 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
         else:
             return ["rustc", "-g"]
     elif lang == "python3":
-        return ["python3", "py_syntax_checker.py"]
+        checker = os.path.join(os.path.dirname(__file__), "py_syntax_checker.py")
+        return ["python3", checker]
     else:
         if no_debug:
             return [

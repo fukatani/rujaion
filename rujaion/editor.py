@@ -557,13 +557,12 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def save_pre_process(self):
         # Get formatted Text
-        temp_file = util.get_temp_file(self.lang)
-        temp_file = codecs.open(temp_file, "w", "utf-8")
-        temp_file.write(self.toPlainText())
-        temp_file.close()
+        temp_file_name = util.get_temp_file(self.lang)
+        with codecs.open(temp_file_name, "w", "utf-8") as f:
+            f.write(self.toPlainText())
         if not util.exec_format(self.lang):
             return
-        temp_file = codecs.open(temp_file, "r", "utf-8")
+        temp_file = codecs.open(temp_file_name, "r", "utf-8")
         all_text = "".join([line for line in temp_file.readlines()])
         temp_file.close()
 

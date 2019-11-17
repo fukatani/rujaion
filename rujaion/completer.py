@@ -36,10 +36,9 @@ class RacerCompleter(CompleterBase):
 
     # this is heavy?
     def setCompletionPrefix(self, text: str):
-        temp_file = util.get_temp_file("rust")
-        temp_file = codecs.open(temp_file, "w", "utf-8")
-        temp_file.write(self.parent.toPlainText())
-        temp_file.close()
+        temp_file_name = util.get_temp_file("rust")
+        with codecs.open(temp_file_name, "w", "utf-8") as f:
+            f.write(self.parent.toPlainText())
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
         src_char_num = str(self.parent.textCursor().columnNumber())
 
@@ -51,7 +50,7 @@ class RacerCompleter(CompleterBase):
                 + " "
                 + src_char_num
                 + " "
-                + temp_file,
+                + temp_file_name,
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:
@@ -106,9 +105,9 @@ class CppCompleter(CompleterBase):
 
     # TODO: Support clang completer
     def setCompletionPrefix(self, text: str):
-        temp_file = codecs.open(util.TEMPFILE_CPP, "w", "utf-8")
-        temp_file.write(self.parent.toPlainText())
-        temp_file.close()
+        temp_file_name = util.get_temp_file("cpp")
+        with codecs.open(temp_file_name, "w", "utf-8") as f:
+            f.write(self.parent.toPlainText())
         src_line_num = str(self.parent.textCursor().blockNumber() + 1)
         src_char_num = str(self.parent.textCursor().columnNumber())
 
@@ -117,7 +116,7 @@ class CppCompleter(CompleterBase):
                 # read all header is too slow
                 # "clang -fsyntax-only -Xclang -code-completion-at=%s:%s:%s %s"
                 "clang -cc1 -fsyntax-only -code-completion-at=%s:%s:%s %s"
-                % (util.TEMPFILE_CPP, src_line_num, src_char_num, util.TEMPFILE_CPP),
+                % (temp_file_name, src_line_num, src_char_num, temp_file_name),
                 shell=True,
             ).decode()
         except subprocess.CalledProcessError as e:
