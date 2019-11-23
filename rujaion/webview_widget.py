@@ -215,7 +215,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.browser.page().profile().cookieStore().cookieAdded.connect(
             self.handleCookieAdded
         )
-        self.browser.loadStarted.connect(self.download_task)
+        self.browser.loadFinished.connect(self.download_task)
 
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.url_edit, 0, 0, 1, 15)
@@ -225,6 +225,7 @@ class WebViewWindow(QtWidgets.QWidget):
         self.next_prev_updater = NextPreviousProblemUpdater()
 
     def download_task(self):
+        self.url_edit.setText(self.browser.url().toString())
         self.next_prev_updater.url = self.browser.url().toString()
         self.next_prev_updater.start()
         self.url_edit.setText(self.browser.url().toString())
