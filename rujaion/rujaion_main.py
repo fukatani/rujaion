@@ -450,12 +450,18 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         error_places = []
         for num in error_disp_lines:
             invalid_line, invalid_pos = lines[num].split(":")[1:3]
-            error_places.append((int(invalid_line), int(invalid_pos)))
+            try:
+                error_places.append((int(invalid_line), int(invalid_pos)))
+            except ValueError:
+                pass
 
         warning_places = []
         for num in warning_disp_lines:
             invalid_line, invalid_pos = lines[num].split(":")[1:3]
-            warning_places.append((int(invalid_line), int(invalid_pos)))
+            try:
+                warning_places.append((int(invalid_line), int(invalid_pos)))
+            except ValueError:
+                pass
 
         return error_places, warning_places
 
