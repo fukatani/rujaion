@@ -1,5 +1,5 @@
 <templateSet group="Rust">
-  <template name="for" value="for $iter$ in 0..$LAST$ {&#10;    $END$;&#10;}" description="for loop" toReformat="false" toShortenFQNames="true">
+  <template name="for" value="for $iter$ in 0..$LAST$ { $END$ }" description="for loop" toReformat="false" toShortenFQNames="true">
     <variable name="iter" expression="" defaultValue="i" alwaysStopAt="true" />
     <variable name="LAST" expression="" defaultValue="n" alwaysStopAt="true" />
   </template>
