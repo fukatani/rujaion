@@ -133,6 +133,15 @@ Select graph elements and do "View Graph" in browser right click menu, you can d
 
 ![screen_cast_graph](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/graph_view.gif)
 
+Display Table
+==============================
+
+In contest, you often want to display table data. (ex. Debugging DP table.)
+
+Select graph elements and do "Visualize Table" in console right click menu, you can draw table data.
+
+![screen_cast_table](https://github.com/fukatani/rust-gui-debugger/blob/master/doc/table.gif)
+
 Blog Entry
 ==============================
 https://codeforces.com/blog/entry/69975
