@@ -3,11 +3,17 @@
     <variable name="iter" expression="" defaultValue="i" alwaysStopAt="true" />
     <variable name="LAST" expression="" defaultValue="n" alwaysStopAt="true" />
   </template>
+  <template name="forrev" value="for $iter$ in (0..$LAST$).rev() { $END$ }" description="for loop" toReformat="false" toShortenFQNames="true">
+    <variable name="iter" expression="" defaultValue="i" alwaysStopAt="true" />
+    <variable name="LAST" expression="" defaultValue="n" alwaysStopAt="true" />
+  </template>
   <template name="let mut" value="let mut " description="let mut;" toReformat="false" toShortenFQNames="true" />
   <template name="let (n, k)" value="let (n, k$END$) = (v[0], v[1]);" description="bind" toReformat="false" toShortenFQNames="true" />
   <template name="collect" value="collect::&lt;Vec&lt;_&gt;&gt;();" description="collect vector" toReformat="false" toShortenFQNames="true"/>
   <template name="cond" value="let a$END$ = if { } else { };" description="conditional operator" toReformat="false" toShortenFQNames="true" />
   <template name="map" value="map(|&amp;x| x$END$)" description="map iterator" toReformat="false" toShortenFQNames="true" />
+  <template name="filter" value="filter(|&amp;&amp;x| x$END$)" description="filter iterator" toReformat="false" toShortenFQNames="true" />
+  <template name="unwrap" value="unwrap()" description="filter iterator" toReformat="false" toShortenFQNames="true" />
   <template name="let vv" value="let mut dp = vec![vec![; ]; ];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="let vvv" value="let mut dp = vec![vec![vec![; ]; ];];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="chars" value="chars().collect::&lt;Vec&lt;_&gt;&gt;();" description="collect chars" toReformat="false" toShortenFQNames="true"/>
