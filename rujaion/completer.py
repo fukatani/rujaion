@@ -21,6 +21,7 @@ class CompleterBase(QtWidgets.QCompleter):
         self.ng_words = set(
             [
                 "core",
+                "compiletest",
                 "proc_macro",
                 "profiler_builtins",
                 "getopts",
