@@ -371,8 +371,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.completer.popup().hide()
 
     def enter_with_auto_indent(self):
-        line_number = self.textCursor().blockNumber()
-        line_text = self.document().findBlockByLineNumber(line_number).text()
+        line_text = self.get_current_line_test()
         indent_level = line_text.count(" " * util.indent_width(self.lang))
         if self.lang == "python3":
             if line_text.endswith(":"):
@@ -380,6 +379,11 @@ class Editter(QtWidgets.QPlainTextEdit):
         elif line_text.endswith("{"):
             indent_level += 1
         self.insertPlainText("\n" + " " * util.indent_width(self.lang) * indent_level)
+
+    def get_current_line_test(self) -> str:
+        line_number = self.textCursor().blockNumber()
+        line_text = self.document().findBlockByLineNumber(line_number).text()
+        return line_text
 
     def should_remove_indent(self) -> bool:
         tc = self.textCursor()
@@ -419,7 +423,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             # Decrease indent level
             if (
                 tc.position() > 0
-                and self.document().characterAt(tc.position() - 1) != "{"
+                and "{" not in self.get_current_line_test()
             ):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
                 for i in range(util.indent_width(self.lang)):
