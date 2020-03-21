@@ -54,9 +54,9 @@ class RustHighlighter(HighlighterBase):
         keyword_format.setFontWeight(QFont.Bold)
 
         # fmt: off
-        keyword_patterns = ("\\bi32\\b", "\\bi64\\b", "\\bi16\\b",
-                            "\\bu16\\b", "\\bu32\\b", "\\bu64\\b",
-                            "\\bf16\\b", "\\bf32\\b", "\\bf64\\b",
+        keyword_patterns = ("\\bi16\\b", "\\bi32\\b", "\\bi64\\b", "\\bi128\\b",
+                            "\\bu16\\b", "\\bu32\\b", "\\bu64\\b", "\\bu128\\b",
+                            "\\bf16\\b", "\\bf32\\b", "\\bf64\\b", "\\bf128\\b",
                             "\\busize\\b", "\\bchar\\b", "\\bbool\\b",
                             "\\blet\\b", "\\bmut\\b",
                             "\\bfn\\b", "\\bstruct\\b", "\\bpub\\b",
@@ -141,6 +141,7 @@ class CppHighlighter(HighlighterBase):
                             "\\benum\\b", "\\btypedef\\b", "\\bnamespace\\b",
                             "\\bfor\\b", "\\bwhile\\b", "\\bbreak\\b",
                             "\\bcontinue\\b", "\\belse\\b", "\\bif\\b",
+                            "\\btypedef\\b", "\\bconstexpr\\b",
                             )
         # fmt: on
 
