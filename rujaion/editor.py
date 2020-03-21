@@ -464,7 +464,7 @@ class Editter(QtWidgets.QPlainTextEdit):
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
-        if event.key() == Qt.Key_Tab and event.modifiers() == QtCore.Qt.ControlModifier:
+        if event.key() == Qt.Key_Backtab:
             tc = self.textCursor()
             if tc.selection().isEmpty():
                 selected_line_num = 1
