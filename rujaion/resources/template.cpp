@@ -1,8 +1,15 @@
-#include <algorithm>
-#include <iostream>
-#include <set>
 #include <stdio.h>
+
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <map>
+#include <set>
+#include <unordered_map>
 #include <vector>
+
+#define ALL(obj) (obj).begin()(obj).end()
+#define DEBUG(x) cerr << #x << " = " << x << endl
 
 using namespace std;
 
