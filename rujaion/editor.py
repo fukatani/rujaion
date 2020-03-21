@@ -451,16 +451,26 @@ class Editter(QtWidgets.QPlainTextEdit):
                     tc.movePosition(
                         QtGui.QTextCursor.NextWord, QtGui.QTextCursor.MoveAnchor, 1
                     )
-                if (
-                    self.document().characterAt(tc.position()) == "/"
-                    and self.document().characterAt(tc.position() + 1) == "/"
-                    and self.document().characterAt(tc.position() + 2) == " "
-                ):
-                    tc.deleteChar()
-                    tc.deleteChar()
-                    tc.deleteChar()
+                if self.lang == "python3":
+                    if (
+                        self.document().characterAt(tc.position()) == "#"
+                        and self.document().characterAt(tc.position() + 1) == " "
+                    ):
+                        tc.deleteChar()
+                        tc.deleteChar()
+                    else:
+                        tc.insertText("# ")
                 else:
-                    tc.insertText("// ")
+                    if (
+                        self.document().characterAt(tc.position()) == "/"
+                        and self.document().characterAt(tc.position() + 1) == "/"
+                        and self.document().characterAt(tc.position() + 2) == " "
+                    ):
+                        tc.deleteChar()
+                        tc.deleteChar()
+                        tc.deleteChar()
+                    else:
+                        tc.insertText("// ")
                 tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
             return
 
