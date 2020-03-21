@@ -59,6 +59,8 @@ class SubmitDialog(QtWidgets.QDialog):
         cmd = (
             "oj",
             "s",
+            "-w",
+            "0.3",
             "-l",
             self.lang_edit.text(),
             "-y",
