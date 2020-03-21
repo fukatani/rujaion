@@ -473,10 +473,8 @@ class Editter(QtWidgets.QPlainTextEdit):
             for i in range(selected_line_num):
                 tc.movePosition(QtGui.QTextCursor.StartOfLine)
                 if self.document().characterAt(tc.position()) == " ":
-                    tc.deleteChar()
-                    tc.deleteChar()
-                    tc.deleteChar()
-                    tc.deleteChar()
+                    for _ in range(util.indent_width(self.lang)):
+                        tc.deleteChar()
                     tc.movePosition(
                         QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1
                     )
