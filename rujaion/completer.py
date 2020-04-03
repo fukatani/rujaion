@@ -20,6 +20,8 @@ class CompleterBase(QtWidgets.QCompleter):
         self.candidates_dict = {}
         self.ng_words = set(
             [
+                "alloc_system",
+                "alloc_jemalloc",
                 "core",
                 "compiletest",
                 "proc_macro",
