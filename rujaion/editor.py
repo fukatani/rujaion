@@ -549,6 +549,13 @@ class Editter(QtWidgets.QPlainTextEdit):
         cursor.removeSelectedText()
         cursor.deletePreviousChar()
 
+    def clear_and_write_text(self, text: str):
+        cursor = self.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.Start)
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor,1)
+        cursor.removeSelectedText()
+        self.insertPlainText(text)
+
     def save_pre_process(self):
         # Get formatted Text
         temp_file_name = util.get_temp_file(self.lang)
@@ -557,7 +564,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         if not util.exec_format(self.lang):
             return
         temp_file = codecs.open(temp_file_name, "r", "utf-8")
-        all_text = "".join([line for line in temp_file.readlines()])
+        formatted_text = "".join([line for line in temp_file.readlines()])
         temp_file.close()
 
         # Save cursor and scroll bar status
@@ -567,10 +574,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         scroll_value = self.verticalScrollBar().value()
 
         # Clear all Text and insert format result
-        cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1)
-        cursor.removeSelectedText()
-        self.insertPlainText(all_text)
+        self.clear_and_write_text(formatted_text)
 
         # recover cursor and scroll bar status
         cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
