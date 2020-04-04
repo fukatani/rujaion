@@ -503,6 +503,9 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.go_to_first_error()
             return
 
+        if event.key() == QtCore.Qt.Key_E and event.modifiers() == QtCore.Qt.ControlModifier:
+            self.extract()
+
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key_Home:
