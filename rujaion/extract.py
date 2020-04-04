@@ -1,6 +1,5 @@
 from PyQt5 import QtWidgets, QtGui
 
-from rujaion.command import finder
 from rujaion import util
 
 
@@ -10,6 +9,7 @@ class ExtractDialog(QtWidgets.QDialog):
         self.sentence_edit = util.StateLessTextEdit(sentence, self)
         self.name_edit = util.StateLessTextEdit("", self)
         self.extract_type = QtWidgets.QRadioButton()
+        self.extract_type.setChecked(True)
         self.dialogs = (
             ("Extract...", None),
             ("Sentence", self.sentence_edit),
@@ -18,6 +18,7 @@ class ExtractDialog(QtWidgets.QDialog):
         )
         self.resize(500, 100)
         self.draw()
+        self.name_edit.setFocus()
 
     def draw(self, *args):
         main_layout = QtWidgets.QVBoxLayout()
@@ -44,6 +45,8 @@ class ExtractDialog(QtWidgets.QDialog):
                 section_layout = QtWidgets.QFormLayout()
                 l_widget.setLayout(section_layout)
                 main_layout.addWidget(l_widget)
+            else:
+                section_layout.addRow(name, widget)
         extract_button = QtWidgets.QPushButton("Extract")
         extract_button.clicked.connect(self.extract)
         main_layout.addWidget(extract_button)
@@ -52,7 +55,13 @@ class ExtractDialog(QtWidgets.QDialog):
     def extract(self):
         if self.extract_type.isChecked():
             declaration = "type {} = {};\n".format(self.name_edit.text(), self.sentence_edit.text())
+
+            pos = self.parent().save_position()
+            text = self.parent().toPlainText()
+            self.parent().clear_and_write_text(text.replace(self.sentence_edit.text(), self.name_edit.text()))
+            self.parent().load_position(*pos)
+
             tc = self.parent().textCursor()
             tc.movePosition(QtGui.QTextCursor.StartOfLine)
             tc.insertText(declaration)
-            finder.Find()
+        self.close()

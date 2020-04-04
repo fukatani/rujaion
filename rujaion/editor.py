@@ -556,6 +556,19 @@ class Editter(QtWidgets.QPlainTextEdit):
         cursor.removeSelectedText()
         self.insertPlainText(text)
 
+    def save_position(self):
+        cursor = self.textCursor()
+        line_num = cursor.blockNumber()
+        char_num = cursor.columnNumber()
+        scroll_value = self.verticalScrollBar().value()
+        return line_num, char_num, scroll_value
+
+    def load_position(self, line_num, char_num, scroll_value):
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
+        cursor.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num)
+        self.setTextCursor(cursor)
+        self.verticalScrollBar().setValue(scroll_value)
+
     def save_pre_process(self):
         # Get formatted Text
         temp_file_name = util.get_temp_file(self.lang)
@@ -568,20 +581,12 @@ class Editter(QtWidgets.QPlainTextEdit):
         temp_file.close()
 
         # Save cursor and scroll bar status
-        cursor = self.textCursor()
-        line_num = cursor.blockNumber()
-        char_num = cursor.columnNumber()
-        scroll_value = self.verticalScrollBar().value()
+        pos = self.save_position()
 
         # Clear all Text and insert format result
         self.clear_and_write_text(formatted_text)
 
         # recover cursor and scroll bar status
-        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
-        cursor.movePosition(
-            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
-        )
-        self.setTextCursor(cursor)
-        self.verticalScrollBar().setValue(scroll_value)
+        self.load_position(*pos)
         self.edited = False
         self.repaint()
