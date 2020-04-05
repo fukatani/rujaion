@@ -135,6 +135,7 @@ class CppHighlighter(HighlighterBase):
         # fmt: off
         keyword_patterns = ("\\bint\\b", "\\blong\\b", "\\bsize_t\\b",
                             "\\bchar\\b", "\\bbool\\b",
+                            "\\bdouble\\b", "\\bfloat\\b",
                             "\\bauto\\b", "\\bstruct\\b", "\\bswitch\\b",
                             "\\bconst\\b", "\\bstatic\\b", "\\bstr\\b",
                             "\\bString\\b", "\\breturn\\b", "\\busing\\b",
