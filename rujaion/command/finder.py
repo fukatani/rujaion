@@ -24,7 +24,6 @@ class FindTextEdit(QtWidgets.QTextEdit):
 class Find(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.parent = parent
         self.lastMatch = None
         self.initUI()
 
@@ -102,7 +101,7 @@ class Find(QtWidgets.QDialog):
 
     def find(self):
         # Grab the parent's text
-        text = self.parent.toPlainText()
+        text = self.parent().toPlainText()
 
         # And the text to find
         query = self.findField.toPlainText()
@@ -130,14 +129,13 @@ class Find(QtWidgets.QDialog):
         self.replace()
 
     def replace(self):
-        cursor = self.parent.textCursor()
+        cursor = self.parent().textCursor()
 
         if self.lastMatch and cursor.hasSelection():
             cursor.insertText(self.replaceField.toPlainText())
-            self.parent.setTextCursor(cursor)
+            self.parent().setTextCursor(cursor)
 
     def replaceAll(self):
-        self.moveCursor(0, 0)
         # Initial find() call so that lastMatch is
         # potentially not None anymore
         self.find()
@@ -163,7 +161,7 @@ class Find(QtWidgets.QDialog):
     def moveCursor(self, start, end):
 
         # We retrieve the QTextCursor object from the parent's QTextEdit
-        cursor = self.parent.textCursor()
+        cursor = self.parent().textCursor()
 
         # Then we set the position to the beginning of the last match
         cursor.setPosition(start)
@@ -175,4 +173,4 @@ class Find(QtWidgets.QDialog):
         )
 
         # And finally we set this new cursor as the parent's
-        self.parent.setTextCursor(cursor)
+        self.parent().setTextCursor(cursor)

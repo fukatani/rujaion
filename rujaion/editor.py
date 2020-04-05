@@ -1,7 +1,6 @@
 import codecs
 from collections import defaultdict
 import os
-import re
 import string
 import subprocess
 from typing import *
@@ -13,6 +12,7 @@ from PyQt5.QtCore import Qt
 
 from rujaion import completer
 from rujaion.command import finder
+from rujaion.extract import ExtractDialog
 from rujaion import syntax
 from rujaion import util
 
@@ -48,16 +48,6 @@ Hey, it's fiction.  Close to reality in spirit,
 but does not refer to a specific project, bug, Sunday,
 or brand of soft drink.
 """
-
-
-def sort_by_levenshtein(center: str, words: Iterable[str], limit: int = 2) -> List[str]:
-    cands = []
-    for word in words:
-        m = StringMatcher.StringMatcher(seq1=center, seq2=word)
-        dist = m.distance()
-        if dist <= limit:
-            cands.append(word)
-    return cands
 
 
 CHARS = set(string.ascii_letters + string.digits + "_")
@@ -108,6 +98,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             and "\u2029" not in self.textCursor().selectedText()
         ):
             menu.addAction(u"Add to watches", self.add_to_watch)
+        menu.addAction(u"Extract", self.extract)
 
     def add_to_watch(self):
         var = self.textCursor().selectedText()
@@ -115,6 +106,9 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def find(self):
         finder.Find(self).show()
+
+    def extract(self):
+        ExtractDialog(self, sentence=self.textCursor().selectedText()).show()
 
     def default_file_name(self) -> str:
         if self.lang == "c++":
@@ -396,9 +390,6 @@ class Editter(QtWidgets.QPlainTextEdit):
         center = self.textCursor().selectedText()
         if center:
             self.highlighter.update_levenshtein([center])
-            # words = set(re.findall(r"\b[a-zA-Z_]+[a-zA-Z1-9_]\b", self.toPlainText(), re.S))
-            # words = sort_by_levenshtein(center, words, 1)
-            # self.highlighter.update_levenshtein(words)
         else:
             self.highlighter.levensteign_rules.clear()
         self.highlighter.rehighlight()
@@ -512,6 +503,9 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.go_to_first_error()
             return
 
+        if event.key() == QtCore.Qt.Key_E and event.modifiers() == QtCore.Qt.ControlModifier:
+            self.extract()
+
         super().keyPressEvent(event)
 
         if event.key() == Qt.Key_Home:
@@ -558,6 +552,26 @@ class Editter(QtWidgets.QPlainTextEdit):
         cursor.removeSelectedText()
         cursor.deletePreviousChar()
 
+    def clear_and_write_text(self, text: str):
+        cursor = self.textCursor()
+        cursor.movePosition(QtGui.QTextCursor.Start)
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor,1)
+        cursor.removeSelectedText()
+        self.insertPlainText(text)
+
+    def save_position(self):
+        cursor = self.textCursor()
+        line_num = cursor.blockNumber()
+        char_num = cursor.columnNumber()
+        scroll_value = self.verticalScrollBar().value()
+        return line_num, char_num, scroll_value
+
+    def load_position(self, line_num, char_num, scroll_value):
+        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
+        cursor.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num)
+        self.setTextCursor(cursor)
+        self.verticalScrollBar().setValue(scroll_value)
+
     def save_pre_process(self):
         # Get formatted Text
         temp_file_name = util.get_temp_file(self.lang)
@@ -566,27 +580,16 @@ class Editter(QtWidgets.QPlainTextEdit):
         if not util.exec_format(self.lang):
             return
         temp_file = codecs.open(temp_file_name, "r", "utf-8")
-        all_text = "".join([line for line in temp_file.readlines()])
+        formatted_text = "".join([line for line in temp_file.readlines()])
         temp_file.close()
 
         # Save cursor and scroll bar status
-        cursor = self.textCursor()
-        line_num = cursor.blockNumber()
-        char_num = cursor.columnNumber()
-        scroll_value = self.verticalScrollBar().value()
+        pos = self.save_position()
 
         # Clear all Text and insert format result
-        cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1)
-        cursor.removeSelectedText()
-        self.insertPlainText(all_text)
+        self.clear_and_write_text(formatted_text)
 
         # recover cursor and scroll bar status
-        cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
-        cursor.movePosition(
-            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
-        )
-        self.setTextCursor(cursor)
-        self.verticalScrollBar().setValue(scroll_value)
+        self.load_position(*pos)
         self.edited = False
         self.repaint()
