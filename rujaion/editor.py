@@ -394,6 +394,15 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.highlighter.levensteign_rules.clear()
         self.highlighter.rehighlight()
 
+    def toggle_ref(self):
+        tc = self.textCursor()
+        while self.document().characterAt(tc.position() - 1) != " " and not tc.atBlockStart():
+            tc.movePosition(QtGui.QTextCursor.PreviousCharacter)
+        if self.document().characterAt(tc.position()) == "&":
+            tc.deleteChar()
+        else:
+            tc.insertText("&")
+
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
         if event.key() == Qt.Key_Return and self.completer.popup().isVisible():
@@ -493,14 +502,20 @@ class Editter(QtWidgets.QPlainTextEdit):
         if event.key() == Qt.Key_K and event.modifiers() == QtCore.Qt.ControlModifier:
             self.remove_whole_line()
             return
+
         if (
             event.modifiers() == QtCore.Qt.ControlModifier
             and event.key() == QtCore.Qt.Key_B
         ):
             self.go_to_declaration()
             return
+
         if event.key() == QtCore.Qt.Key_F2:
             self.go_to_first_error()
+            return
+
+        if event.key() == QtCore.Qt.Key_F3:
+            self.toggle_ref()
             return
 
         if event.key() == QtCore.Qt.Key_E and event.modifiers() == QtCore.Qt.ControlModifier:
