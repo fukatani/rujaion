@@ -59,8 +59,9 @@ navi_script = """// ==UserScript==
            var dom_obj_parent = dom_obj.parentNode.parentNode;
            dom_obj_parent.removeChild(dom_obj.parentNode);
         }
-        for (obj of document.getElementsByClassName("alert alert-warning alert-dismissible fade in")) {
-            obj.innerHTML = '';
+        if (document.getElementsByClassName("alert alert-warning alert-dismissible fade in")) {
+           var obj = document.getElementsByClassName("alert alert-warning alert-dismissible fade in")[0]
+           obj.innerHTML = '';
         }
 
         const tasksBar = document.createElement('l');
