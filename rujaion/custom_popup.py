@@ -22,33 +22,34 @@ class External(QThread):
         self.url = url
 
     def run(self):
-        finished = False
-        with with_cookiejar(
-            new_session_with_our_user_agent(), path=default_cookie_path
-        ) as sess:
-            for i in range(40):
-                time.sleep(2)
-                submission = submission_from_url(self.url)
-                result = submission.download_data(session=sess)
-                self.updateRequest.emit((result.status, result.problem_id))
-                result = result.status
-                failed = any([word in result for word in self.failed_words])
-                if result == "AC" or failed:
-                    finished = True
-                if failed:
-                    subprocess.check_call(
-                        ["sensible-browser", submission.get_url()],
-                        stdin=sys.stdin,
-                        stdout=sys.stdout,
-                        stderr=sys.stderr,
-                    )
-                    finished = True
-                if finished:
-                    time.sleep(3)
-                    self.finishRequest.emit()
-                    break
-            time.sleep(3)
-            self.finishRequest.emit()
+        try:
+            with with_cookiejar(
+                new_session_with_our_user_agent(), path=default_cookie_path
+            ) as sess:
+                finished = False
+                for i in range(40):
+                    time.sleep(2)
+                    submission = submission_from_url(self.url)
+                    result = submission.download_data(session=sess)
+                    self.updateRequest.emit((result.status, result.problem_id))
+                    result = result.status
+                    failed = any([word in result for word in self.failed_words])
+                    if result == "AC" or failed:
+                        finished = True
+                    if failed:
+                        subprocess.check_call(
+                            ["sensible-browser", submission.get_url()],
+                            stdin=sys.stdin,
+                            stdout=sys.stdout,
+                            stderr=sys.stderr,
+                        )
+                        finished = True
+                    if finished:
+                        break
+        except Exception as e:
+            print(e)
+        time.sleep(3)
+        self.finishRequest.emit()
 
 
 class CustomPopup(QtWidgets.QWidget):
