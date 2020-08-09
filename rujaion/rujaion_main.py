@@ -485,6 +485,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             self.console.writeLnSignal.emit(output)
         except subprocess.CalledProcessError as err:
             self.console.writeLnSignal.emit("[-] " + err.output.decode())
+            self.console.writeLnSignal.emit("[-] Run process is terminated abnormally.")
+            self.updateWindowTitle(False)
+            return
         self.console.writeLnSignal.emit("[+] Run process is finished successfully!")
         self.updateWindowTitle(False)
 

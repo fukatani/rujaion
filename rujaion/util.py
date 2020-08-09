@@ -58,6 +58,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
                 "g++",
                 "-std=gnu++1y",
                 "-O2",
+                "-fsanitize=undefined",
                 "-I/opt/boost/gcc/include",
                 "-L/opt/boost/gcc/lib",
             ]
@@ -65,6 +66,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
             return [
                 "g++",
                 "-std=gnu++1y",
+                "-fsanitize=undefined",
                 "-g",
                 "-I/opt/boost/gcc/include",
                 "-L/opt/boost/gcc/lib",
