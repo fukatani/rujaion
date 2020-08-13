@@ -65,15 +65,21 @@ class ExtractDialog(QtWidgets.QDialog):
 
     def extract(self):
         if self.extract_var.isChecked():
-            declaration = "let {} = {};\n".format(self.name_edit.text(), self.sentence_edit.text())
+            declaration = "let {} = {};\n".format(
+                self.name_edit.text(), self.sentence_edit.text()
+            )
 
         if self.extract_type.isChecked():
-            declaration = "type {} = {};\n".format(self.name_edit.text(), self.sentence_edit.text())
+            declaration = "type {} = {};\n".format(
+                self.name_edit.text(), self.sentence_edit.text()
+            )
 
         if self.replace_all_checkbox.isChecked():
             pos = self.parent().save_position()
             text = self.parent().toPlainText()
-            self.parent().clear_and_write_text(text.replace(self.sentence_edit.text(), self.name_edit.text()))
+            self.parent().clear_and_write_text(
+                text.replace(self.sentence_edit.text(), self.name_edit.text())
+            )
             self.parent().load_position(*pos)
 
         tc = self.parent().textCursor()

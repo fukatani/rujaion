@@ -397,7 +397,10 @@ class Editter(QtWidgets.QPlainTextEdit):
     def toggle_ref(self):
         delimit_chars = {" ", "(", "[", "{"}
         tc = self.textCursor()
-        while self.document().characterAt(tc.position() - 1) not in delimit_chars and not tc.atBlockStart():
+        while (
+            self.document().characterAt(tc.position() - 1) not in delimit_chars
+            and not tc.atBlockStart()
+        ):
             tc.movePosition(QtGui.QTextCursor.PreviousCharacter)
         if self.document().characterAt(tc.position()) == "&":
             tc.deleteChar()
@@ -519,7 +522,10 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.toggle_ref()
             return
 
-        if event.key() == QtCore.Qt.Key_E and event.modifiers() == QtCore.Qt.ControlModifier:
+        if (
+            event.key() == QtCore.Qt.Key_E
+            and event.modifiers() == QtCore.Qt.ControlModifier
+        ):
             self.extract()
 
         super().keyPressEvent(event)
@@ -571,7 +577,7 @@ class Editter(QtWidgets.QPlainTextEdit):
     def clear_and_write_text(self, text: str):
         cursor = self.textCursor()
         cursor.movePosition(QtGui.QTextCursor.Start)
-        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor,1)
+        cursor.movePosition(QtGui.QTextCursor.End, QtGui.QTextCursor.KeepAnchor, 1)
         cursor.removeSelectedText()
         self.insertPlainText(text)
 
@@ -584,7 +590,9 @@ class Editter(QtWidgets.QPlainTextEdit):
 
     def load_position(self, line_num, char_num, scroll_value):
         cursor = QtGui.QTextCursor(self.document().findBlockByLineNumber(line_num))
-        cursor.movePosition(QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num)
+        cursor.movePosition(
+            QtGui.QTextCursor.NextCharacter, QtGui.QTextCursor.MoveAnchor, char_num
+        )
         self.setTextCursor(cursor)
         self.verticalScrollBar().setValue(scroll_value)
 

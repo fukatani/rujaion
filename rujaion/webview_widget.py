@@ -4,17 +4,15 @@ import sys
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QThread, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineScript
-
-from onlinejudge import dispatch
-from onlinejudge._implementation.utils import (
-    default_cookie_path,
-    with_cookiejar,
-    new_session_with_our_user_agent,
-)
-from PyQt5.QtCore import QThread
 from PyQt5.QtNetwork import QNetworkCookie
+
+from onlinejudge_workaround_for_conflict import dispatch
+from onlinejudge_workaround_for_conflict._implementation.utils import (
+    default_cookie_path,
+)
+from onlinejudge_command.utils import new_session_with_our_user_agent
 
 from rujaion import util
 
@@ -214,8 +212,10 @@ class WebViewWindow(QtWidgets.QWidget):
         self.browser.setWindowTitle("Task")
         self.url_edit = QtWidgets.QLineEdit()
         self.url_edit.returnPressed.connect(self.loadPage)
-        session = new_session_with_our_user_agent()
-        self.browser.page().profile().setHttpUserAgent(session.headers["User-Agent"])
+        with new_session_with_our_user_agent(path=default_cookie_path) as session:
+            self.browser.page().profile().setHttpUserAgent(
+                session.headers["User-Agent"]
+            )
         self.browser.page().profile().cookieStore().cookieAdded.connect(
             self.handleCookieAdded
         )
@@ -271,9 +271,7 @@ class WebViewWindow(QtWidgets.QWidget):
         if dispatch.service_from_url(url):
             py_cookie = toPyCookie(cookie)
             util.OJ_MUTEX.lock()
-            with with_cookiejar(
-                new_session_with_our_user_agent(), path=default_cookie_path
-            ) as sess:
+            with new_session_with_our_user_agent(path=default_cookie_path) as sess:
                 sess.cookies.set_cookie(py_cookie)
             util.OJ_MUTEX.unlock()
 
@@ -307,9 +305,7 @@ class NextPreviousProblemUpdater(QThread):
             return
         try:
             contest = cur_problem.get_contest()
-            with with_cookiejar(
-                new_session_with_our_user_agent(), path=default_cookie_path
-            ) as sess:
+            with new_session_with_our_user_agent(path=default_cookie_path) as sess:
                 problems = contest.list_problems(session=sess)
             for i, problem in enumerate(problems):
                 if problem == cur_problem:

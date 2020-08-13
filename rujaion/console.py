@@ -6,7 +6,7 @@ from io import StringIO
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import Qt, pyqtSignal
 import pexpect
-from onlinejudge.dispatch import submission_from_url
+from onlinejudge_workaround_for_conflict.dispatch import submission_from_url
 
 from rujaion.custom_popup import CustomPopup
 from rujaion.table_view import TableView
@@ -110,11 +110,11 @@ class Console(QtWidgets.QTextEdit):
                 self.__write(WriteObj(line, mode="error"))
             else:
                 self.__write(WriteObj(line))
-        if last_submission_url is not None:
-            submission = submission_from_url(last_submission_url)
-            if submission is not None:
-                self.popup = CustomPopup(None, last_submission_url)
-                self.popup.show()
+        # if last_submission_url is not None:
+        #     submission = submission_from_url(last_submission_url)
+        #     if submission is not None:
+        #         self.popup = CustomPopup(None, last_submission_url)
+        #         self.popup.show()
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)

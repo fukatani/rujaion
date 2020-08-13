@@ -66,7 +66,7 @@ class SubmitDialog(QtWidgets.QDialog):
             "-y",
             self.url_edit.text(),
             self.parent().editor.fname,
-            "--no-open",
+            # "--no-open",
         )
         print(cmd)
         self.submitter.cmd = cmd

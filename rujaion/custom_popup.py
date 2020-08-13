@@ -2,12 +2,12 @@ import subprocess
 import sys
 import time
 
-from onlinejudge._implementation.utils import (
+from onlinejudge_workaround_for_conflict._implementation.utils import (
     default_cookie_path,
-    with_cookiejar,
-    new_session_with_our_user_agent,
 )
-from onlinejudge.dispatch import submission_from_url
+from onlinejudge_command.utils import new_session_with_our_user_agent
+
+from onlinejudge_workaround_for_conflict.dispatch import submission_from_url
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
@@ -23,9 +23,7 @@ class External(QThread):
 
     def run(self):
         try:
-            with with_cookiejar(
-                new_session_with_our_user_agent(), path=default_cookie_path
-            ) as sess:
+            with new_session_with_our_user_agent(path=default_cookie_path) as sess:
                 finished = False
                 for i in range(40):
                     time.sleep(2)
