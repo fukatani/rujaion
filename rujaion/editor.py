@@ -395,7 +395,7 @@ class Editter(QtWidgets.QPlainTextEdit):
         self.highlighter.rehighlight()
 
     def toggle_ref(self):
-        delimit_chars = {" ", "(", "[", "{"}
+        delimit_chars = {" ", "(", "[", "{", "|", ","}
         tc = self.textCursor()
         while (
             self.document().characterAt(tc.position() - 1) not in delimit_chars
