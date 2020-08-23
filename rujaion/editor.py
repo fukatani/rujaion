@@ -394,7 +394,7 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.highlighter.levensteign_rules.clear()
         self.highlighter.rehighlight()
 
-    def toggle_ref(self):
+    def toggle_ref(self, mut: bool):
         delimit_chars = {" ", "(", "[", "{", "|", ","}
         tc = self.textCursor()
         while (
@@ -402,10 +402,16 @@ class Editter(QtWidgets.QPlainTextEdit):
             and not tc.atBlockStart()
         ):
             tc.movePosition(QtGui.QTextCursor.PreviousCharacter)
-        if self.document().characterAt(tc.position()) == "&":
-            tc.deleteChar()
+
+        ref_string = "&"
+        if mut:
+            ref_string = "&mut "
+
+        if self.document().characterAt(tc.position()) == ref_string:
+            for _ in range(len(ref_string)):
+                tc.deleteChar()
         else:
-            tc.insertText("&")
+            tc.insertText(ref_string)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         tc = self.textCursor()
@@ -535,8 +541,12 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.go_to_first_error()
             return
 
+        if event.key() == QtCore.Qt.Key_F3 and event.modifiers() == QtCore.Qt.ControlModifier:
+            self.toggle_ref(True)
+            return
+
         if event.key() == QtCore.Qt.Key_F3:
-            self.toggle_ref()
+            self.toggle_ref(False)
             return
 
         if (
