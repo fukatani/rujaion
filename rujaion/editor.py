@@ -436,6 +436,23 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.toggleBreak(line_num)
             return
 
+        if event.modifiers() == QtCore.Qt.ControlModifier and event.key() == Qt.Key_Up:
+            tc = self.textCursor()
+            for _ in range(3):
+                tc.movePosition(QtGui.QTextCursor.Up, QtGui.QTextCursor.MoveAnchor, 1)
+            self.setTextCursor(tc)
+            return
+
+        if (
+            event.modifiers() == QtCore.Qt.ControlModifier
+            and event.key() == Qt.Key_Down
+        ):
+            tc = self.textCursor()
+            for _ in range(3):
+                tc.movePosition(QtGui.QTextCursor.Down, QtGui.QTextCursor.MoveAnchor, 1)
+            self.setTextCursor(tc)
+            return
+
         # comment out or uncomment
         if (
             event.modifiers() == QtCore.Qt.ControlModifier
