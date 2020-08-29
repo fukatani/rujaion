@@ -297,9 +297,13 @@ class NextPreviousProblemUpdater(QThread):
             words = self.url.split("?")
             words = words[0].split("/")
             prev_words = words.copy()
-            prev_words[-1] = str(int(words[-1]) - 1)
+            try:
+                problem_no = int(words[-1])
+            except ValueError:
+                return
+            prev_words[-1] = str(problem_no - 1)
             next_words = words.copy()
-            next_words[-1] = str(int(words[-1]) + 1)
+            next_words[-1] = str(problem_no + 1)
             self.prev = "/".join(prev_words)
             self.next = "/".join(next_words)
             return
