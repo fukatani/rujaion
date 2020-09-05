@@ -1,8 +1,8 @@
 #![allow(unused_imports)]
-#![allow(non_snake_case)]
 use std::cmp::*;
 use std::collections::*;
 use std::io::Write;
+use std::ops::Bound::*;
 
 #[allow(unused_macros)]
 macro_rules! debug {
