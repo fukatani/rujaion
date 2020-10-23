@@ -32,6 +32,7 @@
   <template name="entry_or_insert" value="entry(k$END$).or_insert(0) += 1;" description="map iterator" toReformat="false" toShortenFQNames="true" />
   <template name="read_tree" value="let mut edges = vec![vec![]; n]; for i in 0..n - 1 { let v = read_vec::&lt;usize&gt;(); let (a, b) = (v[0] - 1, v[1] - 1); edges[a].push(b); edges[b].push(a);}" description="read tree" toReformat="false" toShortenFQNames="true" />
   <template name="dfs_on_tree" value="fn dfs(cur: usize, parent: usize, edges: &amp;Vec&lt;Vec&lt;usize&gt;&gt;) { for &amp;to in edges[cur].iter().filter(|&amp;&amp;x| x != parent) { dfs(to, cur, edges);}}" description="read tree" toReformat="false" toShortenFQNames="true" />
+  <template name="fact" value="let mut fact = vec![Modulo(1); n + 1]; for i in 1..fact.len() { fact[i] = fact[i - 1] * i as i64;} let fact_inv = fact.iter().map(|&amp;x| x.inv()).collect::&lt;Vec&lt;_&gt;&gt;();" description="read tree" toReformat="false" toShortenFQNames="true" />
   <template name="Vec" value="Vec&lt;$END$&gt;" description="vector type" toReformat="false" toShortenFQNames="true" />
   <template name="to_digit36" value="to_digit(36).unwrap() as usize - 10" description="char to digit" toReformat="false" toShortenFQNames="true" />
   <template name="to_digit10" value="to_digit(10).unwrap() as i64" description="char to digit" toReformat="false" toShortenFQNames="true" />
