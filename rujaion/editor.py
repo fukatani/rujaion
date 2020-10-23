@@ -100,6 +100,11 @@ class Editter(QtWidgets.QPlainTextEdit):
             menu.addAction(u"Add to watches", self.add_to_watch)
         menu.addAction(u"Extract", self.extract)
 
+    def lang_as_option(self):
+        if self.lang == "python3":
+            return "python"
+        return self.lang
+
     def add_to_watch(self):
         var = self.textCursor().selectedText()
         self.parent().display_widget.add_var(var)
@@ -541,7 +546,10 @@ class Editter(QtWidgets.QPlainTextEdit):
             self.go_to_first_error()
             return
 
-        if event.key() == QtCore.Qt.Key_F3 and event.modifiers() == QtCore.Qt.ControlModifier:
+        if (
+            event.key() == QtCore.Qt.Key_F3
+            and event.modifiers() == QtCore.Qt.ControlModifier
+        ):
             self.toggle_ref(True)
             return
 
