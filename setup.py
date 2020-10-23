@@ -15,7 +15,7 @@ def load_module(module_path):
 
 setup(
     name="Rujaion",
-    version="0.12.0",
+    version="0.13.0",
     author="Ryosuke Fukatani",
     install_requires=[
         "PyQt5",
