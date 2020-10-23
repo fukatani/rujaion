@@ -4,15 +4,16 @@ from rujaion import util
 
 
 class SubmitDialog(QtWidgets.QDialog):
-    def __init__(self, *args, url: str, lang: str):
+    def __init__(self, *args, url: str, lang: str, settings=None):
         super().__init__(*args)
         self.url_edit = util.StateLessTextEdit(url, self)
         self.lang_edit = util.StateLessTextEdit(lang, self)
-        self.dialogs = (
+        self.dialogs = [
             ("Submit...", None),
             ("URL", self.url_edit),
             ("Language", self.lang_edit),
-        )
+        ]
+
         self.submitter = util.Commander(self.parent().console)
         self.resize(500, 100)
         self.draw()
@@ -56,7 +57,7 @@ class SubmitDialog(QtWidgets.QDialog):
                 widget.commit()
             except AttributeError:
                 pass
-        cmd = (
+        cmd = [
             "oj",
             "s",
             "-w",
@@ -67,7 +68,7 @@ class SubmitDialog(QtWidgets.QDialog):
             self.url_edit.text(),
             self.parent().editor.fname,
             # "--no-open",
-        )
+        ]
         print(cmd)
         self.submitter.cmd = cmd
         self.submitter.start()

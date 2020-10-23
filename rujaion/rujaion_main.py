@@ -861,7 +861,8 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         submit.SubmitDialog(
             self,
             url=self.browser_widget.browser.url().toString(),
-            lang=self.editor.lang,
+            lang=self.editor.lang_as_option(),
+            settings=self.settings,
         ).show()
 
 
