@@ -144,6 +144,10 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.testMyCodeWithOptions)
         filemenu.addAction(a)
 
+        a = QtWidgets.QAction("Test Interactive", self)
+        a.triggered.connect(self.testReactive)
+        filemenu.addAction(a)
+
         a = QtWidgets.QAction("Debug With Test Data (F4)", self)
         a.triggered.connect(self.debugWithTestData)
         filemenu.addAction(a)
@@ -851,6 +855,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             return
         compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
         test.TestDialog(
+            self, compiled_file=compiled_file, settings=self.settings
+        ).show()
+
+    @with_console
+    def testReactive(self, *args):
+        self.console.clear()
+        if not self.compile(no_debug=True):
+            return
+        compiled_file = util.get_compiled_file(self.editor.lang, self.editor.fname)
+        test.TestReactiveDialog(
             self, compiled_file=compiled_file, settings=self.settings
         ).show()
 
