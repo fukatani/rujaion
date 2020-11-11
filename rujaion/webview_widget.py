@@ -59,7 +59,9 @@ navi_script = """// ==UserScript==
         }
         if (document.getElementsByClassName("alert alert-warning alert-dismissible fade in")) {
            var obj = document.getElementsByClassName("alert alert-warning alert-dismissible fade in")[0]
-           obj.innerHTML = '';
+           if(obj !== undefined && obj.hasOwnProperty('innerHTML')) {
+             obj.innerHTML = '';
+           }
         }
 
         const tasksBar = document.createElement('l');
@@ -72,8 +74,9 @@ navi_script = """// ==UserScript==
             link.textContent = task.task_name;
             tasksBar.appendChild(link);
         }
-        document.getElementById('contest-nav-tabs').innerHTML = '';
-        document.getElementById('contest-nav-tabs').appendChild(tasksBar);
+        var nav_tabs = document.getElementById('contest-nav-tabs');
+        nav_tabs.innerHTML = '';
+        nav_tabs.appendChild(tasksBar);
     }
 })();"""
 
