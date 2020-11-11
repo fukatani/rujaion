@@ -93,28 +93,25 @@ class Console(QtWidgets.QTextEdit):
         self._buffer.write(msg)
 
     def __write_by_line(self, msg: Union[str, bytes]):
-        last_submission_url = None
         if isinstance(msg, bytes):
             msg = msg.decode()
         for line in msg.split("\n"):
-            if line.startswith("[+]"):
-                submit_result_prefix = "[+] success: result: "
-                if line.startswith(submit_result_prefix):
-                    last_submission_url = line[len(submit_result_prefix) :]
+            if line.startswith("[INFO]"):
+                self.__write(WriteObj("[*]" + line[6:]))
+            elif line.startswith("[+]"):
                 self.__write(WriteObj(line, mode="success"))
+            elif line.startswith("[SUCCESS]"):
+                self.__write(WriteObj("[+]" + line[9:], mode="success"))
             elif (
-                line.startswith("[-]")
-                or line.startswith("[!]")
-                or line.startswith("[ERROR]")
+                line.startswith("[FAILURE]")
             ):
-                self.__write(WriteObj(line, mode="error"))
+                self.__write(WriteObj("[-]" + line[9:], mode="error"))
+            elif (
+                line.startswith("[ERROR]")
+            ):
+                self.__write(WriteObj("[0]" + line[7:], mode="error"))
             else:
                 self.__write(WriteObj(line))
-        # if last_submission_url is not None:
-        #     submission = submission_from_url(last_submission_url)
-        #     if submission is not None:
-        #         self.popup = CustomPopup(None, last_submission_url)
-        #         self.popup.show()
 
     def __getattr__(self, attr):
         return getattr(self._buffer, attr)
@@ -202,7 +199,7 @@ class Console(QtWidgets.QTextEdit):
         # Editable final line only.
         if tc.blockNumber() != self.document().blockCount() - 1:
             return
-        if event.key() == 16777220:
+        if event.key() == Qt.Key_Return:
             if self.evcxr_proc is not None:
                 print("execute")
                 command = self.document().toPlainText().split("\n")[-1][3:] + "\n"
