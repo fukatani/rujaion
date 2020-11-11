@@ -201,7 +201,6 @@ class Console(QtWidgets.QTextEdit):
             return
         if event.key() == Qt.Key_Return:
             if self.evcxr_proc is not None:
-                print("execute")
                 command = self.document().toPlainText().split("\n")[-1][3:] + "\n"
                 self.evcxr_proc.send(command.encode())
                 self.command_history.append(
@@ -214,9 +213,7 @@ class Console(QtWidgets.QTextEdit):
                 for word in self.color_words:
                     line = line.replace(word, "")
                 self.writeLnSignal.emit("\n" + line)
-
                 self.display_prefix()
-
             return
         super().keyPressEvent(event)
 
