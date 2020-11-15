@@ -17,6 +17,7 @@
   <template name="let vv" value="let mut dp = vec![vec![; ]; ];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="let vvv" value="let mut dp = vec![vec![vec![; ]; ];];" description="2d vec" toReformat="false" toShortenFQNames="true" />
   <template name="chars" value="chars().collect::&lt;Vec&lt;_&gt;&gt;();" description="collect chars" toReformat="false" toShortenFQNames="true"/>
+  <template name="grid" value="let mut grid = vec![vec![]; h]; for i in 0..h { grid[i] = read::&lt;String&gt;().chars().collect::&lt;Vec&lt;_&gt;&gt;(); }" description="collect chars" toReformat="false" toShortenFQNames="true"/>
   <template name="turbo" value="::&lt;&gt;" description="collect chars" toReformat="false" toShortenFQNames="true"/>
   <template name="print" value="println!(&quot;{}&quot;, $VAR$$END$);" description="p" toReformat="false" toShortenFQNames="true">
     <variable name="VAR" expression="" defaultValue="ans" alwaysStopAt="true" />
