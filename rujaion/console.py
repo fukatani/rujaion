@@ -102,13 +102,9 @@ class Console(QtWidgets.QTextEdit):
                 self.__write(WriteObj(line, mode="success"))
             elif line.startswith("[SUCCESS]"):
                 self.__write(WriteObj("[+]" + line[9:], mode="success"))
-            elif (
-                line.startswith("[FAILURE]")
-            ):
+            elif line.startswith("[FAILURE]"):
                 self.__write(WriteObj("[-]" + line[9:], mode="error"))
-            elif (
-                line.startswith("[ERROR]")
-            ):
+            elif line.startswith("[ERROR]"):
                 self.__write(WriteObj("[0]" + line[7:], mode="error"))
             else:
                 self.__write(WriteObj(line))

@@ -62,6 +62,9 @@ class TestDialog(QtWidgets.QDialog):
                 widget.commit()
             except AttributeError:
                 pass
+        self.parent().recorder.push(
+            self.parent().browser_widget.browser.url().toString(), "test"
+        )
         try:
             command = ["oj", "test", "-c", self.compiled_file]
             if self.float_error_edit.text():
