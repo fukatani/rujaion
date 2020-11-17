@@ -22,6 +22,8 @@ from rujaion.command import login, submit, test
 from rujaion import util
 from rujaion.util import WriteObj
 from rujaion import webview_widget
+from rujaion import recorder
+from rujaion import record_view
 
 # TODO: watch selected variable
 # TODO: highlight multi line comment
@@ -39,7 +41,6 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super(RujaionMainWindow, self).__init__(parent)
         self.settings = QtCore.QSettings("RustDebugger", "RustDebugger")
-
         self.setWindowTitle("Rujaion")
         self.setStyleSheet("background-color: white")
 
@@ -164,11 +165,18 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         a.triggered.connect(self.submit)
         filemenu.addAction(a)
 
+        filemenu.addSeparator()
+
+        a = QtWidgets.QAction("Visualize Record", self)
+        a.triggered.connect(self.visualize_record)
+        filemenu.addAction(a)
+
         self.debug_process = None
         try:
             self.openFile(self.settings.value("LastOpenedFile", type=str))
         except FileNotFoundError:
             pass
+        self.recorder = recorder.Recorder()
         self.lang_box.setCurrentText(self.editor.lang)
         self.lang_box.currentTextChanged.connect(self.editor.lang_changed)
         self.resize(self.settings.value("size", QtCore.QSize(1000, 900)))
@@ -825,15 +833,16 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
         test_command = "{}".format(
             " ".join(util.exec_command(self.editor.lang) + [compiled_file])
         )
+        command = ["oj", "test", "-c", test_command]
+        print(command)
+        if self.exists_float_output():
+            error = 0.00000001
+            command += ["-e", str(error)]
+            self.console.writeLnSignal.emit("[.] Found float expectation")
+            self.console.writeLnSignal.emit("[.] Allow {} error".format(error))
+        self.recorder.push(self.browser_widget.browser.url().toString(), "test")
+
         try:
-            command = ["oj", "test", "-c", test_command]
-            print(command)
-            if self.exists_float_output():
-                error = 0.00000001
-                command += ["-e", str(error)]
-                self.console.writeLnSignal.emit("[.] Found float expectation")
-                self.console.writeLnSignal.emit("[.] Allow {} error".format(error))
-            # TODO: configurable timeout
             out = subprocess.check_output(
                 command, stderr=subprocess.STDOUT, timeout=4.0
             ).decode()
@@ -878,6 +887,9 @@ class RujaionMainWindow(QtWidgets.QMainWindow):
             lang=self.editor.lang_as_option(),
             settings=self.settings,
         ).show()
+
+    def visualize_record(self):
+        record_view.visualize()
 
 
 app = QtWidgets.QApplication(sys.argv)

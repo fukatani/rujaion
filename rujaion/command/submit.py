@@ -70,6 +70,9 @@ class SubmitDialog(QtWidgets.QDialog):
             # "--no-open",
         ]
         print(cmd)
+        self.parent().recorder.push(
+            self.parent().browser_widget.browser.url().toString(), "submit"
+        )
         self.submitter.cmd = cmd
         self.submitter.start()
         self.close()

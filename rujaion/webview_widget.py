@@ -233,6 +233,8 @@ class WebViewWindow(QtWidgets.QWidget):
 
     def download_task(self):
         self.url_edit.setText(self.browser.url().toString())
+        self.parent().parent().recorder.push(self.browser.url().toString(), "download")
+
         self.next_prev_updater.url = self.browser.url().toString()
         self.next_prev_updater.start()
         self.url_edit.setText(self.browser.url().toString())

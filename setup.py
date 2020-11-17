@@ -24,6 +24,7 @@ setup(
         "online-judge-tools == 11.1.1",
         "online-judge-api-client == 10.5.0",
         "pandas",
+        "plotly",
     ],
     packages=find_packages(exclude=("docker", "doc")),
     package_data={"rujaion": ["resources/*"]},
