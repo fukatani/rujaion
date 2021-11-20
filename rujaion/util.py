@@ -56,7 +56,7 @@ def compile_command(lang: str, no_debug: bool) -> List[str]:
         if no_debug:
             return [
                 "g++",
-                "-std=gnu++1y",
+                "-std=gnu++17",
                 "-O2",
                 "-fsanitize=undefined",
                 "-I/opt/boost/gcc/include",
