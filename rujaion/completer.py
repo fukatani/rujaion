@@ -100,8 +100,7 @@ class PyCompleter(CompleterBase):
         src_line_num = self.parent.textCursor().blockNumber() + 1
         src_char_num = self.parent.textCursor().columnNumber()
         candidates = jedi.Script(
-            self.parent.toPlainText(), src_line_num, src_char_num
-        ).completions()
+            self.parent.toPlainText()).complete(src_line_num, src_char_num)
         candidates = [cand.name for cand in candidates]
 
         self.candidates_dict = {}
