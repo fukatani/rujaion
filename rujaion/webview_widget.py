@@ -105,7 +105,7 @@ class CustomWebEngineView(QWebEngineView):
         if self.parent().next_prev_updater.prev is not None:
             menu.addAction(u"Go Previous Task", self.parent().goPreviousTask)
         if self.selectedText():
-            menu.addAction(u"View Graph", self.viewGraph)
+            menu.addAction(u"View Graph (with auto zero-index)", self.viewGraph)
         menu.addAction(u"Back", self.back)
         menu.addSeparator()
         if self.parent().next_prev_updater.problems is not None:
@@ -158,6 +158,7 @@ class CustomWebEngineView(QWebEngineView):
                         u"Go to {}".format(problem_id),
                         lambda: self.parent().changePage(problems[7]),
                     )
+        menu.addAction(u"Open by browser", self.openByBrowser)
         menu.exec(a0.globalPos())
 
     def runScript(self) -> None:
@@ -172,7 +173,6 @@ class CustomWebEngineView(QWebEngineView):
 
     def viewGraph(self) -> None:
         text = self.selectedText()
-        graph_member = []
         weighted = "false"
 
         lines = text.split("\n")
@@ -181,28 +181,42 @@ class CustomWebEngineView(QWebEngineView):
             words = line.split(" ")
             if len(words) < 2:
                 continue
-            if len(words) == 3:
-                weighted = "true"
-            graph_member.append("-".join(words))
             vertexes.append(int(words[0]))
             vertexes.append(int(words[1]))
 
-        if min(vertexes) == 0:
-            indexed = "false"
-        else:
-            indexed = "true"
+        already_one_indexed = min(vertexes) == 1
 
-        max_vertex = max(vertexes)
-        if indexed == "false":
-            max_vertex -= 1
-        graph_member = ["{0}-{1}".format(max_vertex, len(lines))] + graph_member
+        vertex_size = max(vertexes)
+        if not already_one_indexed:
+            vertex_size += 1
+
+        lines = text.split("\n")
+        graph_member = []
+        for line in lines:
+            words = line.split(" ")
+            if len(words) < 2:
+                continue
+            if len(words) == 3:
+                weighted = "true"
+            if already_one_indexed:
+                for i in range(2):
+                    words[i] = str(int(words[i]) - 1)
+            graph_member.append("-".join(words))
+
+        graph_member = ["{0}-{1}".format(vertex_size, len(lines))] + graph_member
         graph_query = ",".join(graph_member)
 
-        url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed={1}&data={2}".format(
-            weighted, indexed, graph_query
+        url = "https://hello-world-494ec.firebaseapp.com/?format=true&directed=false&weighted={0}&indexed=false&data={1}".format(
+            weighted, graph_query
         )
         try:
             subprocess.Popen(["sensible-browser", url])
+        except subprocess.TimeoutExpired:
+            pass
+
+    def openByBrowser(self):
+        try:
+            subprocess.Popen(["sensible-browser", self.url().toString()])
         except subprocess.TimeoutExpired:
             pass
 
